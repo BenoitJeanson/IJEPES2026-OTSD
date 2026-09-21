@@ -67,6 +67,11 @@ table.kv td:last-child{text-align:right;font-variant-numeric:tabular-nums}
 #tip{position:absolute;pointer-events:none;background:#0d1117;border:1px solid var(--line);
   border-radius:5px;padding:4px 7px;font-size:11px;display:none;z-index:9}
 a{color:var(--acc)}
+#busy{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:8;
+  background:var(--panel);border:1px solid var(--line);border-radius:8px;
+  padding:9px 14px;color:var(--dim);font-size:12px;display:none}
+#busy.on{display:block}
+#busy.err{color:var(--hot);border-color:var(--hot)}
 #bar,#scrim{display:none}
 
 /* ------------------------------------------------------------ phone ---- */
@@ -163,6 +168,7 @@ a{color:var(--acc)}
     <div id="hud"></div>
     <div id="legend"></div>
     <div id="tip"></div>
+    <div id="busy"></div>
   </div>
 
   <div class="panel" id="right">
@@ -207,6 +213,11 @@ a{color:var(--acc)}
 
 <script>
 const $ = s => document.querySelector(s);
+function busy(msg, stick) {
+  const b = $('#busy');
+  b.textContent = msg || '';
+  b.className = msg ? (stick ? 'on err' : 'on') : '';
+}
 const phone = () => innerWidth <= 820 || matchMedia('(pointer:coarse)').matches;
 const SVGNS = 'http://www.w3.org/2000/svg';
 const el = (n, a = {}) => { const e = document.createElementNS(SVGNS, n);
@@ -226,7 +237,11 @@ async function j(p) { const r = await fetch(p); if (!r.ok) throw new Error(p); r
 async function net(sys) { return S.nets[sys] ||= await j(`data/net/${sys}.json`); }
 
 async function loadRun(id, asGhost) {
-  const r = await j(`data/runs/${id}.json`);
+  busy(asGhost ? `loading ghost ${id}…` : `loading ${id}…`);
+  let r;
+  try { r = await j(`data/runs/${id}.json`); }
+  catch (e) { busy(`could not load ${id} — check the connection`, true); return; }
+  busy(null);
   await net(r.system);
   if (asGhost) { S.ghost = r; S.ghostHeat = residencyWhole(r); }
   else { S.run = r; S.phase = 0; S.frame = 0; fitView(); }
@@ -649,10 +664,10 @@ $('#phases').addEventListener('click', () => sheet(null));
   const want = q.get('run');
   await loadRun(want && has(want) ? want : '118_H3_d2_hop0_REF_s3', false);
   if (q.get('p')) { S.phase = Math.min(+q.get('p'), S.run.phases.length - 1); S.frame = 0; }
-  if (q.get('ghost') && has(q.get('ghost'))) await loadRun(q.get('ghost'), true);
   if (q.get('f') === 'end') S.frame = frames().length - 1;
   else if (q.get('f')) S.frame = Math.max(0, Math.min(frames().length - 1, +q.get('f')));
   draw(); sidebar();
+  if (q.get('ghost') && has(q.get('ghost'))) await loadRun(q.get('ghost'), true);
   // first paint can precede the final viewport on iOS; settle the fit afterwards
   requestAnimationFrame(refit);
   setTimeout(refit, 350);
