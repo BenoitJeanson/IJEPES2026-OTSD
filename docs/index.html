@@ -201,9 +201,15 @@ a{color:var(--acc)}
       <button id="bstep0">⏮</button><button id="bstepm">◀</button>
       <button id="bstepp">▶</button><button id="bstep1">⏭</button>
       <span class="sp">speed</span>
-      <select id="speed" style="flex:0 0 74px">
-        <option value="1">1×</option><option value="4" selected>4×</option>
-        <option value="16">16×</option><option value="64">64×</option>
+      <select id="speed" style="flex:0 0 84px" title="1× is 2.5 candidates per second">
+        <option value="0.4">0.4×</option>
+        <option value="1" selected>1×</option>
+        <option value="2">2×</option>
+        <option value="5">5×</option>
+        <option value="10">10×</option>
+        <option value="25">25×</option>
+        <option value="100">100×</option>
+        <option value="400">400×</option>
       </select>
       <span id="pos" class="sp"></span>
     </div>
@@ -543,7 +549,15 @@ function runList() {
 
 /* ----------------------------------------------------------------- wire --- */
 
-let pickingGhost = false, timer = null;
+let pickingGhost = false;
+
+/* Playback is rate-based rather than one candidate per tick: below 1× a tick
+   advances less than a whole candidate, so the fraction has to carry over.
+   Pacing comes from the measured elapsed time, so an irregular or throttled
+   tick still plays at the requested rate rather than drifting slow. */
+const BASE = 2.5;                      // candidates per second at 1×
+const TICK = 40;
+let timer = null, acc = 0, last = 0;
 
 function setFrame(i) {
   const fr = frames(); if (!fr.length) return;
@@ -554,11 +568,23 @@ function play(on) {
   $('#bplay').textContent = S.playing ? '⏸ pause' : '▶ play';
   $('#bplay').classList.toggle('on', S.playing);
   clearInterval(timer);
-  if (S.playing) timer = setInterval(() => {
-    const n = +$('#speed').value, fr = frames();
-    if (S.frame >= fr.length - 1) return play(false);
-    setFrame(S.frame + n);
-  }, 40);
+  if (!S.playing) return;
+  if (S.frame >= frames().length - 1) S.frame = 0;   // replay rather than stall
+  acc = 0; last = performance.now();
+  timer = setInterval(tick, TICK);
+}
+function tick() {
+  if (!S.playing) return;
+  if (document.hidden) { last = performance.now(); return; }   // don't bank time
+  const now = performance.now(), dt = Math.min(250, now - last); last = now;
+  acc += dt / 1000 * BASE * (+$('#speed').value);
+  const step = Math.floor(acc);
+  if (step >= 1) {
+    acc -= step;
+    const fr = frames();
+    if (S.frame + step >= fr.length - 1) { setFrame(fr.length - 1); return play(false); }
+    setFrame(S.frame + step);
+  }
 }
 
 $('#scrub').oninput = e => { play(false); setFrame(+e.target.value); };
@@ -672,6 +698,9 @@ $('#phases').addEventListener('click', () => sheet(null));
   requestAnimationFrame(refit);
   setTimeout(refit, 350);
   if (q.get('sheet')) sheet(q.get('sheet'), true);
+  if (q.get('speed') && [...$('#speed').options].some(o => o.value === q.get('speed')))
+    $('#speed').value = q.get('speed');
+  if (q.get('play')) play(true);
 })();
 </script>
 </body>

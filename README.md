@@ -84,12 +84,14 @@ These are all real properties of the data, surfaced in the UI rather than smooth
 | | |
 |---|---|
 | scrubber, `←` `→`, `shift`+arrow | move one / twenty-five candidates |
-| `space`, **play** | run the phase, at 1× to 64× |
+| `space`, **play** | run the phase, 0.4× to 400× — **1× is 2.5 candidates per second** |
 | **ghost a run…** then pick one | overlay a second run's whole residency in violet |
 | **heat** / **violations** / **bus labels** | layers on and off |
 | drag, wheel — or one finger / two-finger pinch | pan, zoom |
 | ☰ and ⓘ (phone only) | the run list and the run details, as sheets |
 | **open in coordedit →** | send this exact candidate to the local tool for real flows |
+
+`&play=1` starts a link playing, and `&speed=5` picks the rate it plays at.
 
 The URL is a deep link and updates as you go —
 `?run=118_H4_d2_hop1_NO-EMBED&p=0&f=end&ghost=118_H4_d2_hop1_REF` is a specific
