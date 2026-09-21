@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0e1116">
 <title>OTSD campaign replay</title>
 <style>
 :root{
@@ -65,9 +67,76 @@ table.kv td:last-child{text-align:right;font-variant-numeric:tabular-nums}
 #tip{position:absolute;pointer-events:none;background:#0d1117;border:1px solid var(--line);
   border-radius:5px;padding:4px 7px;font-size:11px;display:none;z-index:9}
 a{color:var(--acc)}
+#bar,#scrim{display:none}
+
+/* ------------------------------------------------------------ phone ---- */
+@media (max-width:820px), (max-height:520px), (hover:none) and (pointer:coarse){
+  body{font-size:14px;-webkit-text-size-adjust:100%}
+  #app{display:block;height:100dvh}
+  #bar{display:flex;align-items:center;gap:8px;height:48px;padding:0 10px;
+    padding-top:env(safe-area-inset-top);box-sizing:content-box;
+    background:var(--panel);border-bottom:1px solid var(--line);
+    position:fixed;top:0;left:0;right:0;z-index:30}
+  #bar .title{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    font-size:13px;font-weight:600}
+  #bar .title small{display:block;color:var(--dim);font-weight:400;font-size:11px}
+  #bar button{padding:8px 11px;font-size:14px}
+
+  #stage{position:fixed;left:0;right:0;z-index:1;
+    top:var(--barh,48px);bottom:var(--bottomh,112px)}
+  #net{touch-action:none}
+
+  .panel{position:fixed;z-index:40;top:0;bottom:0;width:88%;max-width:360px;
+    padding:14px;padding-top:calc(14px + env(safe-area-inset-top));
+    overflow-y:auto;-webkit-overflow-scrolling:touch;
+    transition:transform .22s cubic-bezier(.4,0,.2,1);box-shadow:0 0 40px #0009}
+  #left{left:0;transform:translateX(-101%);border-right:1px solid var(--line)}
+  #right{right:0;transform:translateX(101%);border-left:1px solid var(--line)}
+  #left.open,#right.open{transform:none}
+  #scrim{display:block;position:fixed;inset:0;z-index:35;background:#000a;
+    opacity:0;pointer-events:none;transition:opacity .22s}
+  #scrim.on{opacity:1;pointer-events:auto}
+  #runs{max-height:none}
+  .run{padding:11px 10px}
+  .ph{padding:9px 2px;min-width:52px}
+
+  #bottom{position:fixed;left:0;right:0;bottom:0;z-index:30;
+    padding:8px 12px calc(8px + env(safe-area-inset-bottom))}
+  .transport{gap:6px;justify-content:space-between;flex-wrap:wrap}
+  .transport button{padding:9px 12px;font-size:15px;min-width:44px}
+  .transport .sp{display:none}
+  .transport select{flex:0 0 68px}
+  #pos{display:block;width:100%;order:9;text-align:center;font-size:11px;color:var(--dim)}
+  #scrub{height:34px;margin:2px 0 0}
+
+  #hud{top:8px;right:8px;left:8px;font-size:12px;padding:6px 10px;min-width:0;
+    display:flex;flex-wrap:wrap;gap:2px 14px}
+  #hud div{display:block}
+  #hud .k{margin-right:4px}
+  #legend{display:none}
+  #legend.on{display:block;left:8px;right:8px;bottom:8px}
+}
+@media (max-height:520px){
+  #bar{height:40px}
+
+  #bottom{padding:5px 10px calc(5px + env(safe-area-inset-bottom))}
+  .transport{flex-wrap:nowrap}
+  .transport button{padding:6px 10px}
+  #pos{display:none}
+  #scrub{height:26px}
+  #hud{left:auto;right:8px;max-width:62vw;justify-content:flex-end}
+  .panel{padding-top:10px}
+}
 </style>
 </head>
 <body>
+<div id="bar">
+  <button id="mruns" aria-label="runs">☰</button>
+  <div class="title"><span id="mtitle">…</span><small id="msub"></small></div>
+  <button id="mlegend" aria-label="legend">?</button>
+  <button id="minfo" aria-label="details">ⓘ</button>
+</div>
+<div id="scrim"></div>
 <div id="app">
   <div class="panel" id="left">
     <h2>Campaign</h2>
@@ -138,6 +207,7 @@ a{color:var(--acc)}
 
 <script>
 const $ = s => document.querySelector(s);
+const phone = () => innerWidth <= 820 || matchMedia('(pointer:coarse)').matches;
 const SVGNS = 'http://www.w3.org/2000/svg';
 const el = (n, a = {}) => { const e = document.createElementNS(SVGNS, n);
   for (const k in a) e.setAttribute(k, a[k]); return e; };
@@ -165,12 +235,21 @@ async function loadRun(id, asGhost) {
 
 /* Residency: how many of frames 0..n have each branch open. The scrub paints
    this in; it is the only view of the candidate sequence that is not a strobe. */
-function residency(frames, upto) {
-  const h = new Map();
-  for (let i = 0; i <= upto && i < frames.length; i++)
-    for (const e of frames[i].o) h.set(e, (h.get(e) || 0) + 1);
-  return { h, n: Math.min(upto + 1, frames.length) };
+let resCache = { key: null, upto: -1, h: new Map() };
+function residency(frames, upto, key) {
+  const c = resCache;
+  if (c.key !== key || upto < c.upto - 40) { c.key = key; c.upto = -1; c.h = new Map(); }
+  for (let i = c.upto + 1; i <= upto && i < frames.length; i++)
+    for (const e of frames[i].o) c.h.set(e, (c.h.get(e) || 0) + 1);
+  for (let i = c.upto; i > upto; i--)
+    for (const e of frames[i].o) {
+      const v = c.h.get(e) - 1;
+      if (v > 0) c.h.set(e, v); else c.h.delete(e);
+    }
+  c.upto = Math.min(upto, frames.length - 1);
+  return { h: c.h, n: c.upto + 1 };
 }
+
 function residencyWhole(run) {
   const h = new Map(); let n = 0;
   for (const p of run.phases) for (const f of p.frames) { n++; for (const e of f.o) h.set(e, (h.get(e) || 0) + 1); }
@@ -189,7 +268,7 @@ function fitView() {
   const W = sv.clientWidth, H = sv.clientHeight;
   const xs = n.buses.map(b => b.xy[0]), ys = n.buses.map(b => b.xy[1]);
   const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
-  const pad = 46, k = Math.min((W - 2 * pad) / (x1 - x0 || 1), (H - 2 * pad) / (y1 - y0 || 1));
+  const pad = Math.min(46, Math.max(14, Math.min(W, H) * 0.06)), k = Math.min((W - 2 * pad) / (x1 - x0 || 1), (H - 2 * pad) / (y1 - y0 || 1));
   geom = { k, x0, y0, W, H,
     X: v => (v - x0) * k + pad + (W - 2 * pad - (x1 - x0) * k) / 2,
     Y: v => H - ((v - y0) * k + pad + (H - 2 * pad - (y1 - y0) * k) / 2) };
@@ -210,7 +289,8 @@ function draw() {
   const g = el('g', { transform: `translate(${S.view.x},${S.view.y}) scale(${S.view.k})` });
   sv.appendChild(g);
 
-  const res = S.showHeat ? residency(frames(), S.frame) : { h: new Map(), n: 1 };
+  const res = S.showHeat
+    ? residency(frames(), S.frame, S.run.id + '#' + S.phase) : { h: new Map(), n: 1 };
   const max = Math.max(1, ...res.h.values());
   const open = new Set(f ? f.o : ph() ? ph().sol : []);
   const vctg = new Set(S.showVctg && f ? f.v : []);
@@ -269,14 +349,25 @@ function stamp() {                       // keep the address bar a shareable dee
   stampT = setTimeout(() => {
     const q = new URLSearchParams({ run: S.run.id, p: S.phase, f: S.frame });
     if (S.ghost) q.set('ghost', S.ghost.id);
-    history.replaceState(null, '', '?' + q);
-  }, 250);
+    // iOS Safari rate-limits replaceState and throws past ~100 calls / 30 s
+    try { history.replaceState(null, '', '?' + q); } catch (e) { /* keep playing */ }
+  }, 800);
 }
 
 function hud(res) {
   const f = cur(), p = ph(), n = S.nets[S.run.system];
   const MW = v => (v * 100).toFixed(0);
   const row = (k, v, cls = '') => `<div><span class="k">${k}</span><span class="${cls}">${v}</span></div>`;
+  if (phone()) {                       // one wrapping strip, no blank-label rows
+    $('#hud').innerHTML = f ? [
+      row('obj', `<b>${MW(f.j)} MW</b>`),
+      row('viol ctg', f.v.length || '—', f.v.length ? 'warn' : ''),
+      row('cuts', f.c),
+      row('t', (f.t / 1000).toFixed(1) + 's'),
+      row('open', f.o.length),
+      row('painted', res.h.size)
+    ].join('') : row('phase result', `${MW(p.obj)} MW`);
+  } else
   $('#hud').innerHTML = f ? [
     row('objective', `${MW(f.j)} MW`),
     row('', `${f.j.toFixed(2)} p.u.`, 'k'),
@@ -295,56 +386,84 @@ function hud(res) {
 
 /* Candidates are branch-and-cut nodes, not a descending trajectory: draw them as
    a cloud with a running minimum, never as a line. */
+let plotCache = null;
 function plot() {
-  const sv = $('#plot'), fr = frames(); sv.innerHTML = '';
-  const W = sv.clientWidth || 280, H = 168, T = 12, B = 16, L = 2, R = 2;
-  sv.setAttribute('viewBox', `0 0 ${W} ${H}`);
-  if (!fr.length) { $('#plotnote').textContent = 'no candidates logged for this phase'; return; }
-  const js = fr.map(f => f.j), p = ph();
-  // a handful of candidates are wildly infeasible and would flatten everything
-  // else; scale to the 98th percentile and say how many fell off the top
-  // 108 of 480 phases recorded `openings: []`; for those the reported objective
-  // cannot be tied to a topology, so no reference line is drawn
-  const solOK = Math.abs(p.solobj - p.obj) <= 5e-4;
-  const srt = [...js].sort((a, b) => a - b);
-  const q98 = srt[Math.min(srt.length - 1, Math.floor(srt.length * .98))];
-  let lo = Math.min(srt[0], solOK ? p.solobj : Infinity);
-  let hi = Math.max(q98, solOK ? p.solobj : -Infinity);
-  const clipped = js.filter(v => v > hi).length;
-  if (hi === lo) { hi += .5; lo -= .5; } else { const m = (hi - lo) * .08; lo -= m; hi += m; }
-  const X = i => L + i / Math.max(1, fr.length - 1) * (W - L - R);
-  const Y = v => T + (hi - v) / (hi - lo) * (H - T - B);
-  if (solOK) sv.appendChild(el('line', { x1: L, y1: Y(p.solobj), x2: W - R, y2: Y(p.solobj),
-    stroke: 'var(--acc)', 'stroke-width': 1, 'stroke-dasharray': '3 3', 'stroke-opacity': .55 }));
-  const step = Math.max(1, Math.floor(fr.length / 1200));
-  const seen = el('g', {}), todo = el('g', {});
-  for (let i = 0; i < fr.length; i += step)
-    (i <= S.frame ? seen : todo).appendChild(el('circle', { cx: X(i),
-      cy: Math.max(T - 5, Y(js[i])), r: i <= S.frame ? 1.7 : 1.3,
-      fill: js[i] > hi ? 'var(--hot)' : (i <= S.frame ? 'var(--warm)' : '#39414d'),
-      'fill-opacity': i <= S.frame ? .9 : .55 }));
-  sv.appendChild(todo); sv.appendChild(seen);
-  let m = Infinity; const pts = js.map((v, i) => { m = Math.min(m, v); return `${X(i)},${Y(m)}`; });
-  sv.appendChild(el('polyline', { points: pts.join(' '), fill: 'none',
-    stroke: 'var(--cool)', 'stroke-width': 1.7 }));
-  sv.appendChild(el('line', { x1: X(S.frame), y1: T - 4, x2: X(S.frame), y2: H - B + 2,
-    stroke: 'var(--acc)', 'stroke-width': 1.2 }));
-  const txt = (x, y, s, anc) => { const t = el('text', { x, y, fill: 'var(--dim)',
-    'font-size': 9.5, 'text-anchor': anc || 'start' }); t.textContent = s; sv.appendChild(t); };
-  txt(L, T - 3, `${(hi * 100).toFixed(0)} MW`);
-  txt(L, H - 4, `${(lo * 100).toFixed(0)} MW`);
-  txt(W - R, H - 4, `${fr.length} candidates`, 'end');
-  if (clipped) txt(W - R, T - 3, `${clipped} above`, 'end');
-  const sol = fr.findIndex(f => same(f.o, p.sol));
-  $('#plotnote').innerHTML = !solOK
-    ? 'green = running minimum. <span class="warn">This phase recorded no opening set, '
-      + `so its reported ${(p.obj * 100).toFixed(0)} MW cannot be placed among the candidates.</span>`
-    : 'green = running minimum · blue dashed = the phase result.<br>' + (sol < 0
-      ? '<span class="warn">the reported result is not among these candidates.</span>'
-      : sol === fr.length - 1
-        ? 'the result is the last candidate.'
-        : `<span class="warn">the result first appears at candidate ${sol + 1} of ${fr.length}, not at the end</span> — the solver kept exploring after finding it.`);
+  const sv = $('#plot'), fr = frames(), p = ph();
+  const key = S.run.id + '#' + S.phase + '#' + (sv.clientWidth || 0);
+  if (!fr.length) { sv.innerHTML = ''; plotCache = null;
+    $('#plotnote').textContent = 'no candidates logged for this phase'; return; }
+
+  if (!plotCache || plotCache.key !== key) {
+    const W = sv.clientWidth || 280, H = 168, T = 12, B = 16, L = 2, R = 2;
+    const js = fr.map(f => f.j);
+    // 108 of 480 phases recorded `openings: []`; for those the reported objective
+    // cannot be tied to a topology, so no reference line is drawn
+    const solOK = Math.abs(p.solobj - p.obj) <= 5e-4;
+    // a handful of candidates are wildly infeasible and would flatten everything
+    // else; scale to the 98th percentile and say how many fell off the top
+    const srt = [...js].sort((x, y) => x - y);
+    const q98 = srt[Math.min(srt.length - 1, Math.floor(srt.length * .98))];
+    let lo = Math.min(srt[0], solOK ? p.solobj : Infinity);
+    let hi = Math.max(q98, solOK ? p.solobj : -Infinity);
+    const clipped = js.filter(v => v > hi).length;
+    if (hi === lo) { hi += .5; lo -= .5; } else { const m = (hi - lo) * .08; lo -= m; hi += m; }
+    const X = i => L + i / Math.max(1, fr.length - 1) * (W - L - R);
+    const Y = v => T + (hi - v) / (hi - lo) * (H - T - B);
+
+    sv.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    sv.innerHTML = '';
+    const defs = el('defs'), cp = el('clipPath', { id: 'seenclip' });
+    const cr = el('rect', { x: 0, y: 0, width: 0, height: H });
+    cp.appendChild(cr); defs.appendChild(cp); sv.appendChild(defs);
+
+    if (solOK) sv.appendChild(el('line', { x1: L, y1: Y(p.solobj), x2: W - R, y2: Y(p.solobj),
+      stroke: 'var(--acc)', 'stroke-width': 1, 'stroke-dasharray': '3 3', 'stroke-opacity': .55 }));
+
+    // the dot cloud is built once per phase; a clip rect reveals the "seen" copy
+    const cap = matchMedia('(pointer:coarse)').matches ? 550 : 1200;
+    const step = Math.max(1, Math.floor(fr.length / cap));
+    const mk = seen => {
+      const g = el('g', seen ? { 'clip-path': 'url(#seenclip)' } : {});
+      for (let i = 0; i < fr.length; i += step)
+        g.appendChild(el('circle', { cx: X(i), cy: Math.max(T - 5, Y(js[i])),
+          r: seen ? 1.7 : 1.3,
+          fill: js[i] > hi ? 'var(--hot)' : (seen ? 'var(--warm)' : '#39414d'),
+          'fill-opacity': seen ? .9 : .55 }));
+      return g;
+    };
+    sv.appendChild(mk(false)); sv.appendChild(mk(true));
+
+    let m = Infinity;
+    const pts = js.map((v, i) => { m = Math.min(m, v); return `${X(i)},${Y(m)}`; });
+    sv.appendChild(el('polyline', { points: pts.join(' '), fill: 'none',
+      stroke: 'var(--cool)', 'stroke-width': 1.7 }));
+    const cur = el('line', { x1: L, y1: T - 4, x2: L, y2: H - B + 2,
+      stroke: 'var(--acc)', 'stroke-width': 1.2 });
+    sv.appendChild(cur);
+    const txt = (x, y, str, anc) => { const t = el('text', { x, y, fill: 'var(--dim)',
+      'font-size': 9.5, 'text-anchor': anc || 'start' }); t.textContent = str; sv.appendChild(t); };
+    txt(L, T - 3, `${(hi * 100).toFixed(0)} MW`);
+    txt(L, H - 4, `${(lo * 100).toFixed(0)} MW`);
+    txt(W - R, H - 4, `${fr.length} candidates`, 'end');
+    if (clipped) txt(W - R, T - 3, `${clipped} above`, 'end');
+
+    const sol = fr.findIndex(f => same(f.o, p.sol));
+    $('#plotnote').innerHTML = !solOK
+      ? 'green = running minimum. <span class="warn">This phase recorded no opening set, '
+        + `so its reported ${(p.obj * 100).toFixed(0)} MW cannot be placed among the candidates.</span>`
+      : 'green = running minimum · blue dashed = the phase result.<br>' + (sol < 0
+        ? '<span class="warn">the reported result is not among these candidates.</span>'
+        : sol === fr.length - 1
+          ? 'the result is the last candidate.'
+          : `<span class="warn">the result first appears at candidate ${sol + 1} of ${fr.length}, not at the end</span> — the solver kept exploring after finding it.`);
+    plotCache = { key, X, cr, cur };
+  }
+
+  const { X, cr, cur } = plotCache, x = X(S.frame);   // per-frame work: two attributes
+  cr.setAttribute('width', x + 2);
+  cur.setAttribute('x1', x); cur.setAttribute('x2', x);
 }
+
 const same = (a, b) => a.length === b.length && a.every((v, i) => v === b[i]);
 
 function transport() {
@@ -381,8 +500,10 @@ function sidebar() {
     `<div class="ph ${i === S.phase ? 'sel' : ''}" data-p="${i}">i${q.i}
       <small>${MW(q.obj)}</small><small>${q.frames.length}f</small></div>`).join('');
   $('#phases').querySelectorAll('.ph').forEach(d => d.onclick = () => {
-    S.phase = +d.dataset.p; S.frame = 0; draw(); sidebar();
+    S.phase = +d.dataset.p; S.frame = 0; play(false); draw(); sidebar();
   });
+  $('#mtitle').textContent = r.id;
+  $('#msub').textContent = `${r.config} · ${MW(r.obj)} MW · phase ${S.phase + 1}/${r.phases.length}`;
   $('#ghostnote').textContent = S.ghost
     ? `ghosting ${S.ghost.id} — its whole residency, all phases.`
     : 'pick a second run to overlay where it spent its time.';
@@ -456,6 +577,33 @@ addEventListener('keydown', e => {
     S.view.y = down.vy + (e.clientY - down.my);
     draw();
   });
+  const mid = t => ({ x: (t[0].clientX + t[1].clientX) / 2, y: (t[0].clientY + t[1].clientY) / 2 });
+  const span = t => Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
+  let touch = null;
+  sv.addEventListener('touchstart', e => {
+    const t = e.touches;
+    touch = t.length >= 2
+      ? { two: true, d: span(t), c: mid(t), ...S.view }
+      : { two: false, mx: t[0].clientX, my: t[0].clientY, vx: S.view.x, vy: S.view.y };
+  }, { passive: true });
+  sv.addEventListener('touchmove', e => {
+    if (!touch) return;
+    e.preventDefault();
+    const t = e.touches, r = sv.getBoundingClientRect();
+    if (touch.two && t.length >= 2) {
+      const f = span(t) / (touch.d || 1), c = mid(t);
+      const ax = touch.c.x - r.left, ay = touch.c.y - r.top;
+      S.view.k = touch.k * f;
+      S.view.x = (c.x - r.left) - (ax - touch.x) * f;
+      S.view.y = (c.y - r.top) - (ay - touch.y) * f;
+    } else if (!touch.two) {
+      S.view.x = touch.vx + (t[0].clientX - touch.mx);
+      S.view.y = touch.vy + (t[0].clientY - touch.my);
+    }
+    draw();
+  }, { passive: false });
+  sv.addEventListener('touchend', e => { if (!e.touches.length) touch = null; }, { passive: true });
+
   sv.addEventListener('wheel', e => {
     e.preventDefault();
     const f = Math.exp(-e.deltaY * 0.0016), r = sv.getBoundingClientRect();
@@ -464,7 +612,30 @@ addEventListener('keydown', e => {
     S.view.k *= f; draw();
   }, { passive: false });
 })();
-addEventListener('resize', () => { geom = null; draw(); });
+const refit = () => {
+  if (phone()) {                       // measure the chrome rather than guess at it
+    const r = document.documentElement.style;
+    r.setProperty('--barh', $('#bar').offsetHeight + 'px');
+    r.setProperty('--bottomh', $('#bottom').offsetHeight + 'px');
+  }
+  geom = null; plotCache = null; if (S.run) draw();
+};
+addEventListener('resize', refit);
+addEventListener('orientationchange', () => setTimeout(refit, 250));
+
+const sheet = (which, on) => {
+  const L = $('#left'), R = $('#right');
+  if (which === 'left') { L.classList.toggle('open', on ?? !L.classList.contains('open')); R.classList.remove('open'); }
+  else if (which === 'right') { R.classList.toggle('open', on ?? !R.classList.contains('open')); L.classList.remove('open'); }
+  else { L.classList.remove('open'); R.classList.remove('open'); }
+  $('#scrim').classList.toggle('on', L.classList.contains('open') || R.classList.contains('open'));
+};
+$('#mruns').onclick = () => sheet('left');
+$('#minfo').onclick = () => sheet('right');
+$('#mlegend').onclick = () => $('#legend').classList.toggle('on');
+$('#scrim').onclick = () => sheet(null);
+$('#runs').addEventListener('click', () => sheet(null));
+$('#phases').addEventListener('click', () => sheet(null));
 
 (async function boot() {
   S.index = await j('data/index.json');
@@ -482,6 +653,10 @@ addEventListener('resize', () => { geom = null; draw(); });
   if (q.get('f') === 'end') S.frame = frames().length - 1;
   else if (q.get('f')) S.frame = Math.max(0, Math.min(frames().length - 1, +q.get('f')));
   draw(); sidebar();
+  // first paint can precede the final viewport on iOS; settle the fit afterwards
+  requestAnimationFrame(refit);
+  setTimeout(refit, 350);
+  if (q.get('sheet')) sheet(q.get('sheet'), true);
 })();
 </script>
 </body>

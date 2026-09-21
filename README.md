@@ -6,7 +6,10 @@ individual Benders candidates**, every one of them a topology you can look at.
 
 **→ [Open the viewer](https://benoitjeanson.github.io/IJEPES2026-OTSD/)**
 
-No install, no server, no build step: one HTML file and a folder of JSON.
+No install, no server, no build step: one HTML file and a folder of JSON. It works on a
+phone — the panels become swipe-over sheets behind ☰ and ⓘ, one finger pans and two
+pinch-zoom, and the whole corpus index is 4 KB gzipped (the largest single run, 17,743
+candidates, is 300 KB).
 
 ---
 
@@ -84,7 +87,8 @@ These are all real properties of the data, surfaced in the UI rather than smooth
 | `space`, **play** | run the phase, at 1× to 64× |
 | **ghost a run…** then pick one | overlay a second run's whole residency in violet |
 | **heat** / **violations** / **bus labels** | layers on and off |
-| drag, wheel | pan, zoom |
+| drag, wheel — or one finger / two-finger pinch | pan, zoom |
+| ☰ and ⓘ (phone only) | the run list and the run details, as sheets |
 | **open in coordedit →** | send this exact candidate to the local tool for real flows |
 
 The URL is a deep link and updates as you go —
