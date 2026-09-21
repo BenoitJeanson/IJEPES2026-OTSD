@@ -1,0 +1,488 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OTSD campaign replay</title>
+<style>
+:root{
+  --bg:#0e1116; --panel:#161b22; --line:#262d38; --ink:#e6edf3; --dim:#8b949e;
+  --acc:#58a6ff; --warm:#f0883e; --hot:#ff7b72; --cool:#3fb950; --ghost:#bc8cff;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:13px/1.45 ui-sans-serif,-apple-system,"Segoe UI",Roboto,sans-serif;overflow:hidden}
+#app{display:grid;grid-template-columns:270px 1fr 300px;grid-template-rows:1fr auto;height:100vh}
+.panel{background:var(--panel);border-right:1px solid var(--line);overflow:auto;padding:10px}
+#right{border-right:0;border-left:1px solid var(--line)}
+#stage{position:relative;overflow:hidden;background:var(--bg)}
+#net{width:100%;height:100%;display:block;cursor:grab}
+#net.drag{cursor:grabbing}
+h2{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);
+   margin:14px 0 6px;font-weight:600}
+h2:first-child{margin-top:0}
+.row{display:flex;gap:6px;align-items:center;margin-bottom:6px;flex-wrap:wrap}
+select,input[type=text]{background:#0d1117;color:var(--ink);border:1px solid var(--line);
+  border-radius:5px;padding:4px 6px;font:inherit;font-size:12px;flex:1;min-width:0}
+button{background:#21262d;color:var(--ink);border:1px solid var(--line);border-radius:5px;
+  padding:4px 9px;font:inherit;font-size:12px;cursor:pointer}
+button:hover{background:#30363d}
+button.on{background:var(--acc);border-color:var(--acc);color:#04121f;font-weight:600}
+#runs{border:1px solid var(--line);border-radius:6px;overflow:auto;max-height:calc(100vh - 230px)}
+.run{padding:5px 8px;border-bottom:1px solid var(--line);cursor:pointer;font-size:12px;
+  display:flex;justify-content:space-between;gap:6px;white-space:nowrap}
+.run:hover{background:#1c2230}
+.run.sel{background:#1f3a5f}
+.run.gh{box-shadow:inset 3px 0 0 var(--ghost)}
+.run b{font-weight:500;overflow:hidden;text-overflow:ellipsis}
+.run span{color:var(--dim);font-variant-numeric:tabular-nums}
+table.kv{width:100%;border-collapse:collapse;font-size:12px}
+table.kv td{padding:2px 0;vertical-align:top}
+table.kv td:first-child{color:var(--dim);padding-right:8px;white-space:nowrap}
+table.kv td:last-child{text-align:right;font-variant-numeric:tabular-nums}
+#phases{display:flex;gap:3px;margin-bottom:8px;flex-wrap:wrap}
+.ph{flex:1;min-width:34px;padding:4px 2px;text-align:center;border:1px solid var(--line);
+  border-radius:5px;cursor:pointer;font-size:11px;line-height:1.3}
+.ph:hover{background:#1c2230}
+.ph.sel{border-color:var(--acc);background:#132a45}
+.ph small{display:block;color:var(--dim);font-size:10px}
+#bottom{grid-column:1/-1;background:var(--panel);border-top:1px solid var(--line);padding:8px 12px}
+#scrub{width:100%;accent-color:var(--acc);margin:4px 0 0}
+.transport{display:flex;gap:8px;align-items:center;font-variant-numeric:tabular-nums}
+.transport .sp{color:var(--dim)}
+#legend{position:absolute;left:12px;bottom:12px;background:rgba(22,27,34,.92);
+  border:1px solid var(--line);border-radius:7px;padding:8px 10px;font-size:11px;color:var(--dim)}
+#legend i{display:inline-block;width:18px;height:0;border-top-width:3px;border-top-style:solid;
+  vertical-align:middle;margin-right:6px}
+#hud{position:absolute;right:12px;top:12px;background:rgba(22,27,34,.92);border:1px solid var(--line);
+  border-radius:7px;padding:8px 11px;font-variant-numeric:tabular-nums;font-size:12px;min-width:150px}
+#hud div{display:flex;justify-content:space-between;gap:12px}
+#hud .k{color:var(--dim)}
+.note{color:var(--dim);font-size:11px;line-height:1.5;margin:8px 0 0}
+.warn{color:var(--warm)}
+#plot{width:100%;height:168px;display:block}
+#tip{position:absolute;pointer-events:none;background:#0d1117;border:1px solid var(--line);
+  border-radius:5px;padding:4px 7px;font-size:11px;display:none;z-index:9}
+a{color:var(--acc)}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="panel" id="left">
+    <h2>Campaign</h2>
+    <div class="row">
+      <select id="fsys"><option value="">all systems</option></select>
+      <select id="fcfg"><option value="">all configs</option></select>
+    </div>
+    <div class="row">
+      <select id="fH"><option value="">all H</option></select>
+      <select id="fsort">
+        <option value="id">sort: name</option>
+        <option value="obj">sort: objective</option>
+        <option value="bi">sort: Benders iters</option>
+        <option value="lp">sort: LP solves</option>
+        <option value="nframes">sort: frames</option>
+      </select>
+    </div>
+    <div id="runs"></div>
+    <p class="note" id="count"></p>
+  </div>
+
+  <div id="stage">
+    <svg id="net"></svg>
+    <div id="hud"></div>
+    <div id="legend"></div>
+    <div id="tip"></div>
+  </div>
+
+  <div class="panel" id="right">
+    <h2>Run</h2>
+    <table class="kv" id="meta"></table>
+    <h2>Phases</h2>
+    <div id="phases"></div>
+    <h2>Objective of each candidate</h2>
+    <svg id="plot"></svg>
+    <p class="note" id="plotnote"></p>
+    <h2>View</h2>
+    <div class="row">
+      <button id="bheat" class="on">heat</button>
+      <button id="bvctg" class="on">violations</button>
+      <button id="blabel">bus labels</button>
+    </div>
+    <div class="row">
+      <button id="bghost">ghost a run…</button>
+      <button id="bclear">clear</button>
+    </div>
+    <p class="note" id="ghostnote"></p>
+    <h2>This frame</h2>
+    <p class="note"><a id="celink" href="#" target="_blank">open in coordedit →</a><br>
+      needs your local <code>serve.py</code> on :8123</p>
+  </div>
+
+  <div id="bottom">
+    <div class="transport">
+      <button id="bplay">▶ play</button>
+      <button id="bstep0">⏮</button><button id="bstepm">◀</button>
+      <button id="bstepp">▶</button><button id="bstep1">⏭</button>
+      <span class="sp">speed</span>
+      <select id="speed" style="flex:0 0 74px">
+        <option value="1">1×</option><option value="4" selected>4×</option>
+        <option value="16">16×</option><option value="64">64×</option>
+      </select>
+      <span id="pos" class="sp"></span>
+    </div>
+    <input type="range" id="scrub" min="0" max="0" value="0">
+  </div>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const SVGNS = 'http://www.w3.org/2000/svg';
+const el = (n, a = {}) => { const e = document.createElementNS(SVGNS, n);
+  for (const k in a) e.setAttribute(k, a[k]); return e; };
+
+const S = {                       // everything the render reads
+  index: null, nets: {}, run: null, phase: 0, frame: 0,
+  heat: null, ghost: null, ghostHeat: null,
+  playing: false, showHeat: true, showVctg: true, showLabels: false,
+  view: { k: 1, x: 0, y: 0 }
+};
+
+/* ---------------------------------------------------------------- data --- */
+
+async function j(p) { const r = await fetch(p); if (!r.ok) throw new Error(p); return r.json(); }
+
+async function net(sys) { return S.nets[sys] ||= await j(`data/net/${sys}.json`); }
+
+async function loadRun(id, asGhost) {
+  const r = await j(`data/runs/${id}.json`);
+  await net(r.system);
+  if (asGhost) { S.ghost = r; S.ghostHeat = residencyWhole(r); }
+  else { S.run = r; S.phase = 0; S.frame = 0; fitView(); }
+  draw(); sidebar(); runList();
+}
+
+/* Residency: how many of frames 0..n have each branch open. The scrub paints
+   this in; it is the only view of the candidate sequence that is not a strobe. */
+function residency(frames, upto) {
+  const h = new Map();
+  for (let i = 0; i <= upto && i < frames.length; i++)
+    for (const e of frames[i].o) h.set(e, (h.get(e) || 0) + 1);
+  return { h, n: Math.min(upto + 1, frames.length) };
+}
+function residencyWhole(run) {
+  const h = new Map(); let n = 0;
+  for (const p of run.phases) for (const f of p.frames) { n++; for (const e of f.o) h.set(e, (h.get(e) || 0) + 1); }
+  return { h, n };
+}
+
+const ph = () => S.run && S.run.phases[S.phase];
+const frames = () => (ph() ? ph().frames : []);
+const cur = () => frames()[S.frame] || null;
+
+/* --------------------------------------------------------------- render --- */
+
+let geom = null;
+function fitView() {
+  const n = S.nets[S.run.system], sv = $('#net');
+  const W = sv.clientWidth, H = sv.clientHeight;
+  const xs = n.buses.map(b => b.xy[0]), ys = n.buses.map(b => b.xy[1]);
+  const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+  const pad = 46, k = Math.min((W - 2 * pad) / (x1 - x0 || 1), (H - 2 * pad) / (y1 - y0 || 1));
+  geom = { k, x0, y0, W, H,
+    X: v => (v - x0) * k + pad + (W - 2 * pad - (x1 - x0) * k) / 2,
+    Y: v => H - ((v - y0) * k + pad + (H - 2 * pad - (y1 - y0) * k) / 2) };
+  S.view = { k: 1, x: 0, y: 0 };
+}
+
+function heatColor(t) {                       // 0..1 -> transparent grey → warm
+  if (t <= 0) return ['#2b313b', 1.1];
+  const c = [`hsl(${34 - 14 * t} ${45 + 45 * t}% ${34 + 26 * t}%)`, 1.1 + 4.4 * t];
+  return c;
+}
+
+function draw() {
+  const sv = $('#net'); sv.innerHTML = '';
+  if (!S.run) return;
+  if (!geom || geom.W !== sv.clientWidth || geom.H !== sv.clientHeight) fitView();
+  const n = S.nets[S.run.system], f = cur();
+  const g = el('g', { transform: `translate(${S.view.x},${S.view.y}) scale(${S.view.k})` });
+  sv.appendChild(g);
+
+  const res = S.showHeat ? residency(frames(), S.frame) : { h: new Map(), n: 1 };
+  const max = Math.max(1, ...res.h.values());
+  const open = new Set(f ? f.o : ph() ? ph().sol : []);
+  const vctg = new Set(S.showVctg && f ? f.v : []);
+  const gh = S.ghostHeat, ghMax = gh ? Math.max(1, ...gh.h.values()) : 1;
+
+  const P = b => [geom.X(n.buses[b].xy[0]), geom.Y(n.buses[b].xy[1])];
+  const byNum = {}; n.buses.forEach((b, i) => byNum[b.i] = i);
+
+  n.edges.forEach((e, i) => {
+    const [x1, y1] = P(byNum[e.f]), [x2, y2] = P(byNum[e.t]);
+    if (gh) {                                  // ghost residency, drawn underneath
+      const t = (gh.h.get(i) || 0) / ghMax;
+      if (t > 0.02) g.appendChild(el('line', { x1, y1, x2, y2, stroke: 'var(--ghost)',
+        'stroke-width': 2 + 7 * t, 'stroke-opacity': 0.13 + 0.3 * t, 'stroke-linecap': 'round' }));
+    }
+    const t = (res.h.get(i) || 0) / max;
+    const [col, w] = heatColor(t);
+    const ln = el('line', { x1, y1, x2, y2, stroke: col, 'stroke-width': w,
+      'stroke-linecap': 'round', 'data-e': i });
+    g.appendChild(ln);
+    if (vctg.has(i))
+      g.appendChild(el('line', { x1, y1, x2, y2, stroke: 'var(--hot)', 'stroke-width': 4.5,
+        'stroke-opacity': .95, 'stroke-dasharray': '7 5', 'stroke-linecap': 'round' }));
+    if (open.has(i)) {
+      g.appendChild(el('line', { x1, y1, x2, y2, stroke: '#fff', 'stroke-width': 4.2,
+        'stroke-linecap': 'round' }));
+      const mx = (x1 + x2) / 2, my = (y1 + y2) / 2, a = Math.atan2(y2 - y1, x2 - x1), r = 5.5;
+      g.appendChild(el('line', { x1: mx - r * Math.sin(a) * 1.5, y1: my + r * Math.cos(a) * 1.5,
+        x2: mx + r * Math.sin(a) * 1.5, y2: my - r * Math.cos(a) * 1.5,
+        stroke: 'var(--bg)', 'stroke-width': 5 }));
+    }
+  });
+
+  n.buses.forEach((b, i) => {
+    const [x, y] = P(i), inj = b.p, r = 2 + 4.2 * Math.sqrt(Math.abs(inj));
+    const gen = inj < 0;
+    g.appendChild(gen
+      ? el('circle', { cx: x, cy: y, r, fill: '#0d1117', stroke: '#6e7681', 'stroke-width': 1.3 })
+      : el('rect', { x: x - r, y: y - r, width: 2 * r, height: 2 * r, rx: 1.2,
+          fill: '#0d1117', stroke: '#6e7681', 'stroke-width': 1.3 }));
+    if (b.i === S.nets[S.run.system].slack)
+      g.appendChild(el('circle', { cx: x, cy: y, r: r + 3.5, fill: 'none',
+        stroke: 'var(--cool)', 'stroke-width': 1.4 }));
+    if (S.showLabels) {
+      const tx = el('text', { x: x + r + 3, y: y + 3.5, fill: 'var(--dim)', 'font-size': 9 });
+      tx.textContent = b.i; g.appendChild(tx);
+    }
+  });
+
+  hud(res); plot(); transport(); stamp();
+}
+
+let stampT = null;
+function stamp() {                       // keep the address bar a shareable deep link
+  clearTimeout(stampT);
+  stampT = setTimeout(() => {
+    const q = new URLSearchParams({ run: S.run.id, p: S.phase, f: S.frame });
+    if (S.ghost) q.set('ghost', S.ghost.id);
+    history.replaceState(null, '', '?' + q);
+  }, 250);
+}
+
+function hud(res) {
+  const f = cur(), p = ph(), n = S.nets[S.run.system];
+  const MW = v => (v * 100).toFixed(0);
+  const row = (k, v, cls = '') => `<div><span class="k">${k}</span><span class="${cls}">${v}</span></div>`;
+  $('#hud').innerHTML = f ? [
+    row('objective', `${MW(f.j)} MW`),
+    row('', `${f.j.toFixed(2)} p.u.`, 'k'),
+    row('violated ctg', f.v.length || '—', f.v.length ? 'warn' : ''),
+    row('cuts applied', f.c),
+    row('elapsed', (f.t / 1000).toFixed(2) + ' s'),
+    row('open', f.o.length),
+    row('branches painted', res.h.size)
+  ].join('') : row('phase result', `${MW(p.solobj)} MW`);
+  $('#legend').innerHTML =
+    `<i style="border-color:#fff"></i>open in this candidate<br>` +
+    `<i style="border-color:var(--hot);border-top-style:dashed"></i>violated contingency<br>` +
+    `<i style="border-color:hsl(24 80% 52%)"></i>opened often so far (heat)` +
+    (S.ghost ? `<br><i style="border-color:var(--ghost)"></i>ghost: ${S.ghost.id}` : '');
+}
+
+/* Candidates are branch-and-cut nodes, not a descending trajectory: draw them as
+   a cloud with a running minimum, never as a line. */
+function plot() {
+  const sv = $('#plot'), fr = frames(); sv.innerHTML = '';
+  const W = sv.clientWidth || 280, H = 168, T = 12, B = 16, L = 2, R = 2;
+  sv.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  if (!fr.length) { $('#plotnote').textContent = 'no candidates logged for this phase'; return; }
+  const js = fr.map(f => f.j), p = ph();
+  // a handful of candidates are wildly infeasible and would flatten everything
+  // else; scale to the 98th percentile and say how many fell off the top
+  // 108 of 480 phases recorded `openings: []`; for those the reported objective
+  // cannot be tied to a topology, so no reference line is drawn
+  const solOK = Math.abs(p.solobj - p.obj) <= 5e-4;
+  const srt = [...js].sort((a, b) => a - b);
+  const q98 = srt[Math.min(srt.length - 1, Math.floor(srt.length * .98))];
+  let lo = Math.min(srt[0], solOK ? p.solobj : Infinity);
+  let hi = Math.max(q98, solOK ? p.solobj : -Infinity);
+  const clipped = js.filter(v => v > hi).length;
+  if (hi === lo) { hi += .5; lo -= .5; } else { const m = (hi - lo) * .08; lo -= m; hi += m; }
+  const X = i => L + i / Math.max(1, fr.length - 1) * (W - L - R);
+  const Y = v => T + (hi - v) / (hi - lo) * (H - T - B);
+  if (solOK) sv.appendChild(el('line', { x1: L, y1: Y(p.solobj), x2: W - R, y2: Y(p.solobj),
+    stroke: 'var(--acc)', 'stroke-width': 1, 'stroke-dasharray': '3 3', 'stroke-opacity': .55 }));
+  const step = Math.max(1, Math.floor(fr.length / 1200));
+  const seen = el('g', {}), todo = el('g', {});
+  for (let i = 0; i < fr.length; i += step)
+    (i <= S.frame ? seen : todo).appendChild(el('circle', { cx: X(i),
+      cy: Math.max(T - 5, Y(js[i])), r: i <= S.frame ? 1.7 : 1.3,
+      fill: js[i] > hi ? 'var(--hot)' : (i <= S.frame ? 'var(--warm)' : '#39414d'),
+      'fill-opacity': i <= S.frame ? .9 : .55 }));
+  sv.appendChild(todo); sv.appendChild(seen);
+  let m = Infinity; const pts = js.map((v, i) => { m = Math.min(m, v); return `${X(i)},${Y(m)}`; });
+  sv.appendChild(el('polyline', { points: pts.join(' '), fill: 'none',
+    stroke: 'var(--cool)', 'stroke-width': 1.7 }));
+  sv.appendChild(el('line', { x1: X(S.frame), y1: T - 4, x2: X(S.frame), y2: H - B + 2,
+    stroke: 'var(--acc)', 'stroke-width': 1.2 }));
+  const txt = (x, y, s, anc) => { const t = el('text', { x, y, fill: 'var(--dim)',
+    'font-size': 9.5, 'text-anchor': anc || 'start' }); t.textContent = s; sv.appendChild(t); };
+  txt(L, T - 3, `${(hi * 100).toFixed(0)} MW`);
+  txt(L, H - 4, `${(lo * 100).toFixed(0)} MW`);
+  txt(W - R, H - 4, `${fr.length} candidates`, 'end');
+  if (clipped) txt(W - R, T - 3, `${clipped} above`, 'end');
+  const sol = fr.findIndex(f => same(f.o, p.sol));
+  $('#plotnote').innerHTML = !solOK
+    ? 'green = running minimum. <span class="warn">This phase recorded no opening set, '
+      + `so its reported ${(p.obj * 100).toFixed(0)} MW cannot be placed among the candidates.</span>`
+    : 'green = running minimum · blue dashed = the phase result.<br>' + (sol < 0
+      ? '<span class="warn">the reported result is not among these candidates.</span>'
+      : sol === fr.length - 1
+        ? 'the result is the last candidate.'
+        : `<span class="warn">the result first appears at candidate ${sol + 1} of ${fr.length}, not at the end</span> — the solver kept exploring after finding it.`);
+}
+const same = (a, b) => a.length === b.length && a.every((v, i) => v === b[i]);
+
+function transport() {
+  const fr = frames(), s = $('#scrub');
+  s.max = Math.max(0, fr.length - 1); s.value = S.frame;
+  $('#pos').textContent = fr.length
+    ? `candidate ${S.frame + 1} / ${fr.length}   ·   phase ${S.phase + 1} / ${S.run.phases.length}`
+    : 'no candidates in this phase';
+  const f = cur(), n = S.nets[S.run.system];
+  if (f) {
+    const nm = { ieee118: 'case118_ieee', ieee57: 'case57_ieee' }[S.run.system];
+    const br = i => `${n.edges[i].f}-${n.edges[i].t}`;
+    $('#celink').href = `http://localhost:8123/?case=${nm}&study=1&open=${f.o.map(br).join(',')}`
+      + (f.v.length ? `&cont=${f.v.map(br).join(',')}` : '');
+  }
+}
+
+/* -------------------------------------------------------------- sidebar --- */
+
+function sidebar() {
+  const r = S.run, p = ph(), MW = v => (v * 100).toFixed(0);
+  $('#meta').innerHTML = [
+    ['system', r.system], ['config', r.config],
+    ['disabled', `<span style="font-size:11px">${r.disabled}</span>`],
+    ['H / d_viol / d_sol', `${r.H} / ${r.d_viol} / ${r.d_sol}`],
+    ['seed', r.seed ?? '—'], ['status', r.status],
+    ['objective', `${MW(r.obj)} MW`],
+    ['', `<span style="color:var(--dim)">${r.obj} p.u.</span>`],
+    ['LP solves', r.lp], ['Benders iters', r.bi],
+    ['wall', `${r.wall} s <span class="warn" title="configs ran in fixed order per block, so wall time carries machine drift">⚠</span>`],
+    ['TLF', r.tlf], ['candidates logged', r.nframes]
+  ].map(([k, v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join('');
+  $('#phases').innerHTML = r.phases.map((q, i) =>
+    `<div class="ph ${i === S.phase ? 'sel' : ''}" data-p="${i}">i${q.i}
+      <small>${MW(q.obj)}</small><small>${q.frames.length}f</small></div>`).join('');
+  $('#phases').querySelectorAll('.ph').forEach(d => d.onclick = () => {
+    S.phase = +d.dataset.p; S.frame = 0; draw(); sidebar();
+  });
+  $('#ghostnote').textContent = S.ghost
+    ? `ghosting ${S.ghost.id} — its whole residency, all phases.`
+    : 'pick a second run to overlay where it spent its time.';
+}
+
+function runList() {
+  const f = { sys: $('#fsys').value, cfg: $('#fcfg').value, H: $('#fH').value };
+  const k = $('#fsort').value;
+  let rs = S.index.runs.filter(r =>
+    (!f.sys || r.system === f.sys) && (!f.cfg || r.config === f.cfg) && (!f.H || r.H == f.H));
+  rs.sort((a, b) => k === 'id' ? a.id.localeCompare(b.id) : (b[k] ?? 0) - (a[k] ?? 0));
+  $('#runs').innerHTML = rs.map(r =>
+    `<div class="run ${S.run && S.run.id === r.id ? 'sel' : ''}${S.ghost && S.ghost.id === r.id ? ' gh' : ''}"
+       data-id="${r.id}"><b>${r.id}</b><span>${(r.obj * 100).toFixed(0)}</span></div>`).join('');
+  $('#runs').querySelectorAll('.run').forEach(d => d.onclick = () => {
+    if (pickingGhost) { pickingGhost = false; $('#bghost').classList.remove('on'); loadRun(d.dataset.id, true); }
+    else loadRun(d.dataset.id, false);
+  });
+  $('#count').textContent = `${rs.length} of ${S.index.runs.length} runs · `
+    + `${S.index.nframes.toLocaleString()} candidates in the corpus`;
+}
+
+/* ----------------------------------------------------------------- wire --- */
+
+let pickingGhost = false, timer = null;
+
+function setFrame(i) {
+  const fr = frames(); if (!fr.length) return;
+  S.frame = Math.max(0, Math.min(fr.length - 1, i)); draw();
+}
+function play(on) {
+  S.playing = on ?? !S.playing;
+  $('#bplay').textContent = S.playing ? '⏸ pause' : '▶ play';
+  $('#bplay').classList.toggle('on', S.playing);
+  clearInterval(timer);
+  if (S.playing) timer = setInterval(() => {
+    const n = +$('#speed').value, fr = frames();
+    if (S.frame >= fr.length - 1) return play(false);
+    setFrame(S.frame + n);
+  }, 40);
+}
+
+$('#scrub').oninput = e => { play(false); setFrame(+e.target.value); };
+$('#bplay').onclick = () => play();
+$('#bstep0').onclick = () => { play(false); setFrame(0); };
+$('#bstep1').onclick = () => { play(false); setFrame(frames().length - 1); };
+$('#bstepm').onclick = () => { play(false); setFrame(S.frame - 1); };
+$('#bstepp').onclick = () => { play(false); setFrame(S.frame + 1); };
+for (const [id, key] of [['bheat', 'showHeat'], ['bvctg', 'showVctg'], ['blabel', 'showLabels']])
+  $('#' + id).onclick = e => { S[key] = !S[key]; e.target.classList.toggle('on', S[key]); draw(); };
+$('#bghost').onclick = e => { pickingGhost = !pickingGhost; e.target.classList.toggle('on', pickingGhost); };
+$('#bclear').onclick = () => { S.ghost = S.ghostHeat = null; draw(); sidebar(); runList(); };
+for (const id of ['fsys', 'fcfg', 'fH', 'fsort']) $('#' + id).onchange = runList;
+addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT' || e.target.tagName === 'INPUT') return;
+  if (e.key === ' ') { e.preventDefault(); play(); }
+  if (e.key === 'ArrowRight') setFrame(S.frame + (e.shiftKey ? 25 : 1));
+  if (e.key === 'ArrowLeft') setFrame(S.frame - (e.shiftKey ? 25 : 1));
+});
+
+(function panzoom() {
+  const sv = $('#net'); let down = null;
+  sv.addEventListener('mousedown', e => {
+    down = { mx: e.clientX, my: e.clientY, vx: S.view.x, vy: S.view.y };
+    sv.classList.add('drag');
+  });
+  addEventListener('mouseup', () => { down = null; sv.classList.remove('drag'); });
+  addEventListener('mousemove', e => {
+    if (!down) return;
+    S.view.x = down.vx + (e.clientX - down.mx);
+    S.view.y = down.vy + (e.clientY - down.my);
+    draw();
+  });
+  sv.addEventListener('wheel', e => {
+    e.preventDefault();
+    const f = Math.exp(-e.deltaY * 0.0016), r = sv.getBoundingClientRect();
+    const mx = e.clientX - r.left, my = e.clientY - r.top;
+    S.view.x = mx - (mx - S.view.x) * f; S.view.y = my - (my - S.view.y) * f;
+    S.view.k *= f; draw();
+  }, { passive: false });
+})();
+addEventListener('resize', () => { geom = null; draw(); });
+
+(async function boot() {
+  S.index = await j('data/index.json');
+  const uniq = (k) => [...new Set(S.index.runs.map(r => r[k]))].sort();
+  for (const [sel, key] of [['#fsys', 'system'], ['#fcfg', 'config'], ['#fH', 'H']])
+    for (const v of uniq(key)) {
+      const o = document.createElement('option'); o.value = o.textContent = v; $(sel).appendChild(o);
+    }
+  runList();
+  const q = new URLSearchParams(location.search), has = id => S.index.runs.some(r => r.id === id);
+  const want = q.get('run');
+  await loadRun(want && has(want) ? want : '118_H3_d2_hop0_REF_s3', false);
+  if (q.get('p')) { S.phase = Math.min(+q.get('p'), S.run.phases.length - 1); S.frame = 0; }
+  if (q.get('ghost') && has(q.get('ghost'))) await loadRun(q.get('ghost'), true);
+  if (q.get('f') === 'end') S.frame = frames().length - 1;
+  else if (q.get('f')) S.frame = Math.max(0, Math.min(frames().length - 1, +q.get('f')));
+  draw(); sidebar();
+})();
+</script>
+</body>
+</html>
