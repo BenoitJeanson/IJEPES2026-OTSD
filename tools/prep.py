@@ -155,7 +155,8 @@ def main():
             prev = key(sb.get('used', {}).get(str(it['iteration'] - 1)) or []) \
                 if it['iteration'] > 1 else []
             phases.append({'sbs': used,
-                           'sbs_new': sorted(set(used) - set(prev)) if it['iteration'] > 1 else [],
+                           'sbs_new': sorted(set(used) - set(prev)) if it['iteration'] > 1
+                                      else list(used),
                            'sbs_after': key(sb.get('after', {}).get(str(it['iteration'])) or []),
                            'i': it['iteration'], 'obj': it['objective'], 'secure': it['secure'],
                            'lp': it['lp_solves'], 'sec': it['seconds'],

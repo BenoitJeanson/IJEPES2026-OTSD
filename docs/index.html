@@ -203,13 +203,10 @@ a{color:var(--acc)}
       <button id="blabel">bus labels</button>
     </div>
     <div class="row">
-      <button id="bghost">ghost a run…</button>
+      <button id="bghost">overlay a run…</button>
       <button id="bclear">clear</button>
     </div>
     <p class="note" id="ghostnote"></p>
-    <h2>This frame</h2>
-    <p class="note"><a id="celink" href="#" target="_blank">open in coordedit →</a><br>
-      needs your local <code>serve.py</code> on :8123</p>
   </div>
 
   <div id="bottom">
@@ -362,9 +359,11 @@ function draw() {
     } else if (S.showSBS && t <= 0) {
       col = '#4e5c72'; w = 1.6;                  // in the SBS, not yet visited
     }
-    if (S.showSBS && newSBS.has(i))
+    // "added this phase" is carried by a thicker teal underlay, and is guarded to
+    // SBS members so it can never contradict the faint outside-the-SBS styling
+    if (S.showSBS && inSBS.has(i) && newSBS.has(i))
       g.appendChild(el('line', { x1, y1, x2, y2, stroke: 'var(--sbs)',
-        'stroke-width': 6, 'stroke-opacity': .3, 'stroke-linecap': 'round' }));
+        'stroke-width': 3.6, 'stroke-opacity': .42, 'stroke-linecap': 'round' }));
     g.appendChild(el('line', { x1, y1, x2, y2, stroke: col, 'stroke-width': w,
       'stroke-opacity': op, 'stroke-linecap': 'round', 'data-e': i }));
     if (vctg.has(i))
@@ -439,9 +438,10 @@ function hud(res) {
     `<i style="border-color:#fff"></i>open in this candidate<br>` +
     `<i style="border-color:var(--hot);border-top-style:dashed"></i>violated contingency<br>` +
     `<i style="border-color:hsl(24 80% 52%)"></i>opened often so far (heat)<br>` +
-    (S.showSBS ? `<i style="border-color:#4e5c72"></i>in the SBS, not yet tried<br>` +
-      `<i style="border-color:#1c212a"></i>outside the SBS — cannot be opened` +
-      (ph() && ph().sbs_new.length ? `<br><i style="border-color:var(--sbs)"></i>added to the SBS this phase` : '')
+    (S.showSBS ? `<i style="border-color:#4e5c72"></i>in the SBS this phase, not yet tried<br>` +
+      `<i style="border-color:#1c212a"></i>outside the SBS this phase` +
+      (ph() && ph().sbs_new.length
+        ? `<br><i style="border-color:var(--sbs);border-top-width:5px"></i>added to the SBS this phase` : '')
       : '') +
     (S.ghost ? `<br><i style="border-color:var(--ghost)"></i>ghost: ${S.ghost.id}` : '');
 }
@@ -587,19 +587,33 @@ function plot() {
     const step = Math.max(1, Math.floor(fr.length / cap));
     const mk = seen => {
       const g = el('g', seen ? { 'clip-path': 'url(#seenclip)' } : {});
-      for (let i = 0; i < fr.length; i += step)
+      for (let i = 0; i < fr.length; i += step) {
+        // feasible candidates are the ones the incumbent can step to, so they are
+        // marked here and banded the same green in the gantt below
+        const feas = !fr[i].v.length;
         g.appendChild(el('circle', { cx: X(i), cy: Math.max(T - 5, Y(js[i])),
-          r: seen ? 1.7 : 1.3,
-          fill: js[i] > hi ? 'var(--hot)' : (seen ? 'var(--warm)' : '#39414d'),
-          'fill-opacity': seen ? .9 : .55 }));
+          r: feas ? (seen ? 2.6 : 2) : (seen ? 1.7 : 1.3),
+          stroke: feas && seen ? '#0d1117' : 'none', 'stroke-width': feas ? 0.8 : 0,
+          fill: js[i] > hi ? 'var(--hot)'
+              : feas ? (seen ? 'var(--cool)' : '#2f5c3c')
+              : (seen ? 'var(--warm)' : '#39414d'),
+          'fill-opacity': seen ? .95 : .55 }));
+      }
       return g;
     };
     sv.appendChild(mk(false)); sv.appendChild(mk(true));
 
-    let m = Infinity;
-    const pts = js.map((v, i) => { m = Math.min(m, v); return `${X(i)},${Y(m)}`; });
-    sv.appendChild(el('polyline', { points: pts.join(' '), fill: 'none',
-      stroke: 'var(--cool)', 'stroke-width': 1.7 }));
+    // The incumbent is the best FEASIBLE objective so far. A running minimum over
+    // every candidate would track proposals the subproblem then rejected, which is
+    // not a bound on anything.
+    let inc = Infinity; const pts = [];
+    for (let i = 0; i < fr.length; i++) {
+      if (!fr[i].v.length) inc = Math.min(inc, js[i]);
+      if (isFinite(inc)) pts.push(`${X(i)},${Y(inc)}`);
+    }
+    if (pts.length) sv.appendChild(el('polyline', { points: pts.join(' '), fill: 'none',
+      stroke: 'var(--cool)', 'stroke-width': 1.8 }));
+    const nfeas = fr.filter(f => !f.v.length).length;
     const cur = el('line', { x1: L, y1: T - 4, x2: L, y2: H - B + 2,
       stroke: 'var(--acc)', 'stroke-width': 1.2 });
     sv.appendChild(cur);
@@ -612,9 +626,10 @@ function plot() {
 
     const sol = fr.findIndex(f => same(f.o, p.sol));
     $('#plotnote').innerHTML = !solOK
-      ? 'green = running minimum. <span class="warn">This phase recorded no opening set, '
+      ? 'green = the incumbent (best feasible so far). <span class="warn">This phase recorded no opening set, '
         + `so its reported ${(p.obj * 100).toFixed(0)} MW cannot be placed among the candidates.</span>`
-      : 'green = running minimum · blue dashed = the phase result.<br>' + (sol < 0
+      : `green = the incumbent, the best of the ${nfeas} feasible candidates so far`
+        + ' · blue dashed = the phase result.<br>' + (sol < 0
         ? '<span class="warn">the reported result is not among these candidates.</span>'
         : sol === fr.length - 1
           ? 'the result is the last candidate.'
@@ -635,13 +650,6 @@ function transport() {
   $('#pos').textContent = fr.length
     ? `candidate ${S.frame + 1} / ${fr.length}   ·   phase ${S.phase + 1} / ${S.run.phases.length}`
     : 'no candidates in this phase';
-  const f = cur(), n = S.nets[S.run.system];
-  if (f) {
-    const nm = { ieee118: 'case118_ieee', ieee57: 'case57_ieee' }[S.run.system];
-    const br = i => `${n.edges[i].f}-${n.edges[i].t}`;
-    $('#celink').href = `http://localhost:8123/?case=${nm}&study=1&open=${f.o.map(br).join(',')}`
-      + (f.v.length ? `&cont=${f.v.map(br).join(',')}` : '');
-  }
 }
 
 /* -------------------------------------------------------------- sidebar --- */
@@ -669,8 +677,9 @@ function sidebar() {
   $('#mtitle').textContent = r.id;
   $('#msub').textContent = `${r.config} · ${MW(r.obj)} MW · phase ${S.phase + 1}/${r.phases.length}`;
   $('#ghostnote').textContent = S.ghost
-    ? `ghosting ${S.ghost.id} — its whole residency, all phases.`
-    : 'pick a second run to overlay where it spent its time.';
+    ? `overlaying ${S.ghost.id}: violet shows where that run spent its candidates, `
+      + 'across all its phases, so you can see where the two searches diverge.'
+    : 'pick a second run to overlay in violet, to compare where two searches went.';
 }
 
 function runList() {
