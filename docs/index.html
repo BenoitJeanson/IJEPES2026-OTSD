@@ -1039,6 +1039,7 @@ $('#phases').addEventListener('click', () => sheet(null));
     }
   runList();
   const q = new URLSearchParams(location.search), has = id => S.index.runs.some(r => r.id === id);
+  if (q.get('help')) openHelp(true);     // before any run download, not after
   const want = q.get('run');
   await loadRun(want && has(want) ? want : '118_H3_d2_hop0_REF_s3', false);
   if (q.get('p')) { S.phase = Math.min(+q.get('p'), S.run.phases.length - 1); S.frame = 0; }
@@ -1053,7 +1054,6 @@ $('#phases').addEventListener('click', () => sheet(null));
   S.ganttH = +LS.get('ganttH') || 150;
   if (LS.get('gantt') === '0' || (phone() && LS.get('gantt') === null)) S.showGantt = false;
   if (q.get('gantt')) S.showGantt = q.get('gantt') !== '0';
-  if (q.get('help')) openHelp(true);
   $('#bgantt').classList.toggle('on', S.showGantt);
   if (q.get('speed') && [...$('#speed').options].some(o => o.value === q.get('speed')))
     $('#speed').value = q.get('speed');
