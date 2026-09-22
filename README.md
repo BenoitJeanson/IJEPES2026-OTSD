@@ -188,8 +188,9 @@ These are all real properties of the data, surfaced in the UI rather than smooth
 | scrubber, `←` `→`, `shift`+arrow | move one / twenty-five candidates |
 | `space`, **play** | run the phase, 0.4× to 400× — **1× is 2.5 candidates per second** |
 | **pin this run as reference**, then pick one from the list | the run you were viewing turns violet and stays as the reference; the run you pick comes to the front, drawn over it |
-| **heat** / **violations** / **SBS** / **bus labels** / **legend** | layers on and off |
-| **time axis** | rescale the plot and gantt from candidate index to elapsed solve time |
+| **network**: heat / violations / SBS / bus labels | what the diagram shows |
+| **candidates**: objective / gantt / time axis | which bottom pane is up, and its x-axis |
+| ✕ on the legend | hide it; a **legend** chip brings it back |
 | drag, wheel — or one finger / two-finger pinch | pan, zoom |
 | click or drag the gantt | seek to that candidate |
 | drag the gantt's top edge, or a panel's inner edge | resize (remembered per browser) |

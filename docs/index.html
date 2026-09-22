@@ -59,10 +59,18 @@ table.kv td:last-child{text-align:right;font-variant-numeric:tabular-nums}
 .transport .sp{color:var(--dim)}
 #legend{position:absolute;right:12px;bottom:12px;background:rgba(22,27,34,.92);
   border:1px solid var(--line);border-radius:7px;padding:8px 10px;font-size:11px;color:var(--dim)}
-#viewctl{position:absolute;left:12px;bottom:12px;z-index:5;display:flex;flex-wrap:wrap;
-  gap:5px;max-width:min(430px,48vw);background:rgba(22,27,34,.92);
-  border:1px solid var(--line);border-radius:7px;padding:7px 8px}
+#viewctl{position:absolute;left:12px;bottom:12px;z-index:5;display:flex;flex-direction:column;
+  gap:5px;background:rgba(22,27,34,.92);border:1px solid var(--line);border-radius:7px;
+  padding:7px 8px}
 #viewctl button{padding:4px 8px;font-size:11.5px}
+.grp{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
+.grp>span{font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);
+  width:70px;flex:0 0 70px}
+#blegoff{position:absolute;top:4px;right:5px;padding:1px 5px;font-size:11px;line-height:1.3;
+  background:transparent;border-color:transparent;color:var(--dim)}
+#blegoff:hover{background:#30363d;border-color:var(--line)}
+#legend{padding-right:24px}
+#blegon{position:absolute;right:12px;bottom:12px;z-index:5;padding:4px 9px;font-size:11.5px}
 #legend i{display:inline-block;width:18px;height:0;border-top-width:3px;border-top-style:solid;
   vertical-align:middle;margin-right:6px}
 #hud{position:absolute;right:12px;top:12px;background:rgba(22,27,34,.92);border:1px solid var(--line);
@@ -72,7 +80,10 @@ table.kv td:last-child{text-align:right;font-variant-numeric:tabular-nums}
 .note{color:var(--dim);font-size:11px;line-height:1.5;margin:8px 0 0}
 .warn{color:var(--warm)}
 #pwrap,#gwrap{position:relative;margin-bottom:5px}
-#gantt,#plot{width:100%;display:block;border-radius:4px;background:#0b0e13;cursor:col-resize}
+/* A canvas with width:100% and no height takes its 2:1 attribute aspect - 788px at
+   this width - which pushes the stage to zero height before JS can size it. */
+#gantt,#plot{width:100%;height:110px;display:block;border-radius:4px;background:#0b0e13;
+  cursor:col-resize}
 #phandle,#ghandle{position:absolute;top:-5px;left:0;right:0;height:9px;cursor:ns-resize}
 #phandle:hover,#ghandle:hover{background:linear-gradient(transparent,var(--acc),transparent);
   opacity:.5}
@@ -298,16 +309,19 @@ a{color:var(--acc)}
     <svg id="net"></svg>
     <div id="hud"></div>
     <div id="viewctl">
-      <button id="bheat" class="on">heat</button>
-      <button id="bvctg" class="on">violations</button>
-      <button id="bsbs" class="on">SBS</button>
-      <button id="blabel">bus labels</button>
-      <button id="blegend" class="on">legend</button>
-      <button id="bcurve" class="on">objective</button>
-      <button id="bgantt" class="on">gantt</button>
-      <button id="bxtime" title="x-axis: candidate index, or elapsed solve time">time axis</button>
+      <div class="grp"><span>network</span>
+        <button id="bheat" class="on">heat</button>
+        <button id="bvctg" class="on">violations</button>
+        <button id="bsbs" class="on">SBS</button>
+        <button id="blabel">bus labels</button></div>
+      <div class="grp"><span>candidates</span>
+        <button id="bcurve" class="on">objective</button>
+        <button id="bgantt" class="on">gantt</button>
+        <button id="bxtime" title="x-axis: candidate index, or elapsed solve time">time axis</button></div>
     </div>
-    <div id="legend"></div>
+    <div id="legend"><button id="blegoff" title="hide the legend">✕</button>
+      <div id="legbody"></div></div>
+    <button id="blegon" hidden>legend</button>
     <div id="busy"></div>
   </div>
 
@@ -436,7 +450,10 @@ function draw() {
   const sv = $('#net'); sv.innerHTML = '';
   if (!S.run) return;
   if (!geom || geom.W !== sv.clientWidth || geom.H !== sv.clientHeight) fitView();
-  if (!geom) return;
+  if (!geom) {            // stage has no room yet: still size the panes below it,
+    gantt(); plot(); transport();   // which is what gives the stage its room back
+    return;
+  }
   const n = S.nets[S.run.system], f = cur();
   const g = el('g', { transform: `translate(${S.view.x},${S.view.y}) scale(${S.view.k})` });
   sv.appendChild(g);
@@ -546,7 +563,7 @@ function hud(res) {
     row('branches painted', res.h.size),
     row('SBS searched', ph().sbs.length + (ph().sbs_new.length ? ` (+${ph().sbs_new.length})` : ''))
   ].join('') : row('phase result', `${MW(p.solobj)} MW`);
-  $('#legend').innerHTML =
+  $('#legbody').innerHTML =
     `<i style="border-color:#fff"></i>open in this candidate<br>` +
     `<i style="border-color:var(--hot);border-top-style:dashed"></i>violated contingency<br>` +
     `<i style="border-color:hsl(24 80% 52%)"></i>opened often so far (heat)<br>` +
@@ -1122,12 +1139,15 @@ $('#bhelp').onclick = () => openHelp(true);
 $('#helpclose').onclick = () => openHelp(false);
 $('#help').onclick = e => { if (e.target.id === 'help') openHelp(false); };
 addEventListener('keydown', e => { if (e.key === 'Escape') openHelp(false); });
-$('#blegend').onclick = e => {
-  S.showLegend = !S.showLegend;
-  e.target.classList.toggle('on', S.showLegend);
-  $('#legend').classList.toggle('on', S.showLegend);
-  $('#legend').style.display = S.showLegend ? '' : 'none';
-};
+function showLegend(on) {
+  S.showLegend = on;
+  $('#legend').style.display = on ? '' : 'none';
+  $('#legend').classList.toggle('on', on);
+  $('#blegon').hidden = on;
+  LS.set('legend', on ? '1' : '0');
+}
+$('#blegoff').onclick = () => showLegend(false);
+$('#blegon').onclick = () => showLegend(true);
 $('#scrim').onclick = () => sheet(null);
 $('#runs').addEventListener('click', () => sheet(null));
 $('#phases').addEventListener('click', () => sheet(null));
@@ -1141,8 +1161,10 @@ $('#phases').addEventListener('click', () => sheet(null));
     }
   runList();
   const q = new URLSearchParams(location.search), has = id => S.index.runs.some(r => r.id === id);
-  // the glossary opens on load: it is the orientation for everything else on screen
-  if (q.get('help') !== '0') openHelp(true);
+  // orientation on a first visit; ?help=1 forces it, ?help=0 suppresses it
+  if (q.get('help') === '1') openHelp(true);
+  else if (q.get('help') !== '0' && !LS.get('seenhelp')) openHelp(true);
+  LS.set('seenhelp', '1');
   const want = q.get('run');
   await loadRun(want && has(want) ? want : '118_H3_d2_hop0_REF_s3', false);
   if (q.get('p')) { S.phase = Math.min(+q.get('p'), S.run.phases.length - 1); S.frame = 0; }
@@ -1156,6 +1178,7 @@ $('#phases').addEventListener('click', () => sheet(null));
   if (q.get('sheet')) sheet(q.get('sheet'), true);
   S.ganttH = +LS.get('ganttH') || 140;
   S.curveH = +LS.get('curveH') || 110;
+  if (LS.get('legend') === '0') showLegend(false);
   if (LS.get('curve') === '0') S.showCurve = false;
   if (q.get('curve')) S.showCurve = q.get('curve') !== '0';
   $('#bcurve').classList.toggle('on', S.showCurve);
