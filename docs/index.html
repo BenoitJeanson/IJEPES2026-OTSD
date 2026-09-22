@@ -9,7 +9,7 @@
 <style>
 :root{
   --bg:#0e1116; --panel:#161b22; --line:#262d38; --ink:#e6edf3; --dim:#8b949e;
-  --acc:#58a6ff; --warm:#f0883e; --hot:#ff7b72; --cool:#3fb950; --ghost:#bc8cff; --sbs:#2dd4bf;
+  --acc:#58a6ff; --warm:#f0883e; --hot:#ff7b72; --cool:#3fb950; --ghost:#bc8cff; --sbs:#2dd4bf; --hl:#ffd14a;
 }
 *{box-sizing:border-box}
 html,body{height:100%}
@@ -76,6 +76,14 @@ table.kv td:last-child{text-align:right;font-variant-numeric:tabular-nums}
 #blegoff:hover{background:#30363d;border-color:var(--line)}
 #legend{padding-right:24px}
 #blegon{position:absolute;right:12px;bottom:12px;z-index:5;padding:4px 9px;font-size:11.5px}
+#hlbar{position:absolute;left:12px;top:12px;z-index:6;
+  background:rgba(22,27,34,.95);border:1px solid var(--hl);border-radius:7px;
+  padding:5px 9px;font-size:11.5px;color:var(--hl);white-space:nowrap;
+  font-variant-numeric:tabular-nums;pointer-events:none}
+#hlbar b{color:#fff}
+#hlbar button{pointer-events:auto;margin-left:8px;padding:0 6px;font-size:11px;
+  background:transparent;border-color:var(--hl);color:var(--hl)}
+.hit line{stroke:transparent;fill:none;pointer-events:stroke}
 #legend i{display:inline-block;width:18px;height:0;border-top-width:3px;border-top-style:solid;
   vertical-align:middle;margin-right:6px}
 #hud{background:rgba(22,27,34,.92);border:1px solid var(--line);
@@ -177,6 +185,7 @@ a{color:var(--acc)}
   #hud .k{margin-right:4px}
   #legend{display:none}
   #legend.on{display:block;left:8px;right:8px;bottom:8px}
+  #hlbar{left:8px;right:8px;top:auto;bottom:8px;white-space:normal;text-align:center}
 }
 @media (max-height:520px){
   #bar{height:40px}
@@ -325,6 +334,7 @@ a{color:var(--acc)}
     <div id="legend"><button id="blegoff" title="hide the legend">✕</button>
       <div id="legbody"></div></div>
     <button id="blegon" hidden>legend</button>
+    <div id="hlbar" hidden></div>
     <div id="busy"></div>
   </div>
 
@@ -374,7 +384,7 @@ const el = (n, a = {}) => { const e = document.createElementNS(SVGNS, n);
   for (const k in a) e.setAttribute(k, a[k]); return e; };
 
 const S = {                       // everything the render reads
-  index: null, nets: {}, run: null, phase: 0, frame: 0,
+  index: null, nets: {}, run: null, phase: 0, frame: 0, hl: null,
   heat: null, ghost: null, ghostHeat: null,
   playing: false, showHeat: true, showVctg: true, showLabels: false, showSBS: true,
   showGantt: true, ganttH: 140, showLegend: true, xTime: false,
@@ -396,7 +406,9 @@ async function loadRun(id, asGhost) {
   busy(null);
   await net(r.system);
   if (asGhost) { S.ghost = r; S.ghostHeat = residencyWhole(r); }
-  else { S.run = r; S.phase = 0; S.frame = 0; fitView(); }
+  else { S.run = r; S.phase = 0; S.frame = 0;
+         S.hl = null; hlSticky = false;   // branch indices are per system
+         fitView(); }
   draw(); sidebar(); runList();
 }
 
@@ -472,8 +484,10 @@ function draw() {
   const P = b => [geom.X(n.buses[b].xy[0]), geom.Y(n.buses[b].xy[1])];
   const byNum = {}; n.buses.forEach((b, i) => byNum[b.i] = i);
 
+  EP.length = 0;
   n.edges.forEach((e, i) => {
     const [x1, y1] = P(byNum[e.f]), [x2, y2] = P(byNum[e.t]);
+    EP[i] = [x1, y1, x2, y2];
     if (gh) {                    // overlaid run's residency, as a halo underneath
       // sqrt, because normalising linearly against the busiest branch pinned almost
       // every other one to the floor; and the floor must out-width the 4.2px stroke
@@ -532,8 +546,86 @@ function draw() {
     }
   });
 
-  hud(res); gantt(); plot(); transport(); stamp();
+  g.appendChild(hlLayer()); paintHL();
+  g.appendChild(hitLayer());             // invisible wide lines, so a thin branch is hoverable
+  hud(res); gantt(); plot(); transport(); stamp(); hlbar();
 }
+
+/* ------------------------------------------------------- branch spotlight --- */
+/* The gantt's rows and the network's lines are the same objects seen two ways, and
+   nothing tied them together: pointing at either now lights up the other. The hit
+   lines live inside the panned group, so they only have to be rebuilt when the fit
+   changes, not on every pan frame. */
+
+const EP = [];                           // edge endpoints in group coordinates
+let hlG = null, hitC = { key: null, g: null }, hlSticky = false;
+
+const hlLayer = () => (hlG || (hlG = el('g')));
+
+function hitLayer() {
+  const key = S.run.system + '#' + geom.W + '#' + geom.H;
+  if (hitC.key !== key) {
+    const hg = el('g', { class: 'hit', 'stroke-width': 14 });
+    EP.forEach((p, i) => hg.appendChild(el('line', { x1: p[0], y1: p[1], x2: p[2], y2: p[3],
+      'data-e': i, 'vector-effect': 'non-scaling-stroke' })));
+    hitC = { key, g: hg };
+  }
+  return hitC.g;
+}
+
+function paintHL() {
+  const g = hlLayer(); g.textContent = '';
+  const p = S.hl != null && EP[S.hl];
+  if (!p) return;
+  g.appendChild(el('line', { x1: p[0], y1: p[1], x2: p[2], y2: p[3], stroke: 'var(--hl)',
+    'stroke-width': 14, 'stroke-opacity': .34, 'stroke-linecap': 'round',
+    'vector-effect': 'non-scaling-stroke' }));
+  for (const c of [[p[0], p[1]], [p[2], p[3]]])
+    g.appendChild(el('circle', { cx: c[0], cy: c[1], r: 5, fill: 'none', stroke: 'var(--hl)',
+      'stroke-width': 1.6, 'vector-effect': 'non-scaling-stroke' }));
+}
+
+function setHL(i, sticky) {
+  sticky = !!sticky;
+  if (i === S.hl && sticky === hlSticky) return;
+  S.hl = i; hlSticky = sticky;
+  paintHL(); gantt(); hlbar();
+}
+
+function hlbar() {
+  const b = $('#hlbar');
+  if (S.hl == null || !S.run || !ph()) { b.hidden = true; return; }
+  const e = S.nets[S.run.system].edges[S.hl], p = ph();
+  let n = 0; for (const f of p.frames) if (f.o.indexOf(S.hl) >= 0) n++;
+  b.hidden = false;
+  b.innerHTML = `branch <b>${e.f}\u2013${e.t}</b> \u00b7 `
+    + (n ? `opened in <b>${n}</b> of ${p.frames.length} candidates this phase`
+         : p.sbs.indexOf(S.hl) >= 0 ? 'in the SBS, never opened this phase'
+                                    : 'outside the SBS this phase')
+    + (hlSticky ? ' <button id="hlx">\u2715</button>' : '');
+  if (hlSticky) $('#hlx').onclick = () => setHL(null, false);
+}
+
+(function netHover() {
+  const sv = $('#net');
+  const at = (x, y) => {
+    const t = document.elementFromPoint(x, y);
+    const d = t && t.getAttribute && t.getAttribute('data-e');
+    return d == null ? null : +d;
+  };
+  sv.addEventListener('mousemove', e => {
+    if (!hlSticky) setHL(at(e.clientX, e.clientY), false);
+  });
+  sv.addEventListener('mouseleave', () => { if (!hlSticky) setHL(null, false); });
+  addEventListener('keydown', e => { if (e.key === 'Escape') setHL(null, false); });
+  // touch: a tap that did not pan selects the branch under the finger and keeps it
+  sv.addEventListener('touchend', e => {
+    const t = e.changedTouches && e.changedTouches[0];
+    if (!t || !tapOK()) return;
+    const i = at(t.clientX, t.clientY);
+    setHL(i, i != null);
+  }, { passive: true });
+})();
 
 let stampT = null;
 function stamp() {                       // keep the address bar a shareable deep link
@@ -646,7 +738,8 @@ function buildGantt(p, W, H) {
   c.width = W; c.height = H;
   const x = c.getContext('2d');
   x.fillStyle = '#0b0e13'; x.fillRect(0, 0, W, H);
-  if (!rows.length || !N) return { bmp: c, rows, sol: -1, gut: 0 };
+  const idx = new Map(rows.map((e, r) => [e, r]));
+  if (!rows.length || !N) return { bmp: c, rows, idx, sol: -1, gut: 0 };
 
   const rh = H / rows.length;
   // a label gutter only once rows are tall enough to carry 9px type
@@ -663,7 +756,6 @@ function buildGantt(p, W, H) {
     x.fillStyle = 'rgba(63,185,80,.85)'; x.fillRect(col(i), H - 3, w, 3);
   }
 
-  const idx = new Map(rows.map((e, r) => [e, r]));
   x.fillStyle = '#f0883e';
   for (let i = 0; i < N; i++) {
     const cx = col(i), w = wid(i);
@@ -691,7 +783,7 @@ function buildGantt(p, W, H) {
     x.fillStyle = 'rgba(88,166,255,.95)';
     x.fillRect(Math.min(W - 2, col(sol)), 0, 2, H);
   }
-  return { bmp: c, rows, sol, gut };
+  return { bmp: c, rows, idx, sol, gut };
 }
 
 function gantt() {
@@ -713,14 +805,31 @@ function gantt() {
   if (!ganttCache || ganttCache.key !== key) ganttCache = { key, ...buildGantt(p, W, H) };
   g.drawImage(ganttCache.bmp, 0, 0, W, H);
 
+  const rows = ganttCache.rows, gu0 = ganttCache.gut || 0;
+  if (S.hl != null && rows.length) {
+    const r = ganttCache.idx.get(S.hl);
+    if (r !== undefined) {
+      // a tint on the row is lost against orange; dim every other row instead, and
+      // keep the band at least 3px so it survives a 60-row phase
+      const rh = H / rows.length, bh = Math.max(3, rh), y = r * rh + rh / 2 - bh / 2;
+      g.fillStyle = 'rgba(11,14,19,.66)';
+      g.fillRect(gu0, 0, W - gu0, Math.max(0, y));
+      g.fillRect(gu0, y + bh, W - gu0, Math.max(0, H - y - bh));
+      g.strokeStyle = '#ffd14a'; g.lineWidth = 2;
+      g.strokeRect(gu0 + 1, y + 1, W - gu0 - 2, bh - 2);
+      g.fillStyle = '#ffd14a'; g.fillRect(0, y, gu0 ? 4 : 3, bh);
+    }
+  }
   if (fr.length) {
     const gu = ganttCache.gut || 0;
     const cx = gu + axis(fr).at(S.frame) * (W - gu - 1);
     g.fillStyle = '#58a6ff'; g.fillRect(cx - 0.5, 0, 1.5, H);
   }
   const feas = fr.filter(f => !f.v.length).length;
-  $('#gleft').textContent =
-    `${ganttCache.rows.length} of ${p.sbs.length} SBS branches ever opened`;
+  $('#gleft').innerHTML =
+    `${rows.length} of ${p.sbs.length} SBS branches ever opened`
+    + ` <span style="color:var(--hl)">\u00b7 ${phone() ? 'tap' : 'hover'} a row to find it`
+    + ` in the network</span>`;
   const ax = axis(fr);
   $('#gright').innerHTML = `<span style="color:var(--cool)">${feas} feasible</span>`
     + ` · ${fr.length} candidates`
@@ -980,11 +1089,23 @@ $('#bgantt').onclick = e => {
     const u = Math.max(0, Math.min(1, px / Math.max(1, r.width - gu)));
     play(false); setFrame(axis(fr).seek(u));
   };
+  const rowAt = e => {
+    const rows = ganttCache && ganttCache.rows;
+    if (!rows || !rows.length) return null;
+    const r = cv.getBoundingClientRect();
+    const y = (e.touches ? e.touches[0].clientY : e.clientY) - r.top;
+    const k = Math.floor(y / (r.height / rows.length));
+    return rows[Math.max(0, Math.min(rows.length - 1, k))];
+  };
+  cv.addEventListener('mousemove', e => { if (!hlSticky) setHL(rowAt(e), false); });
+  cv.addEventListener('mouseleave', () => { if (!hlSticky) setHL(null, false); });
   cv.addEventListener('mousedown', e => { down = true; seek(e); });
   addEventListener('mousemove', e => down && seek(e));
   addEventListener('mouseup', () => down = false);
-  cv.addEventListener('touchstart', e => { seek(e); }, { passive: true });
-  cv.addEventListener('touchmove', e => { e.preventDefault(); seek(e); }, { passive: false });
+  // on a phone one tap does both: x picks the candidate, y picks the branch
+  cv.addEventListener('touchstart', e => { seek(e); setHL(rowAt(e), true); }, { passive: true });
+  cv.addEventListener('touchmove', e => { e.preventDefault(); seek(e); setHL(rowAt(e), true); },
+    { passive: false });
 })();
 
 (function ganttResize() {
@@ -1070,6 +1191,9 @@ addEventListener('keydown', e => {
   if (e.key === 'ArrowLeft') setFrame(S.frame - (e.shiftKey ? 25 : 1));
 });
 
+let lastTap = null;
+const tapOK = () => lastTap && !lastTap.two && lastTap.moved < 9;
+
 (function panzoom() {
   const sv = $('#net'); let down = null;
   sv.addEventListener('mousedown', e => {
@@ -1090,7 +1214,8 @@ addEventListener('keydown', e => {
     const t = e.touches;
     touch = t.length >= 2
       ? { two: true, d: span(t), c: mid(t), ...S.view }
-      : { two: false, mx: t[0].clientX, my: t[0].clientY, vx: S.view.x, vy: S.view.y };
+      : { two: false, mx: t[0].clientX, my: t[0].clientY, vx: S.view.x, vy: S.view.y, moved: 0 };
+    lastTap = touch;
   }, { passive: true });
   sv.addEventListener('touchmove', e => {
     if (!touch) return;
@@ -1103,6 +1228,8 @@ addEventListener('keydown', e => {
       S.view.x = (c.x - r.left) - (ax - touch.x) * f;
       S.view.y = (c.y - r.top) - (ay - touch.y) * f;
     } else if (!touch.two) {
+      touch.moved = Math.max(touch.moved,
+        Math.hypot(t[0].clientX - touch.mx, t[0].clientY - touch.my));
       S.view.x = touch.vx + (t[0].clientX - touch.mx);
       S.view.y = touch.vy + (t[0].clientY - touch.my);
     }

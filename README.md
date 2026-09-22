@@ -101,6 +101,16 @@ feasible proposals — are washed green with a solid foot, and the phase's repor
 result is the blue column — and those same feasible candidates are the green dots in
 the objective plot, the only ones the incumbent can step to.
 
+A row and a branch are the same object seen two ways, so pointing at either lights up
+the other: **hover a gantt row** and its branch is haloed yellow in the network;
+**hover a branch** in the network and its row is outlined while every other row dims.
+A readout in the network's top-left corner names the branch and says in how many of
+the phase's candidates it was open — or that it is in the SBS but was never opened,
+or outside the SBS entirely, neither of which has a row at all. On a phone there is no
+hover, so a **tap** does it and the selection sticks until you tap elsewhere or press
+its ✕; a tap on the gantt reads both axes at once — x picks the candidate, y the
+branch. Escape clears it.
+
 Click or drag anywhere on it to seek. Drag its top edge to resize; past about 8 px a
 row it grows a gutter with the branch names. **gantt** toggles it — on by default on
 desktop, off on a phone, where it also gets capped so it cannot starve the network.
@@ -197,6 +207,7 @@ These are all real properties of the data, surfaced in the UI rather than smooth
 | ✕ on the legend | hide it; a **legend** chip brings it back |
 | drag, wheel — or one finger / two-finger pinch | pan, zoom |
 | click or drag the gantt | seek to that candidate |
+| hover a gantt row or a network branch (tap, on a phone) | light up the other |
 | drag the gantt's top edge, or a panel's inner edge | resize (remembered per browser) |
 | ☰ and ⓘ (phone only) | the run list and the run details, as sheets |
 
