@@ -30,13 +30,14 @@ The campaign has three nested levels, and the viewer gives each of them a contro
 | level | what it is | count | where it is in the UI |
 |---|---|---|---|
 | run | a `(system, H, d_viol, d_sol, config, seed)` configuration | 162 | left-hand list |
-| phase | one outer local-search iteration | 480 | the `i1 i2 i3` buttons |
+| phase | one outer local-search iteration | 480 | the `i1 i2 i3` buttons, top-right |
 | candidate | one Benders iteration — an open-branch set the master proposed | 88,149 | the scrubber |
 
 The layout puts everything about *which* run you are looking at in one full-height left
-panel — concepts, campaign filters and list, run metadata, phases — and everything about
-*what you are seeing* over the network itself: view controls bottom-left, legend
-bottom-right. The objective plot and the gantt stack at the bottom because they share
+panel — concepts, campaign filters and list, run metadata — and everything that acts on
+the picture over the picture: view controls bottom-left (network layers and the run
+comparison on one row each, candidate panes below), phases and the readout top-right,
+legend bottom-right. The objective plot and the gantt stack at the bottom because they share
 one x-axis with each other and with the scrubber, so a cursor line means the same thing
 in all three. Each pane has its own toggle and drags to resize; on a viewport too short
 to host them they hide themselves rather than squeeze the network away.
@@ -190,6 +191,8 @@ These are all real properties of the data, surfaced in the UI rather than smooth
 | `space`, **play** | run the phase, 0.4× to 400× — **1× is 2.5 candidates per second** |
 | **pin this run as reference**, then pick one from the list | the run you were viewing turns violet and stays as the reference; the run you pick comes to the front, drawn over it |
 | **network**: heat / violations / SBS / bus labels | what the diagram shows |
+| **pin this run as reference** / **unpin** | same row, since they also act on the diagram |
+| `i1 i2 i3`, top-right | switch phase |
 | **candidates**: objective / gantt / time axis | which bottom pane is up, and its x-axis |
 | ✕ on the legend | hide it; a **legend** chip brings it back |
 | drag, wheel — or one finger / two-finger pinch | pan, zoom |
