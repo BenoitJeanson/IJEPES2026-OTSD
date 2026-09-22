@@ -33,6 +33,14 @@ The campaign has three nested levels, and the viewer gives each of them a contro
 | phase | one outer local-search iteration | 480 | the `i1 i2 i3` buttons |
 | candidate | one Benders iteration — an open-branch set the master proposed | 88,149 | the scrubber |
 
+The layout puts everything about *which* run you are looking at in one full-height left
+panel — concepts, campaign filters and list, run metadata, phases — and everything about
+*what you are seeing* over the network itself: view controls bottom-left, legend
+bottom-right. The objective plot and the gantt stack at the bottom because they share
+one x-axis with each other and with the scrubber, so a cursor line means the same thing
+in all three. Each pane has its own toggle and drags to resize; on a viewport too short
+to host them they hide themselves rather than squeeze the network away.
+
 ### The scrub paints; it does not animate
 
 The obvious thing to build would be an animation of the topology evolving. The data
