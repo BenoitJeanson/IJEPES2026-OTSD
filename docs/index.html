@@ -15,7 +15,8 @@
 html,body{height:100%}
 body{margin:0;background:var(--bg);color:var(--ink);
   font:13px/1.45 ui-sans-serif,-apple-system,"Segoe UI",Roboto,sans-serif;overflow:hidden}
-#app{display:grid;grid-template-columns:270px 1fr 300px;grid-template-rows:1fr auto;height:100vh}
+#app{display:grid;grid-template-columns:var(--leftw,270px) 1fr var(--rightw,300px);
+  grid-template-rows:1fr auto;height:100vh}
 .panel{background:var(--panel);border-right:1px solid var(--line);overflow:auto;padding:10px}
 #right{border-right:0;border-left:1px solid var(--line)}
 #stage{position:relative;overflow:hidden;background:var(--bg)}
@@ -64,6 +65,19 @@ table.kv td:last-child{text-align:right;font-variant-numeric:tabular-nums}
 .note{color:var(--dim);font-size:11px;line-height:1.5;margin:8px 0 0}
 .warn{color:var(--warm)}
 #plot{width:100%;height:168px;display:block}
+#gwrap{position:relative;margin-bottom:6px}
+#gantt{width:100%;display:block;border-radius:4px;background:#0b0e13;cursor:col-resize}
+#ghandle{position:absolute;top:-5px;left:0;right:0;height:9px;cursor:ns-resize}
+#ghandle:hover{background:linear-gradient(transparent,var(--acc),transparent);opacity:.5}
+#gcap{display:flex;justify-content:space-between;color:var(--dim);font-size:10.5px;
+  padding:2px 1px 0;font-variant-numeric:tabular-nums}
+.grip{position:fixed;top:0;bottom:var(--bottomh,0px);width:7px;z-index:25;cursor:col-resize}
+.grip:hover,.grip.on{background:var(--acc);opacity:.55}
+#gripL{left:var(--leftw,270px);margin-left:-3px}
+#gripR{right:var(--rightw,300px);margin-right:-3px}
+@media (max-width:820px), (max-height:520px), (hover:none) and (pointer:coarse){
+  .grip{display:none}
+}
 #tip{position:absolute;pointer-events:none;background:#0d1117;border:1px solid var(--line);
   border-radius:5px;padding:4px 7px;font-size:11px;display:none;z-index:9}
 a{color:var(--acc)}
@@ -142,6 +156,8 @@ a{color:var(--acc)}
   <button id="minfo" aria-label="details">ⓘ</button>
 </div>
 <div id="scrim"></div>
+<div class="grip" id="gripL"></div>
+<div class="grip" id="gripR"></div>
 <div id="app">
   <div class="panel" id="left">
     <h2>Campaign</h2>
@@ -197,6 +213,11 @@ a{color:var(--acc)}
   </div>
 
   <div id="bottom">
+    <div id="gwrap" hidden>
+      <div id="ghandle"></div>
+      <canvas id="gantt"></canvas>
+      <div id="gcap"><span id="gleft"></span><span id="gright"></span></div>
+    </div>
     <div class="transport">
       <button id="bplay">▶ play</button>
       <button id="bstep0">⏮</button><button id="bstepm">◀</button>
@@ -212,6 +233,7 @@ a{color:var(--acc)}
         <option value="100">100×</option>
         <option value="400">400×</option>
       </select>
+      <button id="bgantt">gantt</button>
       <span id="pos" class="sp"></span>
     </div>
     <input type="range" id="scrub" min="0" max="0" value="0">
@@ -234,6 +256,7 @@ const S = {                       // everything the render reads
   index: null, nets: {}, run: null, phase: 0, frame: 0,
   heat: null, ghost: null, ghostHeat: null,
   playing: false, showHeat: true, showVctg: true, showLabels: false, showSBS: true,
+  showGantt: true, ganttH: 150,
   view: { k: 1, x: 0, y: 0 }
 };
 
@@ -288,6 +311,7 @@ let geom = null;
 function fitView() {
   const n = S.nets[S.run.system], sv = $('#net');
   const W = sv.clientWidth, H = sv.clientHeight;
+  if (!(W > 20 && H > 20)) { geom = null; return; }   // degenerate box: nothing to fit
   const xs = n.buses.map(b => b.xy[0]), ys = n.buses.map(b => b.xy[1]);
   const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
   const pad = Math.min(46, Math.max(14, Math.min(W, H) * 0.06)), k = Math.min((W - 2 * pad) / (x1 - x0 || 1), (H - 2 * pad) / (y1 - y0 || 1));
@@ -307,6 +331,7 @@ function draw() {
   const sv = $('#net'); sv.innerHTML = '';
   if (!S.run) return;
   if (!geom || geom.W !== sv.clientWidth || geom.H !== sv.clientHeight) fitView();
+  if (!geom) return;
   const n = S.nets[S.run.system], f = cur();
   const g = el('g', { transform: `translate(${S.view.x},${S.view.y}) scale(${S.view.k})` });
   sv.appendChild(g);
@@ -371,7 +396,7 @@ function draw() {
     }
   });
 
-  hud(res); plot(); transport(); stamp();
+  hud(res); plot(); gantt(); transport(); stamp();
 }
 
 let stampT = null;
@@ -423,6 +448,107 @@ function hud(res) {
 
 /* Candidates are branch-and-cut nodes, not a descending trajectory: draw them as
    a cloud with a running minimum, never as a line. */
+
+/* ---------------------------------------------------------------- gantt --- */
+/* One row per branch this phase ever opened, ordered by how often; one column
+   per candidate. Columns where the subproblem found no violated contingency are
+   banded green - those are the feasible proposals. The matrix is rasterised once
+   per phase into an offscreen canvas, so scrubbing only blits and moves a cursor. */
+
+let ganttCache = null;
+
+function ganttRows(p) {
+  const n = new Map();
+  for (const f of p.frames) for (const e of f.o) n.set(e, (n.get(e) || 0) + 1);
+  return [...n.entries()].sort((a, b) => b[1] - a[1] || a[0] - b[0]).map(x => x[0]);
+}
+
+function buildGantt(p, W, H) {
+  const rows = ganttRows(p), fr = p.frames, N = fr.length;
+  const c = document.createElement('canvas');
+  c.width = W; c.height = H;
+  const x = c.getContext('2d');
+  x.fillStyle = '#0b0e13'; x.fillRect(0, 0, W, H);
+  if (!rows.length || !N) return { bmp: c, rows, sol: -1, gut: 0 };
+
+  const rh = H / rows.length;
+  // a label gutter only once rows are tall enough to carry 9px type
+  const gut = rh >= 8 ? 50 : 0, PW = W - gut;
+  const cw = Math.max(1, PW / N);
+  const col = i => gut + (N === 1 ? 0 : i / N * PW);
+
+  // feasible candidates: the subproblem returned no violated contingency
+  // a light wash so the column is scannable, plus a solid foot so it is unmistakable
+  for (let i = 0; i < N; i++) if (!fr[i].v.length) {
+    const w = Math.max(1, cw);
+    x.fillStyle = 'rgba(63,185,80,.13)'; x.fillRect(col(i), 0, w, H);
+    x.fillStyle = 'rgba(63,185,80,.85)'; x.fillRect(col(i), H - 3, w, 3);
+  }
+
+  const idx = new Map(rows.map((e, r) => [e, r]));
+  x.fillStyle = '#f0883e';
+  for (let i = 0; i < N; i++) {
+    const cx = col(i), w = Math.max(1, cw);
+    for (const e of fr[i].o) {
+      const r = idx.get(e);
+      if (r !== undefined) x.fillRect(cx, r * rh, w, Math.max(1, rh - (rh > 3 ? 1 : 0)));
+    }
+  }
+  // alternating row shading, drawn over at low alpha so rows stay countable
+  x.fillStyle = 'rgba(255,255,255,.035)';
+  for (let r = 1; r < rows.length; r += 2) x.fillRect(gut, r * rh, PW, Math.max(1, rh));
+  if (gut) {
+    const net = S.nets[S.run.system];
+    x.fillStyle = '#0b0e13'; x.fillRect(0, 0, gut, H);
+    x.font = '8.5px ui-monospace,SFMono-Regular,Menlo,monospace';
+    x.textBaseline = 'middle'; x.fillStyle = '#8b949e';
+    rows.forEach((e, r) => {
+      const b = net.edges[e];
+      x.fillText(`${b.f}-${b.t}`, 4, r * rh + rh / 2);
+    });
+  }
+
+  const sol = fr.findIndex(f => same(f.o, p.sol));
+  if (sol >= 0) {
+    x.fillStyle = 'rgba(88,166,255,.95)';
+    x.fillRect(Math.min(W - 2, col(sol)), 0, 2, H);
+  }
+  return { bmp: c, rows, sol, gut };
+}
+
+function gantt() {
+  const wrap = $('#gwrap');
+  wrap.hidden = !S.showGantt;
+  if (!S.showGantt || !S.run) return;
+  const cv = $('#gantt'), p = ph(), fr = frames();
+  // never let the matrix starve the network: short viewports cap it
+  const W = Math.max(50, wrap.clientWidth);
+  const H = Math.max(40, Math.min(S.ganttH, innerHeight - 300));
+  const dpr = Math.min(2, devicePixelRatio || 1);
+  cv.style.height = H + 'px';
+  if (cv.width !== W * dpr || cv.height !== H * dpr) { cv.width = W * dpr; cv.height = H * dpr; }
+  const g = cv.getContext('2d');
+  g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  g.clearRect(0, 0, W, H);
+
+  const key = S.run.id + '#' + S.phase + '#' + W + 'x' + H;
+  if (!ganttCache || ganttCache.key !== key) ganttCache = { key, ...buildGantt(p, W, H) };
+  g.drawImage(ganttCache.bmp, 0, 0, W, H);
+
+  if (fr.length) {                       // cursor, aligned with the scrubber below
+    const gu = ganttCache.gut || 0;
+    const cx = gu + (fr.length === 1 ? 0 : S.frame / (fr.length - 1) * (W - gu - 1));
+    g.fillStyle = '#58a6ff'; g.fillRect(cx - 0.5, 0, 1.5, H);
+  }
+  const feas = fr.filter(f => !f.v.length).length;
+  $('#gleft').textContent =
+    `${ganttCache.rows.length} of ${p.sbs.length} SBS branches ever opened`;
+  $('#gright').innerHTML = `<span style="color:var(--cool)">${feas} feasible</span>`
+    + ` · ${fr.length} candidates`
+    + (ganttCache.sol >= 0 ? ` · <span style="color:var(--acc)">result at ${ganttCache.sol + 1}</span>`
+                           : ' · result not among them');
+}
+
 let plotCache = null;
 function plot() {
   const sv = $('#plot'), fr = frames(), p = ph();
@@ -604,6 +730,77 @@ function tick() {
   }
 }
 
+
+/* ------------------------------------------------------ gantt + resizing --- */
+
+const LS = { get: k => { try { return localStorage.getItem(k); } catch (e) { return null; } },
+             set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} } };
+
+$('#bgantt').onclick = e => {
+  S.showGantt = !S.showGantt;
+  e.target.classList.toggle('on', S.showGantt);
+  LS.set('gantt', S.showGantt ? '1' : '0');
+  refit();                               // the stage height changes with it
+};
+
+(function ganttSeek() {                  // click or drag anywhere on it to seek
+  const cv = $('#gantt'); let down = false;
+  const seek = e => {
+    const fr = frames(); if (!fr.length) return;
+    const r = cv.getBoundingClientRect();
+    const gu = (ganttCache && ganttCache.gut) || 0;
+    const px = (e.touches ? e.touches[0].clientX : e.clientX) - r.left - gu;
+    const t = Math.max(0, Math.min(1, px / Math.max(1, r.width - gu)));
+    play(false); setFrame(Math.round(t * (fr.length - 1)));
+  };
+  cv.addEventListener('mousedown', e => { down = true; seek(e); });
+  addEventListener('mousemove', e => down && seek(e));
+  addEventListener('mouseup', () => down = false);
+  cv.addEventListener('touchstart', e => { seek(e); }, { passive: true });
+  cv.addEventListener('touchmove', e => { e.preventDefault(); seek(e); }, { passive: false });
+})();
+
+(function ganttResize() {
+  let from = null;
+  $('#ghandle').addEventListener('mousedown', e => {
+    from = { y: e.clientY, h: S.ganttH }; e.preventDefault();
+  });
+  addEventListener('mousemove', e => {
+    if (!from) return;
+    S.ganttH = Math.max(46, Math.min(420, from.h - (e.clientY - from.y)));
+    refit();
+  });
+  addEventListener('mouseup', () => {
+    if (from) { LS.set('ganttH', S.ganttH); from = null; }
+  });
+})();
+
+(function panels() {                     // drag the seam between a panel and the stage
+  const apply = () => {
+    const r = document.documentElement.style;
+    r.setProperty('--leftw', S.leftw + 'px');
+    r.setProperty('--rightw', S.rightw + 'px');
+  };
+  S.leftw = +LS.get('leftw') || 270;
+  S.rightw = +LS.get('rightw') || 300;
+  apply();
+  for (const [id, key, sign] of [['#gripL', 'leftw', 1], ['#gripR', 'rightw', -1]]) {
+    const el_ = $(id); let from = null;
+    el_.addEventListener('mousedown', e => {
+      from = { x: e.clientX, w: S[key] }; el_.classList.add('on'); e.preventDefault();
+    });
+    addEventListener('mousemove', e => {
+      if (!from) return;
+      S[key] = Math.max(170, Math.min(560, from.w + sign * (e.clientX - from.x)));
+      apply(); refit();
+    });
+    addEventListener('mouseup', () => {
+      if (!from) return;
+      LS.set(key, S[key]); el_.classList.remove('on'); from = null;
+    });
+  }
+})();
+
 $('#scrub').oninput = e => { play(false); setFrame(+e.target.value); };
 $('#bplay').onclick = () => play();
 $('#bstep0').onclick = () => { play(false); setFrame(0); };
@@ -672,12 +869,10 @@ addEventListener('keydown', e => {
   }, { passive: false });
 })();
 const refit = () => {
-  if (phone()) {                       // measure the chrome rather than guess at it
-    const r = document.documentElement.style;
-    r.setProperty('--barh', $('#bar').offsetHeight + 'px');
-    r.setProperty('--bottomh', $('#bottom').offsetHeight + 'px');
-  }
-  geom = null; plotCache = null; if (S.run) draw();
+  const r = document.documentElement.style;   // measure the chrome rather than guess
+  r.setProperty('--bottomh', $('#bottom').offsetHeight + 'px');
+  if (phone()) r.setProperty('--barh', $('#bar').offsetHeight + 'px');
+  geom = null; plotCache = null; ganttCache = null; if (S.run) draw();
 };
 addEventListener('resize', refit);
 addEventListener('orientationchange', () => setTimeout(refit, 250));
@@ -716,6 +911,10 @@ $('#phases').addEventListener('click', () => sheet(null));
   requestAnimationFrame(refit);
   setTimeout(refit, 350);
   if (q.get('sheet')) sheet(q.get('sheet'), true);
+  S.ganttH = +LS.get('ganttH') || 150;
+  if (LS.get('gantt') === '0' || (phone() && LS.get('gantt') === null)) S.showGantt = false;
+  if (q.get('gantt')) S.showGantt = q.get('gantt') !== '0';
+  $('#bgantt').classList.toggle('on', S.showGantt);
   if (q.get('speed') && [...$('#speed').options].some(o => o.value === q.get('speed')))
     $('#speed').value = q.get('speed');
   if (q.get('play')) play(true);

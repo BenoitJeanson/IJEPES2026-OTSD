@@ -64,6 +64,20 @@ the SBS their phase searched, which they must, since the master cannot open anyt
 > searched is the previous one (for phase 1, `init_sbs`). The viewer always shows the
 > set the phase searched, and the `+n` beside it is what that phase added.
 
+### The gantt: every branch against every candidate
+
+Under the scrubber, one row per branch the phase ever opened, one column per
+candidate, sharing the scrubber's x-axis so the two line up. Rows are ordered by how
+often the branch is open, which separates two things at a glance: the solid block at
+the top is the stable core the search never gives up, and the scatter below is what it
+churns through. Columns where the subproblem found **no violated contingency** — the
+feasible proposals — are washed green with a solid foot, and the phase's reported
+result is the blue column.
+
+Click or drag anywhere on it to seek. Drag its top edge to resize; past about 8 px a
+row it grows a gutter with the branch names. **gantt** toggles it — on by default on
+desktop, off on a phone, where it also gets capped so it cannot starve the network.
+
 ### The objective was not in the logs
 
 The callback logs record elapsed time, the open-branch set, the violated contingencies
@@ -114,10 +128,13 @@ These are all real properties of the data, surfaced in the UI rather than smooth
 | **ghost a run…** then pick one | overlay a second run's whole residency in violet |
 | **heat** / **violations** / **SBS** / **bus labels** | layers on and off |
 | drag, wheel — or one finger / two-finger pinch | pan, zoom |
+| click or drag the gantt | seek to that candidate |
+| drag the gantt's top edge, or a panel's inner edge | resize (remembered per browser) |
 | ☰ and ⓘ (phone only) | the run list and the run details, as sheets |
 | **open in coordedit →** | send this exact candidate to the local tool for real flows |
 
-`&play=1` starts a link playing, and `&speed=5` picks the rate it plays at.
+`&play=1` starts a link playing, `&speed=5` picks the rate, and `&gantt=1` forces the
+matrix on.
 
 The URL is a deep link and updates as you go —
 `?run=118_H4_d2_hop1_NO-EMBED&p=0&f=end&ghost=118_H4_d2_hop1_REF` is a specific
