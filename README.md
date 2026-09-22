@@ -1,10 +1,20 @@
 # OTSD campaign replay
 
-An interactive replay of the component-ablation campaign behind the IJEPES optimal
-transmission switching paper: 162 runs, 480 outer local-search phases, and **88,149
+**OTSD — Optimal Transmission Switching with De-energization.** Choose transmission
+lines to open so the remaining network carries the least load at risk while staying
+N−1 secure. Paper:
+[preprint on SSRN](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=7352475).
+
+An interactive replay of the component-ablation campaign behind that paper: 162 runs, 480 outer local-search phases, and **88,149
 individual Benders candidates**, every one of them a topology you can look at.
 
-**→ [Open the viewer](https://benoitjeanson.github.io/IJEPES2026-OTSD/)**
+**→ [Open the viewer](https://benoitjeanson.github.io/IJEPES2026-OTSD/)** ·
+[concepts & glossary](https://benoitjeanson.github.io/IJEPES2026-OTSD/?help=1)
+
+Every term below is also in the app itself, behind the **? what am I looking at** button
+at the top of the right panel (the **?** in the bar on a phone): what OTSD is, what a
+candidate, phase, SBS, `H`, `d_viol` and `d_sol` are, what each `NO-…` configuration
+switches off, and the two caveats worth reading before drawing conclusions.
 
 No install, no server, no build step: one HTML file and a folder of JSON. It works on a
 phone — the panels become swipe-over sheets behind ☰ and ⓘ, one finger pans and two
@@ -85,6 +95,15 @@ Click or drag anywhere on it to seek. Drag its top edge to resize; past about 8 
 row it grows a gutter with the branch names. **gantt** toggles it — on by default on
 desktop, off on a phone, where it also gets capped so it cannot starve the network.
 
+### Comparing two runs
+
+**pin this run as reference** freezes the run you are looking at as a violet halo —
+where it spent its candidates, across all its phases — and then lets you pick another
+run to view against it. The violet appears the moment you click, so the button's effect
+is never in doubt, and the run you pick is drawn on top. The difference between the two
+is the divergence between the searches, which for a heuristic outer loop is a finding
+rather than a bug.
+
 ### The green line is the incumbent, not a running minimum
 
 The objective plot draws every candidate as a dot, but the line through them is the
@@ -142,7 +161,7 @@ These are all real properties of the data, surfaced in the UI rather than smooth
 |---|---|
 | scrubber, `←` `→`, `shift`+arrow | move one / twenty-five candidates |
 | `space`, **play** | run the phase, 0.4× to 400× — **1× is 2.5 candidates per second** |
-| **overlay a run…** then pick one from the list | draw a second run's residency as a violet halo, to compare where two searches went |
+| **pin this run as reference**, then pick one from the list | the run you were viewing turns violet and stays as the reference; the run you pick comes to the front, drawn over it |
 | **heat** / **violations** / **SBS** / **bus labels** | layers on and off |
 | drag, wheel — or one finger / two-finger pinch | pan, zoom |
 | click or drag the gantt | seek to that candidate |

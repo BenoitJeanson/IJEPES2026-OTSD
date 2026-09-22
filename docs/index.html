@@ -82,6 +82,21 @@ table.kv td:last-child{text-align:right;font-variant-numeric:tabular-nums}
 #tip{position:absolute;pointer-events:none;background:#0d1117;border:1px solid var(--line);
   border-radius:5px;padding:4px 7px;font-size:11px;display:none;z-index:9}
 a{color:var(--acc)}
+#help{position:fixed;inset:0;z-index:60;background:#000c;display:none;
+  overflow-y:auto;-webkit-overflow-scrolling:touch;padding:24px 16px}
+#help.on{display:block}
+#helpbox{max-width:760px;margin:0 auto;background:var(--panel);border:1px solid var(--line);
+  border-radius:12px;padding:22px 26px;box-shadow:0 18px 60px #000a}
+#helpbox h3{margin:0 0 4px;font-size:17px}
+#helpbox h4{margin:20px 0 6px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--dim)}
+#helpbox p{margin:0 0 8px;color:#c9d1d9}
+#helpbox table{width:100%;border-collapse:collapse;margin:2px 0 4px}
+#helpbox td{padding:4px 8px 4px 0;vertical-align:top;border-top:1px solid var(--line)}
+#helpbox td:first-child{white-space:nowrap;color:var(--acc);font-weight:600;width:1%}
+#helpbox code{background:#0d1117;padding:1px 4px;border-radius:3px;font-size:11.5px}
+#helpclose{position:sticky;top:0;float:right;margin:-6px -10px 0 0}
+#bhelp{width:100%;margin-bottom:8px}
 #busy{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:8;
   background:var(--panel);border:1px solid var(--line);border-radius:8px;
   padding:9px 14px;color:var(--dim);font-size:12px;display:none}
@@ -157,6 +172,71 @@ a{color:var(--acc)}
   <button id="minfo" aria-label="details">ⓘ</button>
 </div>
 <div id="scrim"></div>
+<div id="help"><div id="helpbox">
+  <button id="helpclose">close ✕</button>
+  <h3>What am I looking at?</h3>
+  <p>A replay of the component-ablation campaign behind the paper. Each <b>run</b> is one
+     configuration of the solver on one test system; you can scrub through every topology
+     it proposed on the way to its answer.</p>
+
+  <h4>The problem — OTSD</h4>
+  <p><b>Optimal Transmission Switching with De-energization.</b> Choose a set of
+     transmission lines to open so that the remaining network carries the least
+     <i>load at risk</i>, while staying <b>N−1 secure</b> — no single further line outage
+     may overload anything. Opening lines can strand part of the grid, and the load in a
+     stranded pocket is what the objective counts.</p>
+  <p><a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=7352475"
+        target="_blank" rel="noopener">Read the preprint on SSRN →</a></p>
+
+  <h4>How it is solved</h4>
+  <p>A <b>master</b> MILP proposes which branches to open; a <b>subproblem</b> checks N−1
+     security and, when it fails, returns cuts that forbid that proposal. Each exchange is
+     one <b>candidate</b>. Around that sits a local search of <b>k</b> phases, each
+     re-seeded from the last phase's answer with a wider switchable set.</p>
+
+  <h4>Terms, as this app uses them</h4>
+  <table>
+    <tr><td>candidate</td><td>One Benders iteration: a set of open branches the master
+      proposed. 88,149 of them in the corpus.</td></tr>
+    <tr><td>feasible</td><td>A candidate whose N−1 check found <i>no</i> violated
+      contingency. Only these can move the incumbent. Green everywhere in this app.</td></tr>
+    <tr><td>incumbent</td><td>The best objective among feasible candidates so far.</td></tr>
+    <tr><td>phase</td><td>One outer local-search iteration; <code>k</code> = 3 per run.</td></tr>
+    <tr><td>SBS</td><td><b>Switchable branch set</b> — the branches the master is allowed to
+      open in this phase. Everything else is held closed. It grows each phase, so membership
+      is per phase, not permanent.</td></tr>
+    <tr><td>H</td><td>Hamming bound: how many branches a candidate may differ from the
+      warm start. Larger H is a wider neighbourhood and a harder master.</td></tr>
+    <tr><td>d_viol</td><td>How far the SBS reaches out from trouble: starting at each
+      overloaded branch, follow the flow outward this many hops and add what you pass.
+      <code>SBS_SA_depth</code> in the code.</td></tr>
+    <tr><td>d_sol</td><td>Graph hops around the current solution's open branches, also added
+      to the SBS. <code>warmstart_hop_sbs</code> in the code, <code>hop</code> in run names.
+      The campaign behind the paper's numbers ran <code>d_sol = 0</code>.</td></tr>
+    <tr><td>objective</td><td>Load at risk, per unit on a <b>100 MVA</b> base — so 5.29 p.u.
+      is 529 MW. Shown in MW with p.u. underneath.</td></tr>
+    <tr><td>TLF</td><td>Thermal limit factor scaling every line rating: 1.5 for
+      <code>ieee118</code>, 1.0 for <code>ieee57</code>.</td></tr>
+  </table>
+
+  <h4>The configurations — what each one switches off</h4>
+  <table>
+    <tr><td>REF</td><td>Nothing disabled: the reference.</td></tr>
+    <tr><td>NO-SCREEN</td><td>Security screening.</td></tr>
+    <tr><td>NO-CF-POCKET</td><td>Closed-form cuts, replaced by an LP with pocket π.</td></tr>
+    <tr><td>NO-CF-FREE</td><td>Closed-form cuts, replaced by an LP with free π.</td></tr>
+    <tr><td>NO-EMBED</td><td>Contingency embedding.</td></tr>
+    <tr><td>NO-INHERIT</td><td>Cut inheritance between phases.</td></tr>
+    <tr><td>NO-LOCALSEARCH</td><td>The whole outer loop — no Hamming bound, no SBS.</td></tr>
+  </table>
+
+  <h4>Two things to read carefully</h4>
+  <p><b>Wall time is confounded.</b> Configurations ran in a fixed order within each block,
+     so timing carries machine drift. LP-solve and Benders-iteration counts are the
+     deterministic quantities — it is marked ⚠ wherever it appears.</p>
+  <p><b>The outer search is heuristic.</b> Two configurations ending at different local
+     optima is a finding, not a bug; that is what pinning a reference run is for.</p>
+</div></div>
 <div class="grip" id="gripL"></div>
 <div class="grip" id="gripR"></div>
 <div id="app">
@@ -191,6 +271,7 @@ a{color:var(--acc)}
   </div>
 
   <div class="panel" id="right">
+    <button id="bhelp">? &nbsp;what am I looking at — concepts &amp; glossary</button>
     <h2>Run</h2>
     <table class="kv" id="meta"></table>
     <h2>Phases</h2>
@@ -204,10 +285,11 @@ a{color:var(--acc)}
       <button id="bvctg" class="on">violations</button>
       <button id="bsbs" class="on">SBS</button>
       <button id="blabel">bus labels</button>
+      <button id="blegend" class="on">legend</button>
     </div>
     <div class="row">
-      <button id="bghost">overlay a run…</button>
-      <button id="bclear">clear</button>
+      <button id="bghost">pin this run as reference</button>
+      <button id="bclear">unpin</button>
     </div>
     <p class="note" id="ghostnote"></p>
   </div>
@@ -256,7 +338,7 @@ const S = {                       // everything the render reads
   index: null, nets: {}, run: null, phase: 0, frame: 0,
   heat: null, ghost: null, ghostHeat: null,
   playing: false, showHeat: true, showVctg: true, showLabels: false, showSBS: true,
-  showGantt: true, ganttH: 150,
+  showGantt: true, ganttH: 150, showLegend: true,
   view: { k: 1, x: 0, y: 0 }
 };
 
@@ -451,7 +533,7 @@ function hud(res) {
         ? `<br><i style="border-color:var(--sbs);border-top-width:5px"></i>added to the SBS this phase` : '')
       : '') +
     (S.ghost ? `<br><i style="border-color:var(--ghost);border-top-width:6px"></i>`
-      + `overlaid: ${S.ghost.id}` : '');
+      + `reference: ${S.ghost.id}` : '');
 }
 
 /* Candidates are branch-and-cut nodes, not a descending trajectory: draw them as
@@ -684,10 +766,12 @@ function sidebar() {
   });
   $('#mtitle').textContent = r.id;
   $('#msub').textContent = `${r.config} · ${MW(r.obj)} MW · phase ${S.phase + 1}/${r.phases.length}`;
-  $('#ghostnote').textContent = S.ghost
-    ? `overlaying ${S.ghost.id}: violet shows where that run spent its candidates, `
-      + 'across all its phases, so you can see where the two searches diverge.'
-    : 'pick a second run to overlay in violet, to compare where two searches went.';
+  $('#ghostnote').innerHTML = S.ghost
+    ? `Violet is <b>${S.ghost.id}</b>, pinned: where it spent its candidates across all `
+      + 'its phases. The run you are viewing is drawn on top, so the difference between '
+      + 'the two is the divergence between the searches.'
+    : 'Pins the run you are viewing as a violet reference, then lets you pick another '
+      + 'run to view against it.';
 }
 
 function runList() {
@@ -700,7 +784,7 @@ function runList() {
     `<div class="run ${S.run && S.run.id === r.id ? 'sel' : ''}${S.ghost && S.ghost.id === r.id ? ' gh' : ''}"
        data-id="${r.id}"><b>${r.id}</b><span>${(r.obj * 100).toFixed(0)}</span></div>`).join('');
   $('#runs').querySelectorAll('.run').forEach(d => d.onclick = () => {
-    if (pickingGhost) { endPick(); loadRun(d.dataset.id, true); }
+    if (pickingGhost) { endPick(); loadRun(d.dataset.id, false); }
     else loadRun(d.dataset.id, false);
   });
   $('#count').textContent = `${rs.length} of ${S.index.runs.length} runs · `
@@ -827,18 +911,27 @@ $('#bstepp').onclick = () => { play(false); setFrame(S.frame + 1); };
 for (const [id, key] of [['bheat', 'showHeat'], ['bvctg', 'showVctg'],
                          ['blabel', 'showLabels'], ['bsbs', 'showSBS']])
   $('#' + id).onclick = e => { S[key] = !S[key]; e.target.classList.toggle('on', S[key]); draw(); };
-$('#bghost').onclick = e => {
-  pickingGhost = !pickingGhost;
-  e.target.classList.toggle('on', pickingGhost);
-  e.target.textContent = pickingGhost ? 'pick a run ↓' : 'overlay a run…';
-  $('#runs').classList.toggle('picking', pickingGhost);
-  $('#pickhint').hidden = !pickingGhost;
-  if (pickingGhost && phone()) sheet('left', true);   // the list lives in the other sheet
+$('#bghost').onclick = () => {
+  if (pickingGhost) { endPick(); return; }
+  // Pin the run on screen as the reference. Doing it on the click, before any
+  // choice is made, means the violet appears immediately and the button's effect
+  // is never in doubt.
+  S.ghost = S.run;
+  S.ghostHeat = residencyWhole(S.run);
+  pickingGhost = true;
+  $('#bghost').classList.add('on');
+  $('#bghost').textContent = 'now pick a run ↓';
+  $('#runs').classList.add('picking');
+  $('#pickhint').hidden = false;
+  $('#pickhint').innerHTML = `<b>${S.run.id}</b> is pinned as the violet reference. `
+    + 'Click a run to view it against this one.';
+  draw(); sidebar(); runList();
+  if (phone()) sheet('left', true);        // the list lives in the other sheet
 };
 function endPick() {
   pickingGhost = false;
   $('#bghost').classList.remove('on');
-  $('#bghost').textContent = 'overlay a run…';
+  $('#bghost').textContent = 'pin this run as reference';
   $('#runs').classList.remove('picking');
   $('#pickhint').hidden = true;
 }
@@ -919,7 +1012,20 @@ const sheet = (which, on) => {
 };
 $('#mruns').onclick = () => sheet('left');
 $('#minfo').onclick = () => sheet('right');
-$('#mlegend').onclick = () => $('#legend').classList.toggle('on');
+$('#mlegend').onclick = () => openHelp(true);          // "?" in the phone bar is help
+function openHelp(on) {
+  $('#help').classList.toggle('on', on ?? !$('#help').classList.contains('on'));
+}
+$('#bhelp').onclick = () => openHelp(true);
+$('#helpclose').onclick = () => openHelp(false);
+$('#help').onclick = e => { if (e.target.id === 'help') openHelp(false); };
+addEventListener('keydown', e => { if (e.key === 'Escape') openHelp(false); });
+$('#blegend').onclick = e => {
+  S.showLegend = !S.showLegend;
+  e.target.classList.toggle('on', S.showLegend);
+  $('#legend').classList.toggle('on', S.showLegend);
+  $('#legend').style.display = S.showLegend ? '' : 'none';
+};
 $('#scrim').onclick = () => sheet(null);
 $('#runs').addEventListener('click', () => sheet(null));
 $('#phases').addEventListener('click', () => sheet(null));
@@ -947,6 +1053,7 @@ $('#phases').addEventListener('click', () => sheet(null));
   S.ganttH = +LS.get('ganttH') || 150;
   if (LS.get('gantt') === '0' || (phone() && LS.get('gantt') === null)) S.showGantt = false;
   if (q.get('gantt')) S.showGantt = q.get('gantt') !== '0';
+  if (q.get('help')) openHelp(true);
   $('#bgantt').classList.toggle('on', S.showGantt);
   if (q.get('speed') && [...$('#speed').options].some(o => o.value === q.get('speed')))
     $('#speed').value = q.get('speed');
