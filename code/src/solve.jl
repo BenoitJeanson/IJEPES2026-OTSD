@@ -23,6 +23,9 @@ Keyword arguments:
   * `seed`       — solver seed.
   * `timeout`    — wall-clock cap in seconds for the whole search; `0` for none.
 
+Any further keyword arguments reach the master problem unchanged; the ablation study
+uses `ablate_screening` and `cf_cuts` this way.
+
 Returns `(; objective, openings, secure, phases, wall, lp_solves, benders_iterations)`.
 """
 function solve_otsd(case::String;
@@ -38,7 +41,8 @@ function solve_otsd(case::String;
                     seed::Int = 0,
                     timeout::Real = 0.0,
                     logdir::String = "otsd",
-                    label::String = "OTSD")
+                    label::String = "OTSD",
+                    solver_kwargs...)
     rc = load_case(case; tlf)
     all_branches = collect(ELabel, edge_labels(rc.gc.g))
     sbs = H > 0 ? sa_induced_followed(rc, warm_start, d_viol) : Set(all_branches)
@@ -56,7 +60,7 @@ function solve_otsd(case::String;
         warmstart_hop_sbs = d_sol,
         use_cut_inheritance = inherit,
         timeout = Float64(timeout),
-        solver_kwargs = (; backend))
+        solver_kwargs = (; backend, solver_kwargs...))
 
     (; objective = state.best_obj,
        openings = state.best_openings,

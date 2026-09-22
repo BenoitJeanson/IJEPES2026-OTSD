@@ -74,7 +74,7 @@ function contingency_subproblem(ec::ElementaryCase, outages::Set{ELabel}, contin
     end
 
     m = _build_model(g, outages, contingency, bridge_to_pocket, bigM_π, bigM_flows, tight_bigM, θ_max_bigM, bigM_bound_multiplier)
-    set_optimizer_attribute(m, "InfUnbdInfo", 1)
+    request_infeasibility_certificate!(backend, m)
     optimize!(m)
 
     return benders_subpb_res(m)

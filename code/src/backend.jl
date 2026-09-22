@@ -46,8 +46,9 @@ end
 supports_lazy(::GurobiBackend) = true
 supports_lazy(::HiGHSBackend) = false
 
-name(::GurobiBackend) = "gurobi"
-name(::HiGHSBackend) = "highs"
+"Short identifier used in run tags and result records."
+backend_name(::GurobiBackend) = "gurobi"
+backend_name(::HiGHSBackend) = "highs"
 
 # ── Model construction ────────────────────────────────────────────────────────
 
@@ -86,6 +87,19 @@ set_timeout!(::HiGHSBackend, m, seconds::Real) = set_attribute(m, "time_limit", 
 "Emphasis on finding good incumbents early. Gurobi only; HiGHS has no equivalent."
 set_mip_focus!(::GurobiBackend, m, focus::Int) = set_attribute(m, "MIPFocus", focus)
 set_mip_focus!(::HiGHSBackend, _, _) = nothing
+
+"""
+    request_infeasibility_certificate!(backend, m)
+
+Ask for a Farkas certificate when the LP turns out infeasible — the feasibility cut
+is read off it. Gurobi must be told in advance; HiGHS returns a dual ray whenever it
+has one, so there is nothing to set.
+"""
+request_infeasibility_certificate!(::GurobiBackend, m) = set_optimizer_attribute(m, "InfUnbdInfo", 1)
+# HiGHS returns a dual ray only from the simplex solve itself: if presolve proves
+# infeasibility first there is no basis to read a certificate from, and the dual
+# objective comes back empty. Presolve is therefore off on the subproblem LPs.
+request_infeasibility_certificate!(::HiGHSBackend, m) = set_optimizer_attribute(m, "presolve", "off")
 
 "Announce that the model will receive lazy constraints. Gurobi requires this up front."
 enable_lazy!(m) = MOI.set(m, MOI.RawOptimizerAttribute("LazyConstraints"), 1)

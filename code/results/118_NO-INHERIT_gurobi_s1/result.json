@@ -1,0 +1,58 @@
+{
+    "instance": "118",
+    "cap_seconds": 900,
+    "backend": "gurobi",
+    "wall_seconds": 24.8,
+    "started_at": "2026-09-22T19:45:34.462",
+    "d_sol": 0,
+    "config": "NO-INHERIT",
+    "solver_version": "13.0.3",
+    "disabled": "4: cut inheritance",
+    "objective": 5.29,
+    "secure": true,
+    "julia_version": "1.12.1",
+    "openings": [
+        "14-15",
+        "30-38",
+        "40-41",
+        "40-42",
+        "49-50",
+        "49-51",
+        "54-55",
+        "54-56"
+    ],
+    "status": "done",
+    "lp_solves": 120,
+    "H": 3,
+    "benders_iterations": 123,
+    "phases": [
+        {
+            "secure": true,
+            "iteration": 1,
+            "objective": 5.69,
+            "sbs_size": 61,
+            "seconds": 9.1,
+            "capped": false
+        },
+        {
+            "secure": true,
+            "iteration": 2,
+            "objective": 5.29,
+            "sbs_size": 61,
+            "seconds": 6.1,
+            "capped": false
+        },
+        {
+            "secure": true,
+            "iteration": 3,
+            "objective": 5.29,
+            "sbs_size": 61,
+            "seconds": 9.2,
+            "capped": false
+        }
+    ],
+    "k": 3,
+    "d_viol": 2,
+    "finished_at": "2026-09-22T19:45:59.494",
+    "seed": 1
+}

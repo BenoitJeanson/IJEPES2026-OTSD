@@ -1,0 +1,1869 @@
+Set parameter Username
+Academic license - for non-commercial use only - expires 2027-04-20
+[ Info: Campaign: 42 cells, results in /Users/benoitjeanson/vsCode/TUD/IJEPES2026-OTSD/code/experiments/../results
+[ Info: [1/42] ▶ 57_REF_gurobi_s0  cap=900s  elapsed=empty period
+[ Info: opening case `pglib_opf_case57_ieee.m`
+[ Info: ── 57_REF_gurobi_s0  iter 1  |SBS|=66  |cuts|=0
+[ Info:   ▷ 57_REF_gurobi_s0_i001  H=3  warm=7  cuts=0  |SBS|=66
+[ Info:     ✓ obj=8.472  iter=18  t=9.2s  secure=true
+[ Info:   ↑ improvement: Inf → 8.472
+[ Info:   |SBS| 66 → 67
+[ Info: ── 57_REF_gurobi_s0  iter 2  |SBS|=67  |cuts|=391
+[ Info:   ▷ 57_REF_gurobi_s0_i002  H=3  warm=6  cuts=391  |SBS|=67
+[ Info:     ✓ obj=7.449  iter=15  t=1.0s  secure=true
+[ Info:   ↑ improvement: 8.472 → 7.449
+[ Info:   |SBS| 67 → 67
+[ Info: ── 57_REF_gurobi_s0  iter 3  |SBS|=67  |cuts|=613
+[ Info:   ▷ 57_REF_gurobi_s0_i003  H=3  warm=5  cuts=613  |SBS|=67
+[ Info:     ✓ obj=7.382  iter=8  t=0.7s  secure=true
+[ Info:   ↑ improvement: 7.449 → 7.382
+[ Info:   |SBS| 67 → 67
+[ Info: [2/42] ▶ 118_REF_gurobi_s0  cap=900s  elapsed=15 seconds, 625 milliseconds
+[ Info: opening case `pglib_opf_case118_ieee.m`
+[ Info: ── 118_REF_gurobi_s0  iter 1  |SBS|=56  |cuts|=0
+[ Info:   ▷ 118_REF_gurobi_s0_i001  H=3  warm=10  cuts=0  |SBS|=56
+[ Info:     ✓ obj=5.69  iter=56  t=7.6s  secure=true
+[ Info:   ↑ improvement: Inf → 5.69
+[ Info:   |SBS| 56 → 61
+[ Info: ── 118_REF_gurobi_s0  iter 2  |SBS|=61  |cuts|=666
+[ Info:   ▷ 118_REF_gurobi_s0_i002  H=3  warm=9  cuts=666  |SBS|=61
+[ Info:     ✓ obj=5.29  iter=18  t=3.8s  secure=true
+[ Info:   ↑ improvement: 5.69 → 5.29
+[ Info:   |SBS| 61 → 61
+[ Info: ── 118_REF_gurobi_s0  iter 3  |SBS|=61  |cuts|=875
+[ Info:   ▷ 118_REF_gurobi_s0_i003  H=3  warm=8  cuts=875  |SBS|=61
+[ Info:     ✓ obj=5.29  iter=13  t=5.2s  secure=true
+[ Info:   |SBS| 61 → 61
+[ Info: [3/42] ▶ 57_NO-SCREEN_gurobi_s0  cap=900s  elapsed=32 seconds, 751 milliseconds
+[ Info: opening case `pglib_opf_case57_ieee.m`
+[ Info: ── 57_NO-SCREEN_gurobi_s0  iter 1  |SBS|=66  |cuts|=0
+[ Info:   ▷ 57_NO-SCREEN_gurobi_s0_i001  H=3  warm=7  cuts=0  |SBS|=66
+[ Info:     ✓ obj=8.472  iter=18  t=5.7s  secure=true
+[ Info:   ↑ improvement: Inf → 8.472
+[ Info:   |SBS| 66 → 67
+[ Info: ── 57_NO-SCREEN_gurobi_s0  iter 2  |SBS|=67  |cuts|=391
+[ Info:   ▷ 57_NO-SCREEN_gurobi_s0_i002  H=3  warm=6  cuts=391  |SBS|=67
+[ Info:     ✓ obj=7.449  iter=15  t=5.1s  secure=true
+[ Info:   ↑ improvement: 8.472 → 7.449
+[ Info:   |SBS| 67 → 67
+[ Info: ── 57_NO-SCREEN_gurobi_s0  iter 3  |SBS|=67  |cuts|=613
+[ Info:   ▷ 57_NO-SCREEN_gurobi_s0_i003  H=3  warm=5  cuts=613  |SBS|=67
+[ Info:     ✓ obj=7.382  iter=8  t=2.9s  secure=true
+[ Info:   ↑ improvement: 7.449 → 7.382
+[ Info:   |SBS| 67 → 67
+[ Info: [4/42] ▶ 118_NO-SCREEN_gurobi_s0  cap=900s  elapsed=46 seconds, 661 milliseconds
+[ Info: opening case `pglib_opf_case118_ieee.m`
+[ Info: ── 118_NO-SCREEN_gurobi_s0  iter 1  |SBS|=56  |cuts|=0
+[ Info:   ▷ 118_NO-SCREEN_gurobi_s0_i001  H=3  warm=10  cuts=0  |SBS|=56
+[ Info:     ✓ obj=5.69  iter=56  t=90.5s  secure=true
+[ Info:   ↑ improvement: Inf → 5.69
+[ Info:   |SBS| 56 → 61
+[ Info: ── 118_NO-SCREEN_gurobi_s0  iter 2  |SBS|=61  |cuts|=666
+[ Info:   ▷ 118_NO-SCREEN_gurobi_s0_i002  H=3  warm=9  cuts=666  |SBS|=61
+[ Info:     ✓ obj=5.29  iter=17  t=29.6s  secure=true
+[ Info:   ↑ improvement: 5.69 → 5.29
+[ Info:   |SBS| 61 → 61
+[ Info: ── 118_NO-SCREEN_gurobi_s0  iter 3  |SBS|=61  |cuts|=867
+[ Info:   ▷ 118_NO-SCREEN_gurobi_s0_i003  H=3  warm=8  cuts=867  |SBS|=61
+[ Info:     ✓ obj=5.29  iter=12  t=23.5s  secure=true
+[ Info:   |SBS| 61 → 61
+[ Info: [5/42] ▶ 57_NO-CF-POCKET_gurobi_s0  cap=900s  elapsed=3 minutes, 10 seconds, 915 milliseconds
+[ Info: opening case `pglib_opf_case57_ieee.m`
+[ Info: ── 57_NO-CF-POCKET_gurobi_s0  iter 1  |SBS|=66  |cuts|=0
+[ Info:   ▷ 57_NO-CF-POCKET_gurobi_s0_i001  H=3  warm=7  cuts=0  |SBS|=66
+[ Info:     ✓ obj=8.472  iter=16  t=2.0s  secure=true
+[ Info:   ↑ improvement: Inf → 8.472
+[ Info:   |SBS| 66 → 67
+[ Info: ── 57_NO-CF-POCKET_gurobi_s0  iter 2  |SBS|=67  |cuts|=328
+[ Info:   ▷ 57_NO-CF-POCKET_gurobi_s0_i002  H=3  warm=6  cuts=328  |SBS|=67
+[ Info:     ✓ obj=7.449  iter=10  t=1.3s  secure=true
+[ Info:   ↑ improvement: 8.472 → 7.449
+[ Info:   |SBS| 67 → 67
+[ Info: ── 57_NO-CF-POCKET_gurobi_s0  iter 3  |SBS|=67  |cuts|=467
+[ Info:   ▷ 57_NO-CF-POCKET_gurobi_s0_i003  H=3  warm=5  cuts=467  |SBS|=67
+[ Info:     ✓ obj=7.382  iter=11  t=1.4s  secure=true
+[ Info:   ↑ improvement: 7.449 → 7.382
+[ Info:   |SBS| 67 → 67
+[ Info: [6/42] ▶ 118_NO-CF-POCKET_gurobi_s0  cap=900s  elapsed=3 minutes, 15 seconds, 817 milliseconds
+[ Info: opening case `pglib_opf_case118_ieee.m`
+[ Info: ── 118_NO-CF-POCKET_gurobi_s0  iter 1  |SBS|=56  |cuts|=0
+[ Info:   ▷ 118_NO-CF-POCKET_gurobi_s0_i001  H=3  warm=10  cuts=0  |SBS|=56
+[ Info:     ✓ obj=5.69  iter=74  t=17.0s  secure=true
+[ Info:   ↑ improvement: Inf → 5.69
+[ Info:   |SBS| 56 → 61
+[ Info: ── 118_NO-CF-POCKET_gurobi_s0  iter 2  |SBS|=61  |cuts|=935
+[ Info:   ▷ 118_NO-CF-POCKET_gurobi_s0_i002  H=3  warm=9  cuts=935  |SBS|=61
+[ Info:     ✓ obj=5.29  iter=15  t=5.7s  secure=true
+[ Info:   ↑ improvement: 5.69 → 5.29
+[ Info:   |SBS| 61 → 61
+[ Info: ── 118_NO-CF-POCKET_gurobi_s0  iter 3  |SBS|=61  |cuts|=1109
+[ Info:   ▷ 118_NO-CF-POCKET_gurobi_s0_i003  H=3  warm=8  cuts=1109  |SBS|=61
+[ Info:     ✓ obj=5.29  iter=13  t=5.7s  secure=true
+[ Info:   |SBS| 61 → 61
+[ Info: [7/42] ▶ 57_NO-CF-FREE_gurobi_s0  cap=900s  elapsed=3 minutes, 44 seconds, 747 milliseconds
+[ Info: opening case `pglib_opf_case57_ieee.m`
+[ Info: ── 57_NO-CF-FREE_gurobi_s0  iter 1  |SBS|=66  |cuts|=0
+[ Info:   ▷ 57_NO-CF-FREE_gurobi_s0_i001  H=3  warm=7  cuts=0  |SBS|=66
+[ Info:     ✓ obj=8.472  iter=18  t=2.8s  secure=true
+[ Info:   ↑ improvement: Inf → 8.472
+[ Info:   |SBS| 66 → 67
+[ Info: ── 57_NO-CF-FREE_gurobi_s0  iter 2  |SBS|=67  |cuts|=392
+[ Info:   ▷ 57_NO-CF-FREE_gurobi_s0_i002  H=3  warm=6  cuts=392  |SBS|=67
+[ Info:     ✓ obj=7.449  iter=15  t=2.0s  secure=true
+[ Info:   ↑ improvement: 8.472 → 7.449
+[ Info:   |SBS| 67 → 67
+[ Info: ── 57_NO-CF-FREE_gurobi_s0  iter 3  |SBS|=67  |cuts|=602
+[ Info:   ▷ 57_NO-CF-FREE_gurobi_s0_i003  H=3  warm=5  cuts=602  |SBS|=67
+[ Info:     ✓ obj=7.382  iter=10  t=1.5s  secure=true
+[ Info:   ↑ improvement: 7.449 → 7.382
+[ Info:   |SBS| 67 → 67
+[ Info: [8/42] ▶ 118_NO-CF-FREE_gurobi_s0  cap=900s  elapsed=3 minutes, 51 seconds, 94 milliseconds
+[ Info: opening case `pglib_opf_case118_ieee.m`
+[ Info: ── 118_NO-CF-FREE_gurobi_s0  iter 1  |SBS|=56  |cuts|=0
+[ Info:   ▷ 118_NO-CF-FREE_gurobi_s0_i001  H=3  warm=10  cuts=0  |SBS|=56
+[ Info:     ✓ obj=5.69  iter=75  t=18.8s  secure=true
+[ Info:   ↑ improvement: Inf → 5.69
+[ Info:   |SBS| 56 → 61
+[ Info: ── 118_NO-CF-FREE_gurobi_s0  iter 2  |SBS|=61  |cuts|=942
+[ Info:   ▷ 118_NO-CF-FREE_gurobi_s0_i002  H=3  warm=9  cuts=942  |SBS|=61
+[ Info:     ✓ obj=5.29  iter=10  t=4.8s  secure=true
+[ Info:   ↑ improvement: 5.69 → 5.29
+[ Info:   |SBS| 61 → 61
+[ Info: ── 118_NO-CF-FREE_gurobi_s0  iter 3  |SBS|=61  |cuts|=1057
+[ Info:   ▷ 118_NO-CF-FREE_gurobi_s0_i003  H=3  warm=8  cuts=1057  |SBS|=61
+[ Info:     ✓ obj=5.29  iter=13  t=7.0s  secure=true
+[ Info:   |SBS| 61 → 61
+[ Info: [9/42] ▶ 57_NO-EMBED_gurobi_s0  cap=900s  elapsed=4 minutes, 22 seconds, 295 milliseconds
+[ Info: opening case `pglib_opf_case57_ieee.m`
+[ Info: ── 57_NO-EMBED_gurobi_s0  iter 1  |SBS|=66  |cuts|=0
+[ Info:   ▷ 57_NO-EMBED_gurobi_s0_i001  H=3  warm=7  cuts=0  |SBS|=66
+[ Info:     ✓ obj=8.472  iter=71  t=2.3s  secure=true
+[ Info:   ↑ improvement: Inf → 8.472
+[ Info:   |SBS| 66 → 67
+[ Info: ── 57_NO-EMBED_gurobi_s0  iter 2  |SBS|=67  |cuts|=1452
+[ Info:   ▷ 57_NO-EMBED_gurobi_s0_i002  H=3  warm=6  cuts=1452  |SBS|=67
+[ Info:     ✓ obj=7.449  iter=46  t=1.2s  secure=true
+[ Info:   ↑ improvement: 8.472 → 7.449
+[ Info:   |SBS| 67 → 67
+[ Info: ── 57_NO-EMBED_gurobi_s0  iter 3  |SBS|=67  |cuts|=2284
+[ Info:   ▷ 57_NO-EMBED_gurobi_s0_i003  H=3  warm=5  cuts=2284  |SBS|=67
+[ Info:     ✓ obj=7.382  iter=30  t=1.1s  secure=true
+[ Info:   ↑ improvement: 7.449 → 7.382
+[ Info:   |SBS| 67 → 67
+[ Info: [10/42] ▶ 118_NO-EMBED_gurobi_s0  cap=900s  elapsed=4 minutes, 27 seconds, 200 milliseconds
+[ Info: opening case `pglib_opf_case118_ieee.m`
+[ Info: ── 118_NO-EMBED_gurobi_s0  iter 1  |SBS|=56  |cuts|=0
+[ Info:   ▷ 118_NO-EMBED_gurobi_s0_i001  H=3  warm=10  cuts=0  |SBS|=56
+[ Info:     ✓ obj=5.69  iter=450  t=104.5s  secure=true
+[ Info:   ↑ improvement: Inf → 5.69
+[ Info:   |SBS| 56 → 61
+[ Info: ── 118_NO-EMBED_gurobi_s0  iter 2  |SBS|=61  |cuts|=7055
+[ Info:   ▷ 118_NO-EMBED_gurobi_s0_i002  H=3  warm=9  cuts=7055  |SBS|=61
+[ Info:     ✓ obj=5.29  iter=255  t=61.5s  secure=true
+[ Info:   ↑ improvement: 5.69 → 5.29
+[ Info:   |SBS| 61 → 61
+[ Info: ── 118_NO-EMBED_gurobi_s0  iter 3  |SBS|=61  |cuts|=10984
+[ Info:   ▷ 118_NO-EMBED_gurobi_s0_i003  H=3  warm=8  cuts=10984  |SBS|=61
+[ Info:     ✓ obj=5.29  iter=409  t=86.9s  secure=true
+[ Info:   |SBS| 61 → 61
+[ Info: [11/42] ▶ 57_NO-INHERIT_gurobi_s0  cap=900s  elapsed=8 minutes, 40 seconds, 755 milliseconds
+[ Info: opening case `pglib_opf_case57_ieee.m`
+[ Info: ── 57_NO-INHERIT_gurobi_s0  iter 1  |SBS|=66  |cuts|=0
+[ Info:   ▷ 57_NO-INHERIT_gurobi_s0_i001  H=3  warm=7  cuts=0  |SBS|=66
+[ Info:     ✓ obj=8.472  iter=18  t=0.8s  secure=true
+[ Info:   ↑ improvement: Inf → 8.472
+[ Info:   |SBS| 66 → 67
+[ Info: ── 57_NO-INHERIT_gurobi_s0  iter 2  |SBS|=67  |cuts|=0
+[ Info:   ▷ 57_NO-INHERIT_gurobi_s0_i002  H=3  warm=6  cuts=0  |SBS|=67
+[ Info:     ✓ obj=7.449  iter=22  t=1.2s  secure=true
+[ Info:   ↑ improvement: 8.472 → 7.449
+[ Info:   |SBS| 67 → 67
+[ Info: ── 57_NO-INHERIT_gurobi_s0  iter 3  |SBS|=67  |cuts|=0
+[ Info:   ▷ 57_NO-INHERIT_gurobi_s0_i003  H=3  warm=5  cuts=0  |SBS|=67
+[ Info:     ✓ obj=7.382  iter=22  t=1.0s  secure=true
+[ Info:   ↑ improvement: 7.449 → 7.382
+[ Info:   |SBS| 67 → 67
+[ PowerModels | Info]: removing 3 cost terms from generator 4: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 1: [1696.0624, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 5: [3044.1037, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 2: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 6: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 7: [3718.8979000000004, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 3: [3407.5557000000003, 0.0]
+
+==============================================================================================
+sys   config          backend  seed  objective secure   wall (s)   LPs     status
+----------------------------------------------------------------------------------------------
+57    REF             gurobi   0     7.382     true     11.2       25      done
+==============================================================================================
+
+[ PowerModels | Info]: removing 3 cost terms from generator 32: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 29: [3266.8781000000004, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 1: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 54: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 2: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 41: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 51: [3504.3401000000003, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 53: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 27: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 42: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 33: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 28: [3478.1778000000004, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 50: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 52: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 26: [1605.6042000000002, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 10: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 24: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 25: [2486.1868, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 23: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 49: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 5: [2498.342, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 31: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 43: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 39: [3407.2633000000005, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 34: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 44: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 17: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 37: [2460.0771999999997, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 47: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 9: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 12: [2222.098, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 20: [2420.2306, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 6: [12458.1564, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 14: [2599.3982, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 7: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 8: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 19: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 4: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 22: [2727.7342999999996, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 11: [2894.8321, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 35: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 13: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 15: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 16: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 40: [2460.5101999999997, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 21: [1667.3942, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 38: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 46: [2864.9471, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 45: [1261.217, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 36: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 48: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 18: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 30: [2575.8442, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 3: Float64[]
+
+==============================================================================================
+sys   config          backend  seed  objective secure   wall (s)   LPs     status
+----------------------------------------------------------------------------------------------
+57    REF             gurobi   0     7.382     true     11.2       25      done
+118   REF             gurobi   0     5.29      true     17.0       79      done
+==============================================================================================
+
+[ PowerModels | Info]: removing 3 cost terms from generator 4: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 1: [1696.0624, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 5: [3044.1037, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 2: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 6: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 7: [3718.8979000000004, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 3: [3407.5557000000003, 0.0]
+
+==============================================================================================
+sys   config          backend  seed  objective secure   wall (s)   LPs     status
+----------------------------------------------------------------------------------------------
+57    REF             gurobi   0     7.382     true     11.2       25      done
+118   REF             gurobi   0     5.29      true     17.0       79      done
+57    NO-SCREEN       gurobi   0     7.382     true     13.8       2919    done
+==============================================================================================
+
+[ PowerModels | Info]: removing 3 cost terms from generator 32: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 29: [3266.8781000000004, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 1: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 54: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 2: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 41: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 51: [3504.3401000000003, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 53: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 27: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 42: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 33: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 28: [3478.1778000000004, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 50: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 52: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 26: [1605.6042000000002, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 10: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 24: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 25: [2486.1868, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 23: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 49: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 5: [2498.342, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 31: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 43: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 39: [3407.2633000000005, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 34: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 44: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 17: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 37: [2460.0771999999997, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 47: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 9: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 12: [2222.098, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 20: [2420.2306, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 6: [12458.1564, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 14: [2599.3982, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 7: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 8: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 19: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 4: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 22: [2727.7342999999996, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 11: [2894.8321, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 35: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 13: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 15: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 16: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 40: [2460.5101999999997, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 21: [1667.3942, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 38: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 46: [2864.9471, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 45: [1261.217, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 36: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 48: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 18: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 30: [2575.8442, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 3: Float64[]
+
+==============================================================================================
+sys   config          backend  seed  objective secure   wall (s)   LPs     status
+----------------------------------------------------------------------------------------------
+57    REF             gurobi   0     7.382     true     11.2       25      done
+118   REF             gurobi   0     5.29      true     17.0       79      done
+57    NO-SCREEN       gurobi   0     7.382     true     13.8       2919    done
+118   NO-SCREEN       gurobi   0     5.29      true     144.1      14373   done
+==============================================================================================
+
+[ PowerModels | Info]: removing 3 cost terms from generator 4: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 1: [1696.0624, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 5: [3044.1037, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 2: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 6: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 7: [3718.8979000000004, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 3: [3407.5557000000003, 0.0]
+
+==============================================================================================
+sys   config          backend  seed  objective secure   wall (s)   LPs     status
+----------------------------------------------------------------------------------------------
+57    REF             gurobi   0     7.382     true     11.2       25      done
+118   REF             gurobi   0     5.29      true     17.0       79      done
+57    NO-SCREEN       gurobi   0     7.382     true     13.8       2919    done
+118   NO-SCREEN       gurobi   0     5.29      true     144.1      14373   done
+57    NO-CF-POCKET    gurobi   0     7.382     true     4.8        623     done
+==============================================================================================
+
+[ PowerModels | Info]: removing 3 cost terms from generator 32: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 29: [3266.8781000000004, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 1: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 54: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 2: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 41: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 51: [3504.3401000000003, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 53: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 27: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 42: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 33: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 28: [3478.1778000000004, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 50: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 52: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 26: [1605.6042000000002, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 10: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 24: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 25: [2486.1868, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 23: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 49: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 5: [2498.342, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 31: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 43: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 39: [3407.2633000000005, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 34: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 44: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 17: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 37: [2460.0771999999997, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 47: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 9: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 12: [2222.098, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 20: [2420.2306, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 6: [12458.1564, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 14: [2599.3982, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 7: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 8: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 19: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 4: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 22: [2727.7342999999996, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 11: [2894.8321, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 35: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 13: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 15: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 16: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 40: [2460.5101999999997, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 21: [1667.3942, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 38: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 46: [2864.9471, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 45: [1261.217, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 36: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 48: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 18: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 30: [2575.8442, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 3: Float64[]
+
+==============================================================================================
+sys   config          backend  seed  objective secure   wall (s)   LPs     status
+----------------------------------------------------------------------------------------------
+57    REF             gurobi   0     7.382     true     11.2       25      done
+118   REF             gurobi   0     5.29      true     17.0       79      done
+57    NO-SCREEN       gurobi   0     7.382     true     13.8       2919    done
+118   NO-SCREEN       gurobi   0     5.29      true     144.1      14373   done
+57    NO-CF-POCKET    gurobi   0     7.382     true     4.8        623     done
+118   NO-CF-POCKET    gurobi   0     5.29      true     28.8       1245    done
+==============================================================================================
+
+[ PowerModels | Info]: removing 3 cost terms from generator 4: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 1: [1696.0624, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 5: [3044.1037, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 2: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 6: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 7: [3718.8979000000004, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 3: [3407.5557000000003, 0.0]
+
+==============================================================================================
+sys   config          backend  seed  objective secure   wall (s)   LPs     status
+----------------------------------------------------------------------------------------------
+57    REF             gurobi   0     7.382     true     11.2       25      done
+118   REF             gurobi   0     5.29      true     17.0       79      done
+57    NO-SCREEN       gurobi   0     7.382     true     13.8       2919    done
+118   NO-SCREEN       gurobi   0     5.29      true     144.1      14373   done
+57    NO-CF-POCKET    gurobi   0     7.382     true     4.8        623     done
+118   NO-CF-POCKET    gurobi   0     5.29      true     28.8       1245    done
+57    NO-CF-FREE      gurobi   0     7.382     true     6.3        741     done
+==============================================================================================
+
+[ PowerModels | Info]: removing 3 cost terms from generator 32: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 29: [3266.8781000000004, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 1: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 54: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 2: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 41: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 51: [3504.3401000000003, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 53: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 27: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 42: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 33: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 28: [3478.1778000000004, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 50: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 52: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 26: [1605.6042000000002, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 10: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 24: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 25: [2486.1868, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 23: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 49: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 5: [2498.342, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 31: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 43: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 39: [3407.2633000000005, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 34: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 44: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 17: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 37: [2460.0771999999997, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 47: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 9: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 12: [2222.098, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 20: [2420.2306, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 6: [12458.1564, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 14: [2599.3982, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 7: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 8: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 19: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 4: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 22: [2727.7342999999996, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 11: [2894.8321, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 35: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 13: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 15: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 16: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 40: [2460.5101999999997, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 21: [1667.3942, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 38: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 46: [2864.9471, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 45: [1261.217, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 36: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 48: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 18: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 30: [2575.8442, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 3: Float64[]
+
+==============================================================================================
+sys   config          backend  seed  objective secure   wall (s)   LPs     status
+----------------------------------------------------------------------------------------------
+57    REF             gurobi   0     7.382     true     11.2       25      done
+118   REF             gurobi   0     5.29      true     17.0       79      done
+57    NO-SCREEN       gurobi   0     7.382     true     13.8       2919    done
+118   NO-SCREEN       gurobi   0     5.29      true     144.1      14373   done
+57    NO-CF-POCKET    gurobi   0     7.382     true     4.8        623     done
+118   NO-CF-POCKET    gurobi   0     5.29      true     28.8       1245    done
+57    NO-CF-FREE      gurobi   0     7.382     true     6.3        741     done
+118   NO-CF-FREE      gurobi   0     5.29      true     31.0       1193    done
+==============================================================================================
+
+[ PowerModels | Info]: removing 3 cost terms from generator 4: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 1: [1696.0624, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 5: [3044.1037, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 2: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 6: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 7: [3718.8979000000004, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 3: [3407.5557000000003, 0.0]
+
+==============================================================================================
+sys   config          backend  seed  objective secure   wall (s)   LPs     status
+----------------------------------------------------------------------------------------------
+57    REF             gurobi   0     7.382     true     11.2       25      done
+118   REF             gurobi   0     5.29      true     17.0       79      done
+57    NO-SCREEN       gurobi   0     7.382     true     13.8       2919    done
+118   NO-SCREEN       gurobi   0     5.29      true     144.1      14373   done
+57    NO-CF-POCKET    gurobi   0     7.382     true     4.8        623     done
+118   NO-CF-POCKET    gurobi   0     5.29      true     28.8       1245    done
+57    NO-CF-FREE      gurobi   0     7.382     true     6.3        741     done
+118   NO-CF-FREE      gurobi   0     5.29      true     31.0       1193    done
+57    NO-EMBED        gurobi   0     7.382     true     4.7        307     done
+==============================================================================================
+
+[ PowerModels | Info]: removing 3 cost terms from generator 32: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 29: [3266.8781000000004, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 1: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 54: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 2: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 41: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 51: [3504.3401000000003, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 53: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 27: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 42: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 33: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 28: [3478.1778000000004, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 50: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 52: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 26: [1605.6042000000002, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 10: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 24: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 25: [2486.1868, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 23: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 49: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 5: [2498.342, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 31: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 43: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 39: [3407.2633000000005, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 34: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 44: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 17: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 37: [2460.0771999999997, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 47: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 9: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 12: [2222.098, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 20: [2420.2306, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 6: [12458.1564, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 14: [2599.3982, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 7: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 8: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 19: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 4: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 22: [2727.7342999999996, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 11: [2894.8321, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 35: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 13: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 15: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 16: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 40: [2460.5101999999997, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 21: [1667.3942, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 38: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 46: [2864.9471, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 45: [1261.217, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 36: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 48: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 18: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 30: [2575.8442, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 3: Float64[]
+
+==============================================================================================
+sys   config          backend  seed  objective secure   wall (s)   LPs     status
+----------------------------------------------------------------------------------------------
+57    REF             gurobi   0     7.382     true     11.2       25      done
+118   REF             gurobi   0     5.29      true     17.0       79      done
+57    NO-SCREEN       gurobi   0     7.382     true     13.8       2919    done
+118   NO-SCREEN       gurobi   0     5.29      true     144.1      14373   done
+57    NO-CF-POCKET    gurobi   0     7.382     true     4.8        623     done
+118   NO-CF-POCKET    gurobi   0     5.29      true     28.8       1245    done
+57    NO-CF-FREE      gurobi   0     7.382     true     6.3        741     done
+118   NO-CF-FREE      gurobi   0     5.29      true     31.0       1193    done
+57    NO-EMBED        gurobi   0     7.382     true     4.7        307     done
+118   NO-EMBED        gurobi   0     5.29      true     253.4      5683    done
+==============================================================================================
+
+[ PowerModels | Info]: removing 3 cost terms from generator 4: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 1: [1696.0624, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 5: [3044.1037, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 2: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 6: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 7: [3718.8979000000004, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 3: [3407.5557000000003, 0.0]
+
+==============================================================================================
+sys   config          backend  seed  objective secure   wall (s)   LPs     status
+----------------------------------------------------------------------------------------------
+57    REF             gurobi   0     7.382     true     11.2       25      done
+[ Info: [12/42] ▶ 118_NO-INHERIT_gurobi_s0  cap=900s  elapsed=8 minutes, 43 seconds, 800 milliseconds
+[ Info: opening case `pglib_opf_case118_ieee.m`
+[ Info: ── 118_NO-INHERIT_gurobi_s0  iter 1  |SBS|=56  |cuts|=0
+[ Info:   ▷ 118_NO-INHERIT_gurobi_s0_i001  H=3  warm=10  cuts=0  |SBS|=56
+[ Info:     ✓ obj=5.69  iter=56  t=7.2s  secure=true
+[ Info:   ↑ improvement: Inf → 5.69
+[ Info:   |SBS| 56 → 61
+[ Info: ── 118_NO-INHERIT_gurobi_s0  iter 2  |SBS|=61  |cuts|=0
+[ Info:   ▷ 118_NO-INHERIT_gurobi_s0_i002  H=3  warm=9  cuts=0  |SBS|=61
+[ Info:     ✓ obj=5.29  iter=31  t=5.9s  secure=true
+[ Info:   ↑ improvement: 5.69 → 5.29
+[ Info:   |SBS| 61 → 61
+[ Info: ── 118_NO-INHERIT_gurobi_s0  iter 3  |SBS|=61  |cuts|=0
+[ Info:   ▷ 118_NO-INHERIT_gurobi_s0_i003  H=3  warm=8  cuts=0  |SBS|=61
+[ Info:     ✓ obj=5.29  iter=27  t=6.8s  secure=true
+[ Info:   |SBS| 61 → 61
+[ Info: [13/42] ▶ 57_NO-LOCALSEARCH_gurobi_s0  cap=900s  elapsed=9 minutes, 4 seconds, 345 milliseconds
+[ Info: opening case `pglib_opf_case57_ieee.m`
+[ Info: ── 57_NO-LOCALSEARCH_gurobi_s0  iter 1  |SBS|=78  |cuts|=0
+[ Info:   ▷ 57_NO-LOCALSEARCH_gurobi_s0_i001  H=0  warm=7  cuts=0  |SBS|=78
+┌ Warning: Feasible should not happen
+└ @ OTSD ~/vsCode/TUD/IJEPES2026-OTSD/code/src/master.jl:286
+┌ Info: openbranches: Set([("9", "13"), ("14", "15"), ("26", "27"), ("9", "10"), ("7", "29"), ("9", "12"), ("38", "48"), ("1", "2"), ("1", "17"), ("30", "31"), ("41", "56"), ("22", "38"), ("38", "49"), ("11", "41"), ("41", "42"), ("4", "5"), ("36", "40"), ("13", "15"), ("1", "16")])
+└ contingency: ("35", "36")
+┌ Warning: Feasible should not happen
+└ @ OTSD ~/vsCode/TUD/IJEPES2026-OTSD/code/src/master.jl:286
+┌ Info: openbranches: Set([("9", "13"), ("14", "15"), ("26", "27"), ("9", "10"), ("7", "29"), ("9", "12"), ("38", "48"), ("1", "2"), ("1", "17"), ("30", "31"), ("41", "56"), ("22", "38"), ("38", "49"), ("11", "41"), ("41", "42"), ("4", "5"), ("36", "40"), ("13", "15"), ("1", "16")])
+└ contingency: ("46", "47")
+┌ Warning: Feasible should not happen
+└ @ OTSD ~/vsCode/TUD/IJEPES2026-OTSD/code/src/master.jl:286
+┌ Info: openbranches: Set([("9", "13"), ("14", "15"), ("26", "27"), ("9", "10"), ("7", "29"), ("9", "12"), ("38", "48"), ("1", "2"), ("1", "17"), ("30", "31"), ("41", "56"), ("22", "38"), ("38", "49"), ("11", "41"), ("41", "42"), ("4", "5"), ("36", "40"), ("13", "15"), ("1", "16")])
+└ contingency: ("13", "49")
+┌ Warning: Feasible should not happen
+└ @ OTSD ~/vsCode/TUD/IJEPES2026-OTSD/code/src/master.jl:286
+┌ Info: openbranches: Set([("9", "13"), ("14", "15"), ("26", "27"), ("9", "10"), ("7", "29"), ("9", "12"), ("38", "48"), ("1", "2"), ("1", "17"), ("30", "31"), ("41", "56"), ("22", "38"), ("38", "49"), ("11", "41"), ("41", "42"), ("4", "5"), ("36", "40"), ("13", "15"), ("1", "16")])
+└ contingency: ("56", "57")
+┌ Warning: Feasible should not happen
+└ @ OTSD ~/vsCode/TUD/IJEPES2026-OTSD/code/src/master.jl:286
+┌ Info: openbranches: Set([("9", "13"), ("14", "15"), ("26", "27"), ("9", "10"), ("7", "29"), ("9", "12"), ("38", "48"), ("1", "2"), ("1", "17"), ("30", "31"), ("41", "56"), ("22", "38"), ("38", "49"), ("11", "41"), ("41", "42"), ("4", "5"), ("36", "40"), ("13", "15"), ("1", "16")])
+└ contingency: ("2", "3")
+┌ Warning: Feasible should not happen
+└ @ OTSD ~/vsCode/TUD/IJEPES2026-OTSD/code/src/master.jl:286
+┌ Info: openbranches: Set([("9", "13"), ("14", "15"), ("26", "27"), ("9", "10"), ("7", "29"), ("9", "12"), ("38", "48"), ("1", "2"), ("1", "17"), ("30", "31"), ("41", "56"), ("22", "38"), ("38", "49"), ("11", "41"), ("41", "42"), ("4", "5"), ("36", "40"), ("13", "15"), ("1", "16")])
+└ contingency: ("39", "57")
+┌ Warning: Feasible should not happen
+└ @ OTSD ~/vsCode/TUD/IJEPES2026-OTSD/code/src/master.jl:286
+┌ Info: openbranches: Set([("9", "13"), ("14", "15"), ("26", "27"), ("9", "10"), ("7", "29"), ("9", "12"), ("38", "48"), ("1", "2"), ("1", "17"), ("30", "31"), ("41", "56"), ("22", "38"), ("38", "49"), ("11", "41"), ("41", "42"), ("4", "5"), ("36", "40"), ("13", "15"), ("1", "16")])
+└ contingency: ("7", "8")
+┌ Warning: Feasible should not happen
+└ @ OTSD ~/vsCode/TUD/IJEPES2026-OTSD/code/src/master.jl:286
+┌ Info: openbranches: Set([("9", "13"), ("14", "15"), ("26", "27"), ("9", "10"), ("7", "29"), ("9", "12"), ("38", "48"), ("1", "2"), ("1", "17"), ("30", "31"), ("41", "56"), ("22", "38"), ("38", "49"), ("11", "41"), ("41", "42"), ("4", "5"), ("36", "40"), ("13", "15"), ("1", "16")])
+└ contingency: ("9", "55")
+┌ Warning: Feasible should not happen
+└ @ OTSD ~/vsCode/TUD/IJEPES2026-OTSD/code/src/master.jl:286
+┌ Info: openbranches: Set([("9", "13"), ("14", "15"), ("26", "27"), ("9", "10"), ("7", "29"), ("9", "12"), ("38", "48"), ("1", "2"), ("1", "17"), ("30", "31"), ("41", "56"), ("22", "38"), ("38", "49"), ("11", "41"), ("41", "42"), ("4", "5"), ("36", "40"), ("13", "15"), ("1", "16")])
+└ contingency: ("42", "56")
+┌ Warning: Feasible should not happen
+└ @ OTSD ~/vsCode/TUD/IJEPES2026-OTSD/code/src/master.jl:286
+┌ Info: openbranches: Set([("9", "13"), ("14", "15"), ("26", "27"), ("9", "10"), ("7", "29"), ("9", "12"), ("38", "48"), ("1", "2"), ("1", "17"), ("30", "31"), ("41", "56"), ("22", "38"), ("38", "49"), ("11", "41"), ("41", "42"), ("4", "5"), ("36", "40"), ("13", "15"), ("1", "16")])
+└ contingency: ("13", "14")
+┌ Warning: Feasible should not happen
+└ @ OTSD ~/vsCode/TUD/IJEPES2026-OTSD/code/src/master.jl:286
+┌ Info: openbranches: Set([("9", "13"), ("14", "15"), ("26", "27"), ("9", "10"), ("7", "29"), ("9", "12"), ("38", "48"), ("1", "2"), ("1", "17"), ("30", "31"), ("41", "56"), ("22", "38"), ("38", "49"), ("11", "41"), ("41", "42"), ("4", "5"), ("36", "40"), ("13", "15"), ("1", "16")])
+└ contingency: ("22", "23")
+┌ Warning: Feasible should not happen
+└ @ OTSD ~/vsCode/TUD/IJEPES2026-OTSD/code/src/master.jl:286
+┌ Info: openbranches: Set([("9", "13"), ("14", "15"), ("26", "27"), ("9", "10"), ("7", "29"), ("9", "12"), ("38", "48"), ("1", "2"), ("1", "17"), ("30", "31"), ("41", "56"), ("22", "38"), ("38", "49"), ("11", "41"), ("41", "42"), ("4", "5"), ("36", "40"), ("13", "15"), ("1", "16")])
+└ contingency: ("52", "53")
+┌ Warning: Feasible should not happen
+└ @ OTSD ~/vsCode/TUD/IJEPES2026-OTSD/code/src/master.jl:286
+┌ Info: openbranches: Set([("9", "13"), ("14", "15"), ("26", "27"), ("9", "10"), ("7", "29"), ("9", "12"), ("38", "48"), ("1", "2"), ("1", "17"), ("30", "31"), ("41", "56"), ("22", "38"), ("38", "49"), ("11", "41"), ("41", "42"), ("4", "5"), ("36", "40"), ("13", "15"), ("1", "16")])
+└ contingency: ("21", "22")
+┌ Warning: Feasible should not happen
+└ @ OTSD ~/vsCode/TUD/IJEPES2026-OTSD/code/src/master.jl:286
+┌ Info: openbranches: Set([("9", "13"), ("14", "15"), ("26", "27"), ("9", "10"), ("7", "29"), ("9", "12"), ("38", "48"), ("1", "2"), ("1", "17"), ("30", "31"), ("41", "56"), ("22", "38"), ("38", "49"), ("11", "41"), ("41", "42"), ("4", "5"), ("36", "40"), ("13", "15"), ("1", "16")])
+└ contingency: ("5", "6")
+┌ Warning: Feasible should not happen
+└ @ OTSD ~/vsCode/TUD/IJEPES2026-OTSD/code/src/master.jl:286
+┌ Info: openbranches: Set([("9", "13"), ("14", "15"), ("26", "27"), ("9", "10"), ("7", "29"), ("9", "12"), ("38", "48"), ("1", "2"), ("1", "17"), ("30", "31"), ("41", "56"), ("22", "38"), ("38", "49"), ("11", "41"), ("41", "42"), ("4", "5"), ("36", "40"), ("13", "15"), ("1", "16")])
+└ contingency: ("34", "35")
+┌ Warning: Feasible should not happen
+└ @ OTSD ~/vsCode/TUD/IJEPES2026-OTSD/code/src/master.jl:286
+┌ Info: openbranches: Set([("9", "13"), ("14", "15"), ("26", "27"), ("9", "10"), ("7", "29"), ("9", "12"), ("38", "48"), ("1", "2"), ("1", "17"), ("30", "31"), ("41", "56"), ("22", "38"), ("38", "49"), ("11", "41"), ("41", "42"), ("4", "5"), ("36", "40"), ("13", "15"), ("1", "16")])
+└ contingency: ("27", "28")
+┌ Warning: Feasible should not happen
+└ @ OTSD ~/vsCode/TUD/IJEPES2026-OTSD/code/src/master.jl:286
+┌ Info: openbranches: Set([("9", "13"), ("14", "15"), ("26", "27"), ("9", "10"), ("7", "29"), ("9", "12"), ("38", "48"), ("1", "2"), ("1", "17"), ("30", "31"), ("41", "56"), ("22", "38"), ("38", "49"), ("11", "41"), ("41", "42"), ("4", "5"), ("36", "40"), ("13", "15"), ("1", "16")])
+└ contingency: ("6", "8")
+┌ Warning: Feasible should not happen
+└ @ OTSD ~/vsCode/TUD/IJEPES2026-OTSD/code/src/master.jl:286
+┌ Info: openbranches: Set([("9", "13"), ("14", "15"), ("26", "27"), ("9", "10"), ("7", "29"), ("9", "12"), ("38", "48"), ("1", "2"), ("1", "17"), ("30", "31"), ("41", "56"), ("22", "38"), ("38", "49"), ("11", "41"), ("41", "42"), ("4", "5"), ("36", "40"), ("13", "15"), ("1", "16")])
+└ contingency: ("29", "52")
+┌ Warning: Feasible should not happen
+└ @ OTSD ~/vsCode/TUD/IJEPES2026-OTSD/code/src/master.jl:286
+┌ Info: openbranches: Set([("9", "13"), ("14", "15"), ("26", "27"), ("9", "10"), ("7", "29"), ("9", "12"), ("38", "48"), ("1", "2"), ("1", "17"), ("30", "31"), ("41", "56"), ("22", "38"), ("38", "49"), ("11", "41"), ("41", "42"), ("4", "5"), ("36", "40"), ("13", "15"), ("1", "16")])
+└ contingency: ("31", "32")
+┌ Warning: Feasible should not happen
+└ @ OTSD ~/vsCode/TUD/IJEPES2026-OTSD/code/src/master.jl:286
+┌ Info: openbranches: Set([("9", "13"), ("14", "15"), ("26", "27"), ("9", "10"), ("7", "29"), ("9", "12"), ("38", "48"), ("1", "2"), ("1", "17"), ("30", "31"), ("41", "56"), ("22", "38"), ("38", "49"), ("11", "41"), ("41", "42"), ("4", "5"), ("36", "40"), ("13", "15"), ("1", "16")])
+└ contingency: ("40", "56")
+┌ Warning: Feasible should not happen
+└ @ OTSD ~/vsCode/TUD/IJEPES2026-OTSD/code/src/master.jl:286
+┌ Info: openbranches: Set([("9", "13"), ("14", "15"), ("26", "27"), ("9", "10"), ("7", "29"), ("9", "12"), ("38", "48"), ("1", "2"), ("1", "17"), ("30", "31"), ("41", "56"), ("22", "38"), ("38", "49"), ("11", "41"), ("41", "42"), ("4", "5"), ("36", "40"), ("13", "15"), ("1", "16")])
+└ contingency: ("25", "30")
+┌ Warning: Feasible should not happen
+└ @ OTSD ~/vsCode/TUD/IJEPES2026-OTSD/code/src/master.jl:286
+┌ Info: openbranches: Set([("9", "13"), ("14", "15"), ("26", "27"), ("9", "10"), ("7", "29"), ("9", "12"), ("38", "48"), ("1", "2"), ("1", "17"), ("30", "31"), ("41", "56"), ("22", "38"), ("38", "49"), ("11", "41"), ("41", "42"), ("4", "5"), ("36", "40"), ("13", "15"), ("1", "16")])
+└ contingency: ("23", "24")
+┌ Warning: Feasible should not happen
+└ @ OTSD ~/vsCode/TUD/IJEPES2026-OTSD/code/src/master.jl:286
+┌ Info: openbranches: Set([("9", "13"), ("14", "15"), ("26", "27"), ("9", "10"), ("7", "29"), ("9", "12"), ("38", "48"), ("1", "2"), ("1", "17"), ("30", "31"), ("41", "56"), ("22", "38"), ("38", "49"), ("11", "41"), ("41", "42"), ("4", "5"), ("36", "40"), ("13", "15"), ("1", "16")])
+└ contingency: ("48", "49")
+┌ Warning: Feasible should not happen
+└ @ OTSD ~/vsCode/TUD/IJEPES2026-OTSD/code/src/master.jl:286
+┌ Info: openbranches: Set([("9", "13"), ("14", "15"), ("26", "27"), ("9", "10"), ("7", "29"), ("9", "12"), ("38", "48"), ("1", "2"), ("1", "17"), ("30", "31"), ("41", "56"), ("22", "38"), ("38", "49"), ("11", "41"), ("41", "42"), ("4", "5"), ("36", "40"), ("13", "15"), ("1", "16")])
+└ contingency: ("24", "26")
+┌ Warning: Feasible should not happen
+└ @ OTSD ~/vsCode/TUD/IJEPES2026-OTSD/code/src/master.jl:286
+┌ Info: openbranches: Set([("9", "13"), ("14", "15"), ("26", "27"), ("9", "10"), ("7", "29"), ("9", "12"), ("38", "48"), ("1", "2"), ("1", "17"), ("30", "31"), ("41", "56"), ("22", "38"), ("38", "49"), ("11", "41"), ("41", "42"), ("4", "5"), ("36", "40"), ("13", "15"), ("1", "16")])
+└ contingency: ("53", "54")
+┌ Warning: Feasible should not happen
+└ @ OTSD ~/vsCode/TUD/IJEPES2026-OTSD/code/src/master.jl:286
+┌ Info: openbranches: Set([("9", "13"), ("14", "15"), ("26", "27"), ("9", "10"), ("7", "29"), ("9", "12"), ("38", "48"), ("1", "2"), ("1", "17"), ("30", "31"), ("41", "56"), ("22", "38"), ("38", "49"), ("11", "41"), ("41", "42"), ("4", "5"), ("36", "40"), ("13", "15"), ("1", "16")])
+└ contingency: ("4", "18")
+┌ Warning: Feasible should not happen
+└ @ OTSD ~/vsCode/TUD/IJEPES2026-OTSD/code/src/master.jl:286
+┌ Info: openbranches: Set([("9", "13"), ("14", "15"), ("26", "27"), ("9", "10"), ("7", "29"), ("9", "12"), ("38", "48"), ("1", "2"), ("1", "17"), ("30", "31"), ("41", "56"), ("22", "38"), ("38", "49"), ("11", "41"), ("41", "42"), ("4", "5"), ("36", "40"), ("13", "15"), ("1", "16")])
+└ contingency: ("28", "29")
+┌ Warning: Feasible should not happen
+└ @ OTSD ~/vsCode/TUD/IJEPES2026-OTSD/code/src/master.jl:286
+┌ Info: openbranches: Set([("9", "13"), ("14", "15"), ("26", "27"), ("9", "10"), ("7", "29"), ("9", "12"), ("38", "48"), ("1", "2"), ("1", "17"), ("30", "31"), ("41", "56"), ("22", "38"), ("38", "49"), ("11", "41"), ("41", "42"), ("4", "5"), ("36", "40"), ("13", "15"), ("1", "16")])
+└ contingency: ("6", "7")
+┌ Warning: Feasible should not happen
+└ @ OTSD ~/vsCode/TUD/IJEPES2026-OTSD/code/src/master.jl:286
+┌ Info: openbranches: Set([("9", "13"), ("14", "15"), ("26", "27"), ("9", "10"), ("7", "29"), ("9", "12"), ("38", "48"), ("1", "2"), ("1", "17"), ("30", "31"), ("41", "56"), ("22", "38"), ("38", "49"), ("11", "41"), ("41", "42"), ("4", "5"), ("36", "40"), ("13", "15"), ("1", "16")])
+└ contingency: ("32", "34")
+┌ Warning: Feasible should not happen
+└ @ OTSD ~/vsCode/TUD/IJEPES2026-OTSD/code/src/master.jl:286
+┌ Info: openbranches: Set([("9", "13"), ("14", "15"), ("26", "27"), ("9", "10"), ("7", "29"), ("9", "12"), ("38", "48"), ("1", "2"), ("1", "17"), ("30", "31"), ("41", "56"), ("22", "38"), ("38", "49"), ("11", "41"), ("41", "42"), ("4", "5"), ("36", "40"), ("13", "15"), ("1", "16")])
+└ contingency: ("19", "20")
+┌ Warning: Feasible should not happen
+└ @ OTSD ~/vsCode/TUD/IJEPES2026-OTSD/code/src/master.jl:286
+┌ Info: openbranches: Set([("9", "13"), ("14", "15"), ("26", "27"), ("9", "10"), ("7", "29"), ("9", "12"), ("38", "48"), ("1", "2"), ("1", "17"), ("30", "31"), ("41", "56"), ("22", "38"), ("38", "49"), ("11", "41"), ("41", "42"), ("4", "5"), ("36", "40"), ("13", "15"), ("1", "16")])
+└ contingency: ("36", "37")
+┌ Warning: Feasible should not happen
+└ @ OTSD ~/vsCode/TUD/IJEPES2026-OTSD/code/src/master.jl:286
+┌ Info: openbranches: Set([("9", "13"), ("14", "15"), ("26", "27"), ("9", "10"), ("7", "29"), ("9", "12"), ("38", "48"), ("1", "2"), ("1", "17"), ("30", "31"), ("41", "56"), ("22", "38"), ("38", "49"), ("11", "41"), ("41", "42"), ("4", "5"), ("36", "40"), ("13", "15"), ("1", "16")])
+└ contingency: ("37", "38")
+┌ Warning: Feasible should not happen
+└ @ OTSD ~/vsCode/TUD/IJEPES2026-OTSD/code/src/master.jl:286
+┌ Info: openbranches: Set([("9", "13"), ("14", "15"), ("26", "27"), ("9", "10"), ("7", "29"), ("9", "12"), ("38", "48"), ("1", "2"), ("1", "17"), ("30", "31"), ("41", "56"), ("22", "38"), ("38", "49"), ("11", "41"), ("41", "42"), ("4", "5"), ("36", "40"), ("13", "15"), ("1", "16")])
+└ contingency: ("20", "21")
+┌ Warning: Feasible should not happen
+└ @ OTSD ~/vsCode/TUD/IJEPES2026-OTSD/code/src/master.jl:286
+┌ Info: openbranches: Set([("9", "13"), ("14", "15"), ("26", "27"), ("9", "10"), ("7", "29"), ("9", "12"), ("38", "48"), ("1", "2"), ("1", "17"), ("30", "31"), ("41", "56"), ("22", "38"), ("38", "49"), ("11", "41"), ("41", "42"), ("4", "5"), ("36", "40"), ("13", "15"), ("1", "16")])
+└ contingency: ("54", "55")
+┌ Warning: Feasible should not happen
+└ @ OTSD ~/vsCode/TUD/IJEPES2026-OTSD/code/src/master.jl:286
+┌ Info: openbranches: Set([("9", "13"), ("14", "15"), ("26", "27"), ("9", "10"), ("7", "29"), ("9", "12"), ("38", "48"), ("1", "2"), ("1", "17"), ("30", "31"), ("41", "56"), ("22", "38"), ("38", "49"), ("11", "41"), ("41", "42"), ("4", "5"), ("36", "40"), ("13", "15"), ("1", "16")])
+└ contingency: ("32", "33")
+┌ Warning: Feasible should not happen
+└ @ OTSD ~/vsCode/TUD/IJEPES2026-OTSD/code/src/master.jl:286
+┌ Info: openbranches: Set([("9", "13"), ("14", "15"), ("26", "27"), ("9", "10"), ("7", "29"), ("9", "12"), ("38", "48"), ("1", "2"), ("1", "17"), ("30", "31"), ("41", "56"), ("22", "38"), ("38", "49"), ("11", "41"), ("41", "42"), ("4", "5"), ("36", "40"), ("13", "15"), ("1", "16")])
+└ contingency: ("18", "19")
+┌ Warning: Feasible should not happen
+└ @ OTSD ~/vsCode/TUD/IJEPES2026-OTSD/code/src/master.jl:286
+┌ Info: openbranches: Set([("9", "13"), ("14", "15"), ("26", "27"), ("9", "10"), ("7", "29"), ("9", "12"), ("38", "48"), ("1", "2"), ("1", "17"), ("30", "31"), ("41", "56"), ("22", "38"), ("38", "49"), ("11", "41"), ("41", "42"), ("4", "5"), ("36", "40"), ("13", "15"), ("1", "16")])
+└ contingency: ("14", "46")
+┌ Warning: Feasible should not happen
+└ @ OTSD ~/vsCode/TUD/IJEPES2026-OTSD/code/src/master.jl:286
+┌ Info: openbranches: Set([("9", "13"), ("14", "15"), ("26", "27"), ("9", "10"), ("7", "29"), ("9", "12"), ("38", "48"), ("1", "2"), ("1", "17"), ("30", "31"), ("41", "56"), ("22", "38"), ("38", "49"), ("11", "41"), ("41", "42"), ("4", "5"), ("36", "40"), ("13", "15"), ("1", "16")])
+└ contingency: ("37", "39")
+┌ Warning: Feasible should not happen
+└ @ OTSD ~/vsCode/TUD/IJEPES2026-OTSD/code/src/master.jl:286
+┌ Info: openbranches: Set([("9", "13"), ("14", "15"), ("26", "27"), ("9", "10"), ("7", "29"), ("9", "12"), ("38", "48"), ("1", "2"), ("1", "17"), ("30", "31"), ("41", "56"), ("22", "38"), ("38", "49"), ("11", "41"), ("41", "42"), ("4", "5"), ("36", "40"), ("13", "15"), ("1", "16")])
+└ contingency: ("1", "15")
+┌ Warning: Feasible should not happen
+└ @ OTSD ~/vsCode/TUD/IJEPES2026-OTSD/code/src/master.jl:286
+┌ Info: openbranches: Set([("9", "13"), ("14", "15"), ("26", "27"), ("9", "10"), ("7", "29"), ("9", "12"), ("38", "48"), ("1", "2"), ("1", "17"), ("30", "31"), ("41", "56"), ("22", "38"), ("38", "49"), ("11", "41"), ("41", "42"), ("4", "5"), ("36", "40"), ("13", "15"), ("1", "16")])
+└ contingency: ("24", "25")
+[ Info:     ✓ obj=7.331  iter=186  t=900.0s  secure=true ⏱
+[ Info:   ↑ improvement: Inf → 7.331
+[ Info:   |SBS| 78 → 78
+[ Info: [14/42] ▶ 118_NO-LOCALSEARCH_gurobi_s0  cap=900s  elapsed=24 minutes, 4 seconds, 469 milliseconds
+[ Info: opening case `pglib_opf_case118_ieee.m`
+[ Info: ── 118_NO-LOCALSEARCH_gurobi_s0  iter 1  |SBS|=179  |cuts|=0
+[ Info:   ▷ 118_NO-LOCALSEARCH_gurobi_s0_i001  H=0  warm=10  cuts=0  |SBS|=179
+[ Info:     ✓ obj=7.695  iter=85  t=900.1s  secure=true ⏱
+[ Info:   ↑ improvement: Inf → 7.695
+[ Info:   |SBS| 179 → 179
+[ Info: [15/42] ▶ 57_REF_gurobi_s1  cap=900s  elapsed=39 minutes, 4 seconds, 766 milliseconds
+[ Info: opening case `pglib_opf_case57_ieee.m`
+[ Info: ── 57_REF_gurobi_s1  iter 1  |SBS|=66  |cuts|=0
+[ Info:   ▷ 57_REF_gurobi_s1_i001  H=3  warm=7  cuts=0  |SBS|=66
+[ Info:     ✓ obj=8.472  iter=17  t=1.1s  secure=true
+[ Info:   ↑ improvement: Inf → 8.472
+[ Info:   |SBS| 66 → 67
+[ Info: ── 57_REF_gurobi_s1  iter 2  |SBS|=67  |cuts|=353
+[ Info:   ▷ 57_REF_gurobi_s1_i002  H=3  warm=6  cuts=353  |SBS|=67
+[ Info:     ✓ obj=7.449  iter=14  t=0.9s  secure=true
+[ Info:   ↑ improvement: 8.472 → 7.449
+[ Info:   |SBS| 67 → 67
+[ Info: ── 57_REF_gurobi_s1  iter 3  |SBS|=67  |cuts|=554
+[ Info:   ▷ 57_REF_gurobi_s1_i003  H=3  warm=5  cuts=554  |SBS|=67
+[ Info:     ✓ obj=7.382  iter=7  t=0.8s  secure=true
+[ Info:   ↑ improvement: 7.449 → 7.382
+[ Info:   |SBS| 67 → 67
+[ Info: [16/42] ▶ 118_REF_gurobi_s1  cap=900s  elapsed=39 minutes, 7 seconds, 713 milliseconds
+[ Info: opening case `pglib_opf_case118_ieee.m`
+[ Info: ── 118_REF_gurobi_s1  iter 1  |SBS|=56  |cuts|=0
+[ Info:   ▷ 118_REF_gurobi_s1_i001  H=3  warm=10  cuts=0  |SBS|=56
+[ Info:     ✓ obj=5.69  iter=64  t=11.4s  secure=true
+[ Info:   ↑ improvement: Inf → 5.69
+[ Info:   |SBS| 56 → 61
+[ Info: ── 118_REF_gurobi_s1  iter 2  |SBS|=61  |cuts|=790
+[ Info:   ▷ 118_REF_gurobi_s1_i002  H=3  warm=9  cuts=790  |SBS|=61
+[ Info:     ✓ obj=5.29  iter=16  t=7.4s  secure=true
+[ Info:   ↑ improvement: 5.69 → 5.29
+[ Info:   |SBS| 61 → 61
+[ Info: ── 118_REF_gurobi_s1  iter 3  |SBS|=61  |cuts|=973
+[ Info:   ▷ 118_REF_gurobi_s1_i003  H=3  warm=8  cuts=973  |SBS|=61
+[ Info:     ✓ obj=5.29  iter=13  t=7.7s  secure=true
+[ Info:   |SBS| 61 → 61
+[ Info: [17/42] ▶ 57_NO-SCREEN_gurobi_s1  cap=900s  elapsed=39 minutes, 35 seconds, 261 milliseconds
+[ Info: opening case `pglib_opf_case57_ieee.m`
+[ Info: ── 57_NO-SCREEN_gurobi_s1  iter 1  |SBS|=66  |cuts|=0
+[ Info:   ▷ 57_NO-SCREEN_gurobi_s1_i001  H=3  warm=7  cuts=0  |SBS|=66
+[ Info:     ✓ obj=8.472  iter=17  t=6.8s  secure=true
+[ Info:   ↑ improvement: Inf → 8.472
+[ Info:   |SBS| 66 → 67
+[ Info: ── 57_NO-SCREEN_gurobi_s1  iter 2  |SBS|=67  |cuts|=353
+[ Info:   ▷ 57_NO-SCREEN_gurobi_s1_i002  H=3  warm=6  cuts=353  |SBS|=67
+[ Info:     ✓ obj=7.449  iter=14  t=5.6s  secure=true
+[ Info:   ↑ improvement: 8.472 → 7.449
+[ Info:   |SBS| 67 → 67
+[ Info: ── 57_NO-SCREEN_gurobi_s1  iter 3  |SBS|=67  |cuts|=554
+[ Info:   ▷ 57_NO-SCREEN_gurobi_s1_i003  H=3  warm=5  cuts=554  |SBS|=67
+[ Info:     ✓ obj=7.382  iter=7  t=3.1s  secure=true
+[ Info:   ↑ improvement: 7.449 → 7.382
+[ Info:   |SBS| 67 → 67
+[ Info: [18/42] ▶ 118_NO-SCREEN_gurobi_s1  cap=900s  elapsed=39 minutes, 50 seconds, 839 milliseconds
+[ Info: opening case `pglib_opf_case118_ieee.m`
+[ Info: ── 118_NO-SCREEN_gurobi_s1  iter 1  |SBS|=56  |cuts|=0
+[ Info:   ▷ 118_NO-SCREEN_gurobi_s1_i001  H=3  warm=10  cuts=0  |SBS|=56
+[ Info:     ✓ obj=5.69  iter=64  t=123.4s  secure=true
+[ Info:   ↑ improvement: Inf → 5.69
+[ Info:   |SBS| 56 → 61
+[ Info: ── 118_NO-SCREEN_gurobi_s1  iter 2  |SBS|=61  |cuts|=790
+[ Info:   ▷ 118_NO-SCREEN_gurobi_s1_i002  H=3  warm=9  cuts=790  |SBS|=61
+[ Info:     ✓ obj=5.29  iter=18  t=37.5s  secure=true
+[ Info:   ↑ improvement: 5.69 → 5.29
+[ Info:   |SBS| 61 → 61
+[ Info: ── 118_NO-SCREEN_gurobi_s1  iter 3  |SBS|=61  |cuts|=997
+[ Info:   ▷ 118_NO-SCREEN_gurobi_s1_i003  H=3  warm=8  cuts=997  |SBS|=61
+[ Info:     ✓ obj=5.29  iter=14  t=32.1s  secure=true
+[ Info:   |SBS| 61 → 61
+[ Info: [19/42] ▶ 57_NO-CF-POCKET_gurobi_s1  cap=900s  elapsed=43 minutes, 4 seconds, 490 milliseconds
+[ Info: opening case `pglib_opf_case57_ieee.m`
+[ Info: ── 57_NO-CF-POCKET_gurobi_s1  iter 1  |SBS|=66  |cuts|=0
+[ Info:   ▷ 57_NO-CF-POCKET_gurobi_s1_i001  H=3  warm=7  cuts=0  |SBS|=66
+[ Info:     ✓ obj=8.472  iter=26  t=3.7s  secure=true
+[ Info:   ↑ improvement: Inf → 8.472
+[ Info:   |SBS| 66 → 67
+[ Info: ── 57_NO-CF-POCKET_gurobi_s1  iter 2  |SBS|=67  |cuts|=571
+[ Info:   ▷ 57_NO-CF-POCKET_gurobi_s1_i002  H=3  warm=6  cuts=571  |SBS|=67
+[ Info:     ✓ obj=7.449  iter=12  t=1.8s  secure=true
+[ Info:   ↑ improvement: 8.472 → 7.449
+[ Info:   |SBS| 67 → 67
+[ Info: ── 57_NO-CF-POCKET_gurobi_s1  iter 3  |SBS|=67  |cuts|=731
+[ Info:   ▷ 57_NO-CF-POCKET_gurobi_s1_i003  H=3  warm=5  cuts=731  |SBS|=67
+[ Info:     ✓ obj=7.382  iter=9  t=1.4s  secure=true
+[ Info:   ↑ improvement: 7.449 → 7.382
+[ Info:   |SBS| 67 → 67
+[ Info: [20/42] ▶ 118_NO-CF-POCKET_gurobi_s1  cap=900s  elapsed=43 minutes, 11 seconds, 529 milliseconds
+[ Info: opening case `pglib_opf_case118_ieee.m`
+118   REF             gurobi   0     5.29      true     17.0       79      done
+57    NO-SCREEN       gurobi   0     7.382     true     13.8       2919    done
+118   NO-SCREEN       gurobi   0     5.29      true     144.1      14373   done
+57    NO-CF-POCKET    gurobi   0     7.382     true     4.8        623     done
+118   NO-CF-POCKET    gurobi   0     5.29      true     28.8       1245    done
+57    NO-CF-FREE      gurobi   0     7.382     true     6.3        741     done
+118   NO-CF-FREE      gurobi   0     5.29      true     31.0       1193    done
+57    NO-EMBED        gurobi   0     7.382     true     4.7        307     done
+118   NO-EMBED        gurobi   0     5.29      true     253.4      5683    done
+57    NO-INHERIT      gurobi   0     7.382     true     3.0        39      done
+==============================================================================================
+
+[ PowerModels | Info]: removing 3 cost terms from generator 32: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 29: [3266.8781000000004, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 1: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 54: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 2: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 41: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 51: [3504.3401000000003, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 53: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 27: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 42: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 33: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 28: [3478.1778000000004, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 50: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 52: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 26: [1605.6042000000002, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 10: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 24: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 25: [2486.1868, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 23: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 49: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 5: [2498.342, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 31: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 43: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 39: [3407.2633000000005, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 34: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 44: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 17: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 37: [2460.0771999999997, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 47: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 9: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 12: [2222.098, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 20: [2420.2306, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 6: [12458.1564, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 14: [2599.3982, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 7: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 8: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 19: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 4: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 22: [2727.7342999999996, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 11: [2894.8321, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 35: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 13: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 15: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 16: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 40: [2460.5101999999997, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 21: [1667.3942, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 38: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 46: [2864.9471, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 45: [1261.217, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 36: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 48: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 18: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 30: [2575.8442, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 3: Float64[]
+
+==============================================================================================
+sys   config          backend  seed  objective secure   wall (s)   LPs     status
+----------------------------------------------------------------------------------------------
+57    REF             gurobi   0     7.382     true     11.2       25      done
+118   REF             gurobi   0     5.29      true     17.0       79      done
+57    NO-SCREEN       gurobi   0     7.382     true     13.8       2919    done
+118   NO-SCREEN       gurobi   0     5.29      true     144.1      14373   done
+57    NO-CF-POCKET    gurobi   0     7.382     true     4.8        623     done
+118   NO-CF-POCKET    gurobi   0     5.29      true     28.8       1245    done
+57    NO-CF-FREE      gurobi   0     7.382     true     6.3        741     done
+118   NO-CF-FREE      gurobi   0     5.29      true     31.0       1193    done
+57    NO-EMBED        gurobi   0     7.382     true     4.7        307     done
+118   NO-EMBED        gurobi   0     5.29      true     253.4      5683    done
+57    NO-INHERIT      gurobi   0     7.382     true     3.0        39      done
+118   NO-INHERIT      gurobi   0     5.29      true     20.4       108     done
+==============================================================================================
+
+[ PowerModels | Info]: removing 3 cost terms from generator 4: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 1: [1696.0624, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 5: [3044.1037, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 2: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 6: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 7: [3718.8979000000004, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 3: [3407.5557000000003, 0.0]
+
+==============================================================================================
+sys   config          backend  seed  objective secure   wall (s)   LPs     status
+----------------------------------------------------------------------------------------------
+57    REF             gurobi   0     7.382     true     11.2       25      done
+118   REF             gurobi   0     5.29      true     17.0       79      done
+57    NO-SCREEN       gurobi   0     7.382     true     13.8       2919    done
+118   NO-SCREEN       gurobi   0     5.29      true     144.1      14373   done
+57    NO-CF-POCKET    gurobi   0     7.382     true     4.8        623     done
+118   NO-CF-POCKET    gurobi   0     5.29      true     28.8       1245    done
+57    NO-CF-FREE      gurobi   0     7.382     true     6.3        741     done
+118   NO-CF-FREE      gurobi   0     5.29      true     31.0       1193    done
+57    NO-EMBED        gurobi   0     7.382     true     4.7        307     done
+118   NO-EMBED        gurobi   0     5.29      true     253.4      5683    done
+57    NO-INHERIT      gurobi   0     7.382     true     3.0        39      done
+118   NO-INHERIT      gurobi   0     5.29      true     20.4       108     done
+57    NO-LOCALSEARCH  gurobi   0     7.331     true     900.0      1137    done
+==============================================================================================
+
+[ PowerModels | Info]: removing 3 cost terms from generator 32: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 29: [3266.8781000000004, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 1: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 54: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 2: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 41: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 51: [3504.3401000000003, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 53: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 27: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 42: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 33: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 28: [3478.1778000000004, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 50: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 52: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 26: [1605.6042000000002, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 10: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 24: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 25: [2486.1868, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 23: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 49: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 5: [2498.342, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 31: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 43: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 39: [3407.2633000000005, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 34: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 44: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 17: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 37: [2460.0771999999997, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 47: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 9: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 12: [2222.098, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 20: [2420.2306, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 6: [12458.1564, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 14: [2599.3982, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 7: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 8: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 19: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 4: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 22: [2727.7342999999996, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 11: [2894.8321, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 35: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 13: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 15: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 16: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 40: [2460.5101999999997, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 21: [1667.3942, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 38: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 46: [2864.9471, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 45: [1261.217, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 36: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 48: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 18: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 30: [2575.8442, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 3: Float64[]
+
+==============================================================================================
+sys   config          backend  seed  objective secure   wall (s)   LPs     status
+----------------------------------------------------------------------------------------------
+57    REF             gurobi   0     7.382     true     11.2       25      done
+118   REF             gurobi   0     5.29      true     17.0       79      done
+57    NO-SCREEN       gurobi   0     7.382     true     13.8       2919    done
+118   NO-SCREEN       gurobi   0     5.29      true     144.1      14373   done
+57    NO-CF-POCKET    gurobi   0     7.382     true     4.8        623     done
+118   NO-CF-POCKET    gurobi   0     5.29      true     28.8       1245    done
+57    NO-CF-FREE      gurobi   0     7.382     true     6.3        741     done
+118   NO-CF-FREE      gurobi   0     5.29      true     31.0       1193    done
+57    NO-EMBED        gurobi   0     7.382     true     4.7        307     done
+118   NO-EMBED        gurobi   0     5.29      true     253.4      5683    done
+57    NO-INHERIT      gurobi   0     7.382     true     3.0        39      done
+118   NO-INHERIT      gurobi   0     5.29      true     20.4       108     done
+57    NO-LOCALSEARCH  gurobi   0     7.331     true     900.0      1137    done
+118   NO-LOCALSEARCH  gurobi   0     7.695     true     900.3      299     done
+==============================================================================================
+
+[ PowerModels | Info]: removing 3 cost terms from generator 4: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 1: [1696.0624, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 5: [3044.1037, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 2: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 6: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 7: [3718.8979000000004, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 3: [3407.5557000000003, 0.0]
+
+==============================================================================================
+sys   config          backend  seed  objective secure   wall (s)   LPs     status
+----------------------------------------------------------------------------------------------
+57    REF             gurobi   0     7.382     true     11.2       25      done
+118   REF             gurobi   0     5.29      true     17.0       79      done
+57    NO-SCREEN       gurobi   0     7.382     true     13.8       2919    done
+118   NO-SCREEN       gurobi   0     5.29      true     144.1      14373   done
+57    NO-CF-POCKET    gurobi   0     7.382     true     4.8        623     done
+118   NO-CF-POCKET    gurobi   0     5.29      true     28.8       1245    done
+57    NO-CF-FREE      gurobi   0     7.382     true     6.3        741     done
+118   NO-CF-FREE      gurobi   0     5.29      true     31.0       1193    done
+57    NO-EMBED        gurobi   0     7.382     true     4.7        307     done
+118   NO-EMBED        gurobi   0     5.29      true     253.4      5683    done
+57    NO-INHERIT      gurobi   0     7.382     true     3.0        39      done
+118   NO-INHERIT      gurobi   0     5.29      true     20.4       108     done
+57    NO-LOCALSEARCH  gurobi   0     7.331     true     900.0      1137    done
+118   NO-LOCALSEARCH  gurobi   0     7.695     true     900.3      299     done
+57    REF             gurobi   1     7.382     true     2.9        4       done
+==============================================================================================
+
+[ PowerModels | Info]: removing 3 cost terms from generator 32: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 29: [3266.8781000000004, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 1: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 54: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 2: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 41: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 51: [3504.3401000000003, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 53: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 27: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 42: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 33: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 28: [3478.1778000000004, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 50: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 52: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 26: [1605.6042000000002, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 10: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 24: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 25: [2486.1868, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 23: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 49: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 5: [2498.342, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 31: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 43: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 39: [3407.2633000000005, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 34: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 44: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 17: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 37: [2460.0771999999997, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 47: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 9: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 12: [2222.098, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 20: [2420.2306, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 6: [12458.1564, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 14: [2599.3982, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 7: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 8: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 19: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 4: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 22: [2727.7342999999996, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 11: [2894.8321, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 35: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 13: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 15: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 16: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 40: [2460.5101999999997, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 21: [1667.3942, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 38: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 46: [2864.9471, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 45: [1261.217, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 36: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 48: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 18: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 30: [2575.8442, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 3: Float64[]
+
+==============================================================================================
+sys   config          backend  seed  objective secure   wall (s)   LPs     status
+----------------------------------------------------------------------------------------------
+57    REF             gurobi   0     7.382     true     11.2       25      done
+118   REF             gurobi   0     5.29      true     17.0       79      done
+57    NO-SCREEN       gurobi   0     7.382     true     13.8       2919    done
+118   NO-SCREEN       gurobi   0     5.29      true     144.1      14373   done
+57    NO-CF-POCKET    gurobi   0     7.382     true     4.8        623     done
+118   NO-CF-POCKET    gurobi   0     5.29      true     28.8       1245    done
+57    NO-CF-FREE      gurobi   0     7.382     true     6.3        741     done
+118   NO-CF-FREE      gurobi   0     5.29      true     31.0       1193    done
+57    NO-EMBED        gurobi   0     7.382     true     4.7        307     done
+118   NO-EMBED        gurobi   0     5.29      true     253.4      5683    done
+57    NO-INHERIT      gurobi   0     7.382     true     3.0        39      done
+118   NO-INHERIT      gurobi   0     5.29      true     20.4       108     done
+57    NO-LOCALSEARCH  gurobi   0     7.331     true     900.0      1137    done
+118   NO-LOCALSEARCH  gurobi   0     7.695     true     900.3      299     done
+57    REF             gurobi   1     7.382     true     2.9        4       done
+118   REF             gurobi   1     5.29      true     27.3       88      done
+==============================================================================================
+
+[ PowerModels | Info]: removing 3 cost terms from generator 4: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 1: [1696.0624, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 5: [3044.1037, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 2: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 6: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 7: [3718.8979000000004, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 3: [3407.5557000000003, 0.0]
+
+==============================================================================================
+sys   config          backend  seed  objective secure   wall (s)   LPs     status
+----------------------------------------------------------------------------------------------
+57    REF             gurobi   0     7.382     true     11.2       25      done
+118   REF             gurobi   0     5.29      true     17.0       79      done
+57    NO-SCREEN       gurobi   0     7.382     true     13.8       2919    done
+118   NO-SCREEN       gurobi   0     5.29      true     144.1      14373   done
+57    NO-CF-POCKET    gurobi   0     7.382     true     4.8        623     done
+118   NO-CF-POCKET    gurobi   0     5.29      true     28.8       1245    done
+57    NO-CF-FREE      gurobi   0     7.382     true     6.3        741     done
+118   NO-CF-FREE      gurobi   0     5.29      true     31.0       1193    done
+57    NO-EMBED        gurobi   0     7.382     true     4.7        307     done
+118   NO-EMBED        gurobi   0     5.29      true     253.4      5683    done
+57    NO-INHERIT      gurobi   0     7.382     true     3.0        39      done
+118   NO-INHERIT      gurobi   0     5.29      true     20.4       108     done
+57    NO-LOCALSEARCH  gurobi   0     7.331     true     900.0      1137    done
+118   NO-LOCALSEARCH  gurobi   0     7.695     true     900.3      299     done
+57    REF             gurobi   1     7.382     true     2.9        4       done
+118   REF             gurobi   1     5.29      true     27.3       88      done
+57    NO-SCREEN       gurobi   1     7.382     true     15.5       2710    done
+==============================================================================================
+
+[ PowerModels | Info]: removing 3 cost terms from generator 32: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 29: [3266.8781000000004, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 1: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 54: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 2: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 41: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 51: [3504.3401000000003, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 53: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 27: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 42: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 33: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 28: [3478.1778000000004, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 50: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 52: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 26: [1605.6042000000002, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 10: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 24: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 25: [2486.1868, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 23: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 49: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 5: [2498.342, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 31: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 43: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 39: [3407.2633000000005, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 34: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 44: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 17: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 37: [2460.0771999999997, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 47: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 9: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 12: [2222.098, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 20: [2420.2306, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 6: [12458.1564, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 14: [2599.3982, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 7: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 8: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 19: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 4: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 22: [2727.7342999999996, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 11: [2894.8321, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 35: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 13: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 15: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 16: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 40: [2460.5101999999997, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 21: [1667.3942, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 38: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 46: [2864.9471, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 45: [1261.217, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 36: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 48: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 18: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 30: [2575.8442, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 3: Float64[]
+
+==============================================================================================
+sys   config          backend  seed  objective secure   wall (s)   LPs     status
+----------------------------------------------------------------------------------------------
+57    REF             gurobi   0     7.382     true     11.2       25      done
+118   REF             gurobi   0     5.29      true     17.0       79      done
+57    NO-SCREEN       gurobi   0     7.382     true     13.8       2919    done
+118   NO-SCREEN       gurobi   0     5.29      true     144.1      14373   done
+57    NO-CF-POCKET    gurobi   0     7.382     true     4.8        623     done
+118   NO-CF-POCKET    gurobi   0     5.29      true     28.8       1245    done
+57    NO-CF-FREE      gurobi   0     7.382     true     6.3        741     done
+118   NO-CF-FREE      gurobi   0     5.29      true     31.0       1193    done
+57    NO-EMBED        gurobi   0     7.382     true     4.7        307     done
+118   NO-EMBED        gurobi   0     5.29      true     253.4      5683    done
+57    NO-INHERIT      gurobi   0     7.382     true     3.0        39      done
+118   NO-INHERIT      gurobi   0     5.29      true     20.4       108     done
+57    NO-LOCALSEARCH  gurobi   0     7.331     true     900.0      1137    done
+118   NO-LOCALSEARCH  gurobi   0     7.695     true     900.3      299     done
+57    REF             gurobi   1     7.382     true     2.9        4       done
+118   REF             gurobi   1     5.29      true     27.3       88      done
+57    NO-SCREEN       gurobi   1     7.382     true     15.5       2710    done
+118   NO-SCREEN       gurobi   1     5.29      true     193.5      16228   done
+==============================================================================================
+
+[ PowerModels | Info]: removing 3 cost terms from generator 4: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 1: [1696.0624, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 5: [3044.1037, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 2: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 6: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 7: [3718.8979000000004, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 3: [3407.5557000000003, 0.0]
+
+==============================================================================================
+sys   config          backend  seed  objective secure   wall (s)   LPs     status
+----------------------------------------------------------------------------------------------
+57    REF             gurobi   0     7.382     true     11.2       25      done
+118   REF             gurobi   0     5.29      true     17.0       79      done
+57    NO-SCREEN       gurobi   0     7.382     true     13.8       2919    done
+118   NO-SCREEN       gurobi   0     5.29      true     144.1      14373   done
+57    NO-CF-POCKET    gurobi   0     7.382     true     4.8        623     done
+118   NO-CF-POCKET    gurobi   0     5.29      true     28.8       1245    done
+57    NO-CF-FREE      gurobi   0     7.382     true     6.3        741     done
+118   NO-CF-FREE      gurobi   0     5.29      true     31.0       1193    done
+57    NO-EMBED        gurobi   0     7.382     true     4.7        307     done
+118   NO-EMBED        gurobi   0     5.29      true     253.4      5683    done
+57    NO-INHERIT      gurobi   0     7.382     true     3.0        39      done
+118   NO-INHERIT      gurobi   0     5.29      true     20.4       108     done
+57    NO-LOCALSEARCH  gurobi   0     7.331     true     900.0      1137    done
+118   NO-LOCALSEARCH  gurobi   0     7.695     true     900.3      299     done
+57    REF             gurobi   1     7.382     true     2.9        4       done
+118   REF             gurobi   1     5.29      true     27.3       88      done
+57    NO-SCREEN       gurobi   1     7.382     true     15.5       2710    done
+118   NO-SCREEN       gurobi   1     5.29      true     193.5      16228   done
+57    NO-CF-POCKET    gurobi   1     7.382     true     7.0        839     done
+==============================================================================================
+
+[ Info: ── 118_NO-CF-POCKET_gurobi_s1  iter 1  |SBS|=56  |cuts|=0
+[ Info:   ▷ 118_NO-CF-POCKET_gurobi_s1_i001  H=3  warm=10  cuts=0  |SBS|=56
+[ Info:     ✓ obj=5.69  iter=60  t=16.5s  secure=true
+[ Info:   ↑ improvement: Inf → 5.69
+[ Info:   |SBS| 56 → 61
+[ Info: ── 118_NO-CF-POCKET_gurobi_s1  iter 2  |SBS|=61  |cuts|=739
+[ Info:   ▷ 118_NO-CF-POCKET_gurobi_s1_i002  H=3  warm=9  cuts=739  |SBS|=61
+[ Info:     ✓ obj=5.29  iter=28  t=11.7s  secure=true
+[ Info:   ↑ improvement: 5.69 → 5.29
+[ Info:   |SBS| 61 → 61
+[ Info: ── 118_NO-CF-POCKET_gurobi_s1  iter 3  |SBS|=61  |cuts|=1074
+[ Info:   ▷ 118_NO-CF-POCKET_gurobi_s1_i003  H=3  warm=8  cuts=1074  |SBS|=61
+[ Info:     ✓ obj=5.29  iter=11  t=8.5s  secure=true
+[ Info:   |SBS| 61 → 61
+[ Info: [21/42] ▶ 57_NO-CF-FREE_gurobi_s1  cap=900s  elapsed=43 minutes, 48 seconds, 984 milliseconds
+[ Info: opening case `pglib_opf_case57_ieee.m`
+[ Info: ── 57_NO-CF-FREE_gurobi_s1  iter 1  |SBS|=66  |cuts|=0
+[ Info:   ▷ 57_NO-CF-FREE_gurobi_s1_i001  H=3  warm=7  cuts=0  |SBS|=66
+[ Info:     ✓ obj=8.472  iter=20  t=3.3s  secure=true
+[ Info:   ↑ improvement: Inf → 8.472
+[ Info:   |SBS| 66 → 67
+[ Info: ── 57_NO-CF-FREE_gurobi_s1  iter 2  |SBS|=67  |cuts|=416
+[ Info:   ▷ 57_NO-CF-FREE_gurobi_s1_i002  H=3  warm=6  cuts=416  |SBS|=67
+[ Info:     ✓ obj=7.449  iter=12  t=2.1s  secure=true
+[ Info:   ↑ improvement: 8.472 → 7.449
+[ Info:   |SBS| 67 → 67
+[ Info: ── 57_NO-CF-FREE_gurobi_s1  iter 3  |SBS|=67  |cuts|=583
+[ Info:   ▷ 57_NO-CF-FREE_gurobi_s1_i003  H=3  warm=5  cuts=583  |SBS|=67
+[ Info:     ✓ obj=7.382  iter=10  t=2.6s  secure=true
+[ Info:   ↑ improvement: 7.449 → 7.382
+[ Info:   |SBS| 67 → 67
+[ Info: [22/42] ▶ 118_NO-CF-FREE_gurobi_s1  cap=900s  elapsed=43 minutes, 57 seconds, 23 milliseconds
+[ Info: opening case `pglib_opf_case118_ieee.m`
+[ Info: ── 118_NO-CF-FREE_gurobi_s1  iter 1  |SBS|=56  |cuts|=0
+[ Info:   ▷ 118_NO-CF-FREE_gurobi_s1_i001  H=3  warm=10  cuts=0  |SBS|=56
+[ Info:     ✓ obj=5.69  iter=73  t=23.8s  secure=true
+[ Info:   ↑ improvement: Inf → 5.69
+[ Info:   |SBS| 56 → 61
+[ Info: ── 118_NO-CF-FREE_gurobi_s1  iter 2  |SBS|=61  |cuts|=936
+[ Info:   ▷ 118_NO-CF-FREE_gurobi_s1_i002  H=3  warm=9  cuts=936  |SBS|=61
+[ Info:     ✓ obj=5.29  iter=9  t=7.9s  secure=true
+[ Info:   ↑ improvement: 5.69 → 5.29
+[ Info:   |SBS| 61 → 61
+[ Info: ── 118_NO-CF-FREE_gurobi_s1  iter 3  |SBS|=61  |cuts|=1041
+[ Info:   ▷ 118_NO-CF-FREE_gurobi_s1_i003  H=3  warm=8  cuts=1041  |SBS|=61
+[ Info:     ✓ obj=5.29  iter=11  t=9.5s  secure=true
+[ Info:   |SBS| 61 → 61
+[ Info: [23/42] ▶ 57_NO-EMBED_gurobi_s1  cap=900s  elapsed=44 minutes, 38 seconds, 904 milliseconds
+[ Info: opening case `pglib_opf_case57_ieee.m`
+[ Info: ── 57_NO-EMBED_gurobi_s1  iter 1  |SBS|=66  |cuts|=0
+[ Info:   ▷ 57_NO-EMBED_gurobi_s1_i001  H=3  warm=7  cuts=0  |SBS|=66
+[ Info:     ✓ obj=8.472  iter=80  t=2.7s  secure=true
+[ Info:   ↑ improvement: Inf → 8.472
+[ Info:   |SBS| 66 → 67
+[ Info: ── 57_NO-EMBED_gurobi_s1  iter 2  |SBS|=67  |cuts|=1635
+[ Info:   ▷ 57_NO-EMBED_gurobi_s1_i002  H=3  warm=6  cuts=1635  |SBS|=67
+[ Info:     ✓ obj=7.449  iter=52  t=1.6s  secure=true
+[ Info:   ↑ improvement: 8.472 → 7.449
+[ Info:   |SBS| 67 → 67
+[ Info: ── 57_NO-EMBED_gurobi_s1  iter 3  |SBS|=67  |cuts|=2550
+[ Info:   ▷ 57_NO-EMBED_gurobi_s1_i003  H=3  warm=5  cuts=2550  |SBS|=67
+[ Info:     ✓ obj=7.382  iter=21  t=0.7s  secure=true
+[ Info:   ↑ improvement: 7.449 → 7.382
+[ Info:   |SBS| 67 → 67
+[ Info: [24/42] ▶ 118_NO-EMBED_gurobi_s1  cap=900s  elapsed=44 minutes, 44 seconds, 5 milliseconds
+[ Info: opening case `pglib_opf_case118_ieee.m`
+[ Info: ── 118_NO-EMBED_gurobi_s1  iter 1  |SBS|=56  |cuts|=0
+[ Info:   ▷ 118_NO-EMBED_gurobi_s1_i001  H=3  warm=10  cuts=0  |SBS|=56
+[ Info:     ✓ obj=5.69  iter=446  t=114.3s  secure=true
+[ Info:   ↑ improvement: Inf → 5.69
+[ Info:   |SBS| 56 → 61
+[ Info: ── 118_NO-EMBED_gurobi_s1  iter 2  |SBS|=61  |cuts|=7030
+[ Info:   ▷ 118_NO-EMBED_gurobi_s1_i002  H=3  warm=9  cuts=7030  |SBS|=61
+[ Info:     ✓ obj=5.29  iter=270  t=73.8s  secure=true
+[ Info:   ↑ improvement: 5.69 → 5.29
+[ Info:   |SBS| 61 → 61
+[ Info: ── 118_NO-EMBED_gurobi_s1  iter 3  |SBS|=61  |cuts|=11261
+[ Info:   ▷ 118_NO-EMBED_gurobi_s1_i003  H=3  warm=8  cuts=11261  |SBS|=61
+[ Info:     ✓ obj=5.29  iter=416  t=97.2s  secure=true
+[ Info:   |SBS| 61 → 61
+[ Info: [25/42] ▶ 57_NO-INHERIT_gurobi_s1  cap=900s  elapsed=49 minutes, 30 seconds, 56 milliseconds
+[ Info: opening case `pglib_opf_case57_ieee.m`
+[ Info: ── 57_NO-INHERIT_gurobi_s1  iter 1  |SBS|=66  |cuts|=0
+[ Info:   ▷ 57_NO-INHERIT_gurobi_s1_i001  H=3  warm=7  cuts=0  |SBS|=66
+[ Info:     ✓ obj=8.472  iter=17  t=0.9s  secure=true
+[ Info:   ↑ improvement: Inf → 8.472
+[ Info:   |SBS| 66 → 67
+[ Info: ── 57_NO-INHERIT_gurobi_s1  iter 2  |SBS|=67  |cuts|=0
+[ Info:   ▷ 57_NO-INHERIT_gurobi_s1_i002  H=3  warm=6  cuts=0  |SBS|=67
+[ Info:     ✓ obj=7.449  iter=15  t=1.0s  secure=true
+[ Info:   ↑ improvement: 8.472 → 7.449
+[ Info:   |SBS| 67 → 67
+[ Info: ── 57_NO-INHERIT_gurobi_s1  iter 3  |SBS|=67  |cuts|=0
+[ Info:   ▷ 57_NO-INHERIT_gurobi_s1_i003  H=3  warm=5  cuts=0  |SBS|=67
+[ Info:     ✓ obj=7.382  iter=22  t=1.3s  secure=true
+[ Info:   ↑ improvement: 7.449 → 7.382
+[ Info:   |SBS| 67 → 67
+[ Info: [26/42] ▶ 118_NO-INHERIT_gurobi_s1  cap=900s  elapsed=49 minutes, 33 seconds, 287 milliseconds
+[ Info: opening case `pglib_opf_case118_ieee.m`
+[ Info: ── 118_NO-INHERIT_gurobi_s1  iter 1  |SBS|=56  |cuts|=0
+[ Info:   ▷ 118_NO-INHERIT_gurobi_s1_i001  H=3  warm=10  cuts=0  |SBS|=56
+[ Info:     ✓ obj=5.69  iter=64  t=9.1s  secure=true
+[ Info:   ↑ improvement: Inf → 5.69
+[ Info:   |SBS| 56 → 61
+[ Info: ── 118_NO-INHERIT_gurobi_s1  iter 2  |SBS|=61  |cuts|=0
+[ Info:   ▷ 118_NO-INHERIT_gurobi_s1_i002  H=3  warm=9  cuts=0  |SBS|=61
+[ Info:     ✓ obj=5.29  iter=30  t=6.1s  secure=true
+[ Info:   ↑ improvement: 5.69 → 5.29
+[ Info:   |SBS| 61 → 61
+[ Info: ── 118_NO-INHERIT_gurobi_s1  iter 3  |SBS|=61  |cuts|=0
+[ Info:   ▷ 118_NO-INHERIT_gurobi_s1_i003  H=3  warm=8  cuts=0  |SBS|=61
+[ Info:     ✓ obj=5.29  iter=29  t=9.2s  secure=true
+[ Info:   |SBS| 61 → 61
+[ PowerModels | Info]: removing 3 cost terms from generator 32: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 29: [3266.8781000000004, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 1: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 54: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 2: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 41: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 51: [3504.3401000000003, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 53: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 27: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 42: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 33: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 28: [3478.1778000000004, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 50: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 52: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 26: [1605.6042000000002, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 10: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 24: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 25: [2486.1868, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 23: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 49: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 5: [2498.342, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 31: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 43: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 39: [3407.2633000000005, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 34: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 44: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 17: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 37: [2460.0771999999997, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 47: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 9: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 12: [2222.098, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 20: [2420.2306, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 6: [12458.1564, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 14: [2599.3982, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 7: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 8: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 19: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 4: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 22: [2727.7342999999996, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 11: [2894.8321, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 35: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 13: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 15: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 16: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 40: [2460.5101999999997, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 21: [1667.3942, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 38: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 46: [2864.9471, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 45: [1261.217, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 36: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 48: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 18: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 30: [2575.8442, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 3: Float64[]
+
+==============================================================================================
+sys   config          backend  seed  objective secure   wall (s)   LPs     status
+----------------------------------------------------------------------------------------------
+57    REF             gurobi   0     7.382     true     11.2       25      done
+118   REF             gurobi   0     5.29      true     17.0       79      done
+57    NO-SCREEN       gurobi   0     7.382     true     13.8       2919    done
+118   NO-SCREEN       gurobi   0     5.29      true     144.1      14373   done
+57    NO-CF-POCKET    gurobi   0     7.382     true     4.8        623     done
+118   NO-CF-POCKET    gurobi   0     5.29      true     28.8       1245    done
+57    NO-CF-FREE      gurobi   0     7.382     true     6.3        741     done
+118   NO-CF-FREE      gurobi   0     5.29      true     31.0       1193    done
+57    NO-EMBED        gurobi   0     7.382     true     4.7        307     done
+118   NO-EMBED        gurobi   0     5.29      true     253.4      5683    done
+57    NO-INHERIT      gurobi   0     7.382     true     3.0        39      done
+118   NO-INHERIT      gurobi   0     5.29      true     20.4       108     done
+57    NO-LOCALSEARCH  gurobi   0     7.331     true     900.0      1137    done
+118   NO-LOCALSEARCH  gurobi   0     7.695     true     900.3      299     done
+57    REF             gurobi   1     7.382     true     2.9        4       done
+118   REF             gurobi   1     5.29      true     27.3       88      done
+57    NO-SCREEN       gurobi   1     7.382     true     15.5       2710    done
+118   NO-SCREEN       gurobi   1     5.29      true     193.5      16228   done
+57    NO-CF-POCKET    gurobi   1     7.382     true     7.0        839     done
+118   NO-CF-POCKET    gurobi   1     5.29      true     37.3       1188    done
+==============================================================================================
+
+[ PowerModels | Info]: removing 3 cost terms from generator 4: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 1: [1696.0624, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 5: [3044.1037, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 2: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 6: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 7: [3718.8979000000004, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 3: [3407.5557000000003, 0.0]
+
+==============================================================================================
+sys   config          backend  seed  objective secure   wall (s)   LPs     status
+----------------------------------------------------------------------------------------------
+57    REF             gurobi   0     7.382     true     11.2       25      done
+118   REF             gurobi   0     5.29      true     17.0       79      done
+57    NO-SCREEN       gurobi   0     7.382     true     13.8       2919    done
+118   NO-SCREEN       gurobi   0     5.29      true     144.1      14373   done
+57    NO-CF-POCKET    gurobi   0     7.382     true     4.8        623     done
+118   NO-CF-POCKET    gurobi   0     5.29      true     28.8       1245    done
+57    NO-CF-FREE      gurobi   0     7.382     true     6.3        741     done
+118   NO-CF-FREE      gurobi   0     5.29      true     31.0       1193    done
+57    NO-EMBED        gurobi   0     7.382     true     4.7        307     done
+118   NO-EMBED        gurobi   0     5.29      true     253.4      5683    done
+57    NO-INHERIT      gurobi   0     7.382     true     3.0        39      done
+118   NO-INHERIT      gurobi   0     5.29      true     20.4       108     done
+57    NO-LOCALSEARCH  gurobi   0     7.331     true     900.0      1137    done
+118   NO-LOCALSEARCH  gurobi   0     7.695     true     900.3      299     done
+57    REF             gurobi   1     7.382     true     2.9        4       done
+118   REF             gurobi   1     5.29      true     27.3       88      done
+57    NO-SCREEN       gurobi   1     7.382     true     15.5       2710    done
+118   NO-SCREEN       gurobi   1     5.29      true     193.5      16228   done
+57    NO-CF-POCKET    gurobi   1     7.382     true     7.0        839     done
+118   NO-CF-POCKET    gurobi   1     5.29      true     37.3       1188    done
+57    NO-CF-FREE      gurobi   1     7.382     true     8.0        725     done
+==============================================================================================
+
+[ PowerModels | Info]: removing 3 cost terms from generator 32: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 29: [3266.8781000000004, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 1: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 54: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 2: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 41: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 51: [3504.3401000000003, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 53: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 27: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 42: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 33: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 28: [3478.1778000000004, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 50: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 52: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 26: [1605.6042000000002, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 10: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 24: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 25: [2486.1868, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 23: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 49: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 5: [2498.342, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 31: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 43: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 39: [3407.2633000000005, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 34: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 44: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 17: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 37: [2460.0771999999997, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 47: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 9: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 12: [2222.098, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 20: [2420.2306, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 6: [12458.1564, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 14: [2599.3982, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 7: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 8: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 19: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 4: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 22: [2727.7342999999996, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 11: [2894.8321, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 35: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 13: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 15: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 16: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 40: [2460.5101999999997, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 21: [1667.3942, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 38: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 46: [2864.9471, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 45: [1261.217, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 36: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 48: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 18: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 30: [2575.8442, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 3: Float64[]
+
+==============================================================================================
+sys   config          backend  seed  objective secure   wall (s)   LPs     status
+----------------------------------------------------------------------------------------------
+57    REF             gurobi   0     7.382     true     11.2       25      done
+118   REF             gurobi   0     5.29      true     17.0       79      done
+57    NO-SCREEN       gurobi   0     7.382     true     13.8       2919    done
+118   NO-SCREEN       gurobi   0     5.29      true     144.1      14373   done
+57    NO-CF-POCKET    gurobi   0     7.382     true     4.8        623     done
+118   NO-CF-POCKET    gurobi   0     5.29      true     28.8       1245    done
+57    NO-CF-FREE      gurobi   0     7.382     true     6.3        741     done
+118   NO-CF-FREE      gurobi   0     5.29      true     31.0       1193    done
+57    NO-EMBED        gurobi   0     7.382     true     4.7        307     done
+118   NO-EMBED        gurobi   0     5.29      true     253.4      5683    done
+57    NO-INHERIT      gurobi   0     7.382     true     3.0        39      done
+118   NO-INHERIT      gurobi   0     5.29      true     20.4       108     done
+57    NO-LOCALSEARCH  gurobi   0     7.331     true     900.0      1137    done
+118   NO-LOCALSEARCH  gurobi   0     7.695     true     900.3      299     done
+57    REF             gurobi   1     7.382     true     2.9        4       done
+118   REF             gurobi   1     5.29      true     27.3       88      done
+57    NO-SCREEN       gurobi   1     7.382     true     15.5       2710    done
+118   NO-SCREEN       gurobi   1     5.29      true     193.5      16228   done
+57    NO-CF-POCKET    gurobi   1     7.382     true     7.0        839     done
+118   NO-CF-POCKET    gurobi   1     5.29      true     37.3       1188    done
+57    NO-CF-FREE      gurobi   1     7.382     true     8.0        725     done
+118   NO-CF-FREE      gurobi   1     5.29      true     41.7       1155    done
+==============================================================================================
+
+[ PowerModels | Info]: removing 3 cost terms from generator 4: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 1: [1696.0624, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 5: [3044.1037, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 2: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 6: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 7: [3718.8979000000004, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 3: [3407.5557000000003, 0.0]
+
+==============================================================================================
+sys   config          backend  seed  objective secure   wall (s)   LPs     status
+----------------------------------------------------------------------------------------------
+57    REF             gurobi   0     7.382     true     11.2       25      done
+118   REF             gurobi   0     5.29      true     17.0       79      done
+57    NO-SCREEN       gurobi   0     7.382     true     13.8       2919    done
+118   NO-SCREEN       gurobi   0     5.29      true     144.1      14373   done
+57    NO-CF-POCKET    gurobi   0     7.382     true     4.8        623     done
+118   NO-CF-POCKET    gurobi   0     5.29      true     28.8       1245    done
+57    NO-CF-FREE      gurobi   0     7.382     true     6.3        741     done
+118   NO-CF-FREE      gurobi   0     5.29      true     31.0       1193    done
+57    NO-EMBED        gurobi   0     7.382     true     4.7        307     done
+118   NO-EMBED        gurobi   0     5.29      true     253.4      5683    done
+57    NO-INHERIT      gurobi   0     7.382     true     3.0        39      done
+118   NO-INHERIT      gurobi   0     5.29      true     20.4       108     done
+57    NO-LOCALSEARCH  gurobi   0     7.331     true     900.0      1137    done
+118   NO-LOCALSEARCH  gurobi   0     7.695     true     900.3      299     done
+57    REF             gurobi   1     7.382     true     2.9        4       done
+118   REF             gurobi   1     5.29      true     27.3       88      done
+57    NO-SCREEN       gurobi   1     7.382     true     15.5       2710    done
+118   NO-SCREEN       gurobi   1     5.29      true     193.5      16228   done
+57    NO-CF-POCKET    gurobi   1     7.382     true     7.0        839     done
+118   NO-CF-POCKET    gurobi   1     5.29      true     37.3       1188    done
+57    NO-CF-FREE      gurobi   1     7.382     true     8.0        725     done
+118   NO-CF-FREE      gurobi   1     5.29      true     41.7       1155    done
+57    NO-EMBED        gurobi   1     7.382     true     5.1        282     done
+==============================================================================================
+
+[ PowerModels | Info]: removing 3 cost terms from generator 32: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 29: [3266.8781000000004, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 1: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 54: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 2: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 41: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 51: [3504.3401000000003, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 53: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 27: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 42: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 33: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 28: [3478.1778000000004, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 50: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 52: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 26: [1605.6042000000002, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 10: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 24: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 25: [2486.1868, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 23: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 49: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 5: [2498.342, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 31: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 43: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 39: [3407.2633000000005, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 34: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 44: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 17: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 37: [2460.0771999999997, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 47: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 9: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 12: [2222.098, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 20: [2420.2306, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 6: [12458.1564, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 14: [2599.3982, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 7: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 8: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 19: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 4: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 22: [2727.7342999999996, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 11: [2894.8321, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 35: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 13: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 15: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 16: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 40: [2460.5101999999997, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 21: [1667.3942, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 38: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 46: [2864.9471, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 45: [1261.217, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 36: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 48: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 18: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 30: [2575.8442, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 3: Float64[]
+
+==============================================================================================
+sys   config          backend  seed  objective secure   wall (s)   LPs     status
+----------------------------------------------------------------------------------------------
+57    REF             gurobi   0     7.382     true     11.2       25      done
+118   REF             gurobi   0     5.29      true     17.0       79      done
+57    NO-SCREEN       gurobi   0     7.382     true     13.8       2919    done
+118   NO-SCREEN       gurobi   0     5.29      true     144.1      14373   done
+57    NO-CF-POCKET    gurobi   0     7.382     true     4.8        623     done
+118   NO-CF-POCKET    gurobi   0     5.29      true     28.8       1245    done
+57    NO-CF-FREE      gurobi   0     7.382     true     6.3        741     done
+118   NO-CF-FREE      gurobi   0     5.29      true     31.0       1193    done
+57    NO-EMBED        gurobi   0     7.382     true     4.7        307     done
+118   NO-EMBED        gurobi   0     5.29      true     253.4      5683    done
+57    NO-INHERIT      gurobi   0     7.382     true     3.0        39      done
+118   NO-INHERIT      gurobi   0     5.29      true     20.4       108     done
+57    NO-LOCALSEARCH  gurobi   0     7.331     true     900.0      1137    done
+118   NO-LOCALSEARCH  gurobi   0     7.695     true     900.3      299     done
+57    REF             gurobi   1     7.382     true     2.9        4       done
+118   REF             gurobi   1     5.29      true     27.3       88      done
+57    NO-SCREEN       gurobi   1     7.382     true     15.5       2710    done
+118   NO-SCREEN       gurobi   1     5.29      true     193.5      16228   done
+57    NO-CF-POCKET    gurobi   1     7.382     true     7.0        839     done
+118   NO-CF-POCKET    gurobi   1     5.29      true     37.3       1188    done
+57    NO-CF-FREE      gurobi   1     7.382     true     8.0        725     done
+118   NO-CF-FREE      gurobi   1     5.29      true     41.7       1155    done
+57    NO-EMBED        gurobi   1     7.382     true     5.1        282     done
+118   NO-EMBED        gurobi   1     5.29      true     285.9      5834    done
+==============================================================================================
+
+[ PowerModels | Info]: removing 3 cost terms from generator 4: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 1: [1696.0624, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 5: [3044.1037, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 2: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 6: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 7: [3718.8979000000004, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 3: [3407.5557000000003, 0.0]
+
+==============================================================================================
+sys   config          backend  seed  objective secure   wall (s)   LPs     status
+----------------------------------------------------------------------------------------------
+57    REF             gurobi   0     7.382     true     11.2       25      done
+118   REF             gurobi   0     5.29      true     17.0       79      done
+57    NO-SCREEN       gurobi   0     7.382     true     13.8       2919    done
+118   NO-SCREEN       gurobi   0     5.29      true     144.1      14373   done
+57    NO-CF-POCKET    gurobi   0     7.382     true     4.8        623     done
+118   NO-CF-POCKET    gurobi   0     5.29      true     28.8       1245    done
+57    NO-CF-FREE      gurobi   0     7.382     true     6.3        741     done
+118   NO-CF-FREE      gurobi   0     5.29      true     31.0       1193    done
+57    NO-EMBED        gurobi   0     7.382     true     4.7        307     done
+118   NO-EMBED        gurobi   0     5.29      true     253.4      5683    done
+57    NO-INHERIT      gurobi   0     7.382     true     3.0        39      done
+118   NO-INHERIT      gurobi   0     5.29      true     20.4       108     done
+57    NO-LOCALSEARCH  gurobi   0     7.331     true     900.0      1137    done
+118   NO-LOCALSEARCH  gurobi   0     7.695     true     900.3      299     done
+57    REF             gurobi   1     7.382     true     2.9        4       done
+118   REF             gurobi   1     5.29      true     27.3       88      done
+57    NO-SCREEN       gurobi   1     7.382     true     15.5       2710    done
+118   NO-SCREEN       gurobi   1     5.29      true     193.5      16228   done
+57    NO-CF-POCKET    gurobi   1     7.382     true     7.0        839     done
+118   NO-CF-POCKET    gurobi   1     5.29      true     37.3       1188    done
+57    NO-CF-FREE      gurobi   1     7.382     true     8.0        725     done
+118   NO-CF-FREE      gurobi   1     5.29      true     41.7       1155    done
+57    NO-EMBED        gurobi   1     7.382     true     5.1        282     done
+118   NO-EMBED        gurobi   1     5.29      true     285.9      5834    done
+57    NO-INHERIT      gurobi   1     7.382     true     3.2        20      done
+==============================================================================================
+
+[ PowerModels | Info]: removing 3 cost terms from generator 32: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 29: [3266.8781000000004, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 1: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 54: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 2: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 41: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 51: [3504.3401000000003, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 53: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 27: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 42: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 33: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 28: [3478.1778000000004, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 50: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 52: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 26: [1605.6042000000002, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 10: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 24: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 25: [2486.1868, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 23: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 49: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 5: [2498.342, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 31: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 43: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 39: [3407.2633000000005, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 34: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 44: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 17: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 37: [2460.0771999999997, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 47: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 9: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 12: [2222.098, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 20: [2420.2306, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 6: [12458.1564, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 14: [2599.3982, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 7: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 8: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 19: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 4: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 22: [2727.7342999999996, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 11: [2894.8321, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 35: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 13: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 15: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 16: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 40: [2460.5101999999997, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 21: [1667.3942, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 38: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 46: [2864.9471, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 45: [1261.217, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 36: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 48: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 18: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 30: [2575.8442, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 3: Float64[]
+
+==============================================================================================
+sys   config          backend  seed  objective secure   wall (s)   LPs     status
+----------------------------------------------------------------------------------------------
+57    REF             gurobi   0     7.382     true     11.2       25      done
+118   REF             gurobi   0     5.29      true     17.0       79      done
+57    NO-SCREEN       gurobi   0     7.382     true     13.8       2919    done
+118   NO-SCREEN       gurobi   0     5.29      true     144.1      14373   done
+57    NO-CF-POCKET    gurobi   0     7.382     true     4.8        623     done
+118   NO-CF-POCKET    gurobi   0     5.29      true     28.8       1245    done
+57    NO-CF-FREE      gurobi   0     7.382     true     6.3        741     done
+118   NO-CF-FREE      gurobi   0     5.29      true     31.0       1193    done
+57    NO-EMBED        gurobi   0     7.382     true     4.7        307     done
+118   NO-EMBED        gurobi   0     5.29      true     253.4      5683    done
+57    NO-INHERIT      gurobi   0     7.382     true     3.0        39      done
+118   NO-INHERIT      gurobi   0     5.29      true     20.4       108     done
+57    NO-LOCALSEARCH  gurobi   0     7.331     true     900.0      1137    done
+[ Info: [27/42] ▶ 57_NO-LOCALSEARCH_gurobi_s1  cap=900s  elapsed=49 minutes, 58 seconds, 319 milliseconds
+[ Info: opening case `pglib_opf_case57_ieee.m`
+[ Info: ── 57_NO-LOCALSEARCH_gurobi_s1  iter 1  |SBS|=78  |cuts|=0
+[ Info:   ▷ 57_NO-LOCALSEARCH_gurobi_s1_i001  H=0  warm=7  cuts=0  |SBS|=78
+[ Info:     ✓ obj=8.532  iter=211  t=900.0s  secure=true ⏱
+[ Info:   ↑ improvement: Inf → 8.532
+[ Info:   |SBS| 78 → 78
+[ Info: [28/42] ▶ 118_NO-LOCALSEARCH_gurobi_s1  cap=900s  elapsed=1 hour, 4 minutes, 58 seconds, 412 milliseconds
+[ Info: opening case `pglib_opf_case118_ieee.m`
+[ Info: ── 118_NO-LOCALSEARCH_gurobi_s1  iter 1  |SBS|=179  |cuts|=0
+[ Info:   ▷ 118_NO-LOCALSEARCH_gurobi_s1_i001  H=0  warm=10  cuts=0  |SBS|=179

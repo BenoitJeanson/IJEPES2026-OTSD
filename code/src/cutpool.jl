@@ -98,31 +98,67 @@ function get_activated_fcuts(bcpool::BCPool, contingency::ELabel, v)
                 if val > 0)
 end
 
-function cb_apply_cut!(m::Model, cb_data, bc::OBendersCut)
-    con = @build_constraint(
-        bc.objval + sum(bc.rc[i] * (m[:v][br...] - bc.v0[i]) for (i, br) in enumerate(bc.edges)) ≤ m[bc.var][bc.contingency...])
-    MOI.submit(m, MOI.LazyConstraint(cb_data), con)
+# ── Delivering a cut ──────────────────────────────────────────────────────────
+#
+# `cut_constraint` is the single definition of what each cut family asserts; the
+# sink (see `cutsink.jl`) decides whether it is submitted to a callback or added to
+# the model. The two delivery paths therefore cannot drift apart.
+
+# ── What each cut family asserts ──────────────────────────────────────────────
+
+cut_constraint(m::Model, bc::OBendersCut) = @build_constraint(
+    bc.objval + sum(bc.rc[i] * (m[:v][br...] - bc.v0[i]) for (i, br) in enumerate(bc.edges)) ≤ m[bc.var][bc.contingency...])
+
+cut_constraint(m::Model, bc::FBendersCut) = @build_constraint(
+    1 + sum(bc.rc[i] * (m[:v][br...] - bc.v0[i]) for (i, br) in enumerate(bc.edges)) ≤ 0)
+
+cut_constraint(m::Model, bc::GenericCut) = @build_constraint(
+    sum(bc.rc[i] * (m[:v][br...]) for (i, br) in enumerate(bc.edges)) ≤ bc.val)
+
+# ── Is the cut violated here? ─────────────────────────────────────────────────
+#
+# A Benders cut is valid everywhere, but only a *violated* one makes progress. Inside
+# a branch-and-cut tree that distinction is the solver's problem: a lazy constraint
+# that already holds is simply absorbed. A cut loop has to make it explicitly —
+# otherwise every round adds the same inert cuts, the master never moves, and the
+# loop cannot tell convergence from deadlock. The margin by which each family is
+# violated is written once, here, and used by both the loop and its stopping test.
+
+"How much `bc` is violated at the solution `s` reads. Non-positive means it holds."
+function cut_violation(s::CutSink, bc::OBendersCut)
+    lhs = bc.objval + sum(bc.rc[i] * (solution_value(s, s.m[:v][br...]) - bc.v0[i])
+                          for (i, br) in enumerate(bc.edges))
+    lhs - solution_value(s, s.m[bc.var][bc.contingency...])
 end
 
-function cb_apply_cut!(m::Model, cb_data, bc::FBendersCut)
-    con = @build_constraint(
-        1 + sum(bc.rc[i] * (m[:v][br...] - bc.v0[i]) for (i, br) in enumerate(bc.edges)) ≤ 0)
-    MOI.submit(m, MOI.LazyConstraint(cb_data), con)
+function cut_violation(s::CutSink, bc::FBendersCut)
+    1 + sum(bc.rc[i] * (solution_value(s, s.m[:v][br...]) - bc.v0[i])
+            for (i, br) in enumerate(bc.edges))
 end
 
-function cb_apply_cut!(m::Model, cb_data, bc::GenericCut)
-    con = @build_constraint(
-        sum(bc.rc[i] * (m[:v][br...]) for (i, br) in enumerate(bc.edges)) ≤ bc.val)
-    MOI.submit(m, MOI.LazyConstraint(cb_data), con)
+cut_violation(s::CutSink, bc::GenericCut) =
+    sum(bc.rc[i] * solution_value(s, s.m[:v][br...]) for (i, br) in enumerate(bc.edges)) - bc.val
+
+"Below this, a cut is treated as already satisfied."
+const CUT_VIOLATION_TOL = 1e-6
+
+# ── Delivery ──────────────────────────────────────────────────────────────────
+
+# In the tree, hand every cut to the solver: one that already holds costs nothing.
+apply_cut!(s::LazySink, bc) = MOI.submit(s.m, MOI.LazyConstraint(s.cb_data), cut_constraint(s.m, bc))
+
+# In the loop, add only what the current solution violates, and count it: that count
+# is what tells the loop whether the round achieved anything.
+function apply_cut!(s::DirectSink, bc)
+    cut_violation(s, bc) > CUT_VIOLATION_TOL || return nothing
+    add_constraint(s.m, cut_constraint(s.m, bc))
+    s.added[] += 1
+    nothing
 end
 
-function cb_apply_cuts!(m::Model, cb_dat, bcs)
-    for bc in bcs
-        con = cb_apply_cut!(m, cb_dat, bc)
-    end
-end
+apply_cuts!(s::CutSink, bcs) = foreach(bc -> apply_cut!(s, bc), bcs)
 
-function apply_best_feasibility_cut!(m, bcpool::BCPool, cb_data, v_0, iteration=0)
+function apply_best_feasibility_cut!(m, bcpool::BCPool, sink::CutSink, v_0, iteration=0)
     feascutfound = false
     t1 = now()
     for contingency in keys(bcpool.subpbbcp)
@@ -131,7 +167,7 @@ function apply_best_feasibility_cut!(m, bcpool::BCPool, cb_data, v_0, iteration=
         feascutfound = true
         _, cut = findmax(fcuts)
         bcpool.appliedFcuts[1] += 1
-        cb_apply_cut!(m, cb_data, cut)
+        apply_cut!(sink, cut)
     end
     t2 = now()
     if feascutfound

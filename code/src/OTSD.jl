@@ -53,12 +53,14 @@ export reduced_sa, secured_dcpf, create_bridge_to_pocket, violating_contingencie
 
 # ── Benders ───────────────────────────────────────────────────────────────────
 export BendersCut, CutRecord, mastercutpool, solve_benders_phase
+export CutSink, LazySink, DirectSink, benders_cut_loop!
 
 # ── Local search ──────────────────────────────────────────────────────────────
 export SessionState, run_benders_iterations!, sa_induced_followed, extend_sbs_by_hops
 
 # ── Backends ──────────────────────────────────────────────────────────────────
 export Backend, GurobiBackend, HiGHSBackend, solve_otsd
+export backend_name, solver_version, supports_lazy
 
 # Gurobi is held in a single environment for the life of the session: a licence
 # check-out per model is slow and, on a token licence, can fail under load.
@@ -82,9 +84,11 @@ include("case.jl")
 include("dcpf.jl")
 
 include("backend.jl")
+include("cutsink.jl")
 include("blocks.jl")
 include("benders_commons.jl")
 include("cutpool.jl")
+include("cutloop.jl")
 include("subproblem.jl")
 include("master.jl")
 

@@ -1,0 +1,80 @@
+Set parameter Username
+Academic license - for non-commercial use only - expires 2027-04-20
+[ Info: opening case `pglib_opf_case57_ieee.m`
+[ Info: ── HIGHS57  iter 1  |SBS|=66  |cuts|=0
+[ Info:   ▷ HIGHS57_i001  H=3  warm=7  cuts=0  |SBS|=66
+
+[4478] signal 15: Terminated: 15
+in expression starting at /tmp/highs.jl:4
+__psynch_cvwait at /usr/lib/system/libsystem_kernel.dylib (unknown line)
+unknown function (ip: 0x0) at (unknown file)
+_ZN11HVectorBaseIdE7reIndexEv at /Users/benoitjeanson/.julia/artifacts/5a3d28a9c8ef24dab596551d0b991b2f9d029ee7/lib/libhighs.1.15.dylib (unknown line)
+_ZNK7HFactor9ftranCallER11HVectorBaseIdEdP15HighsTimerClock at /Users/benoitjeanson/.julia/artifacts/5a3d28a9c8ef24dab596551d0b991b2f9d029ee7/lib/libhighs.1.15.dylib (unknown line)
+_ZNK11HSimplexNla5ftranER11HVectorBaseIdEdP15HighsTimerClock at /Users/benoitjeanson/.julia/artifacts/5a3d28a9c8ef24dab596551d0b991b2f9d029ee7/lib/libhighs.1.15.dylib (unknown line)
+_ZN8HEkkDual11updateFtranEv at /Users/benoitjeanson/.julia/artifacts/5a3d28a9c8ef24dab596551d0b991b2f9d029ee7/lib/libhighs.1.15.dylib (unknown line)
+_ZN8HEkkDual7iterateEv at /Users/benoitjeanson/.julia/artifacts/5a3d28a9c8ef24dab596551d0b991b2f9d029ee7/lib/libhighs.1.15.dylib (unknown line)
+_ZN8HEkkDual11solvePhase2Ev at /Users/benoitjeanson/.julia/artifacts/5a3d28a9c8ef24dab596551d0b991b2f9d029ee7/lib/libhighs.1.15.dylib (unknown line)
+_ZN8HEkkDual5solveEb at /Users/benoitjeanson/.julia/artifacts/5a3d28a9c8ef24dab596551d0b991b2f9d029ee7/lib/libhighs.1.15.dylib (unknown line)
+_ZN4HEkk5solveEb at /Users/benoitjeanson/.julia/artifacts/5a3d28a9c8ef24dab596551d0b991b2f9d029ee7/lib/libhighs.1.15.dylib (unknown line)
+_Z14solveLpSimplexR19HighsLpSolverObject at /Users/benoitjeanson/.julia/artifacts/5a3d28a9c8ef24dab596551d0b991b2f9d029ee7/lib/libhighs.1.15.dylib (unknown line)
+_ZZ7solveLpR19HighsLpSolverObjectNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEEENK3$_0clEv at /Users/benoitjeanson/.julia/artifacts/5a3d28a9c8ef24dab596551d0b991b2f9d029ee7/lib/libhighs.1.15.dylib (unknown line)
+_Z7solveLpR19HighsLpSolverObjectNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEE at /Users/benoitjeanson/.julia/artifacts/5a3d28a9c8ef24dab596551d0b991b2f9d029ee7/lib/libhighs.1.15.dylib (unknown line)
+_ZZN5Highs19calledOptimizeModelEvENK3$_0clER7HighsLpRKNSt3__112basic_stringIcNS3_11char_traitsIcEENS3_9allocatorIcEEEERd at /Users/benoitjeanson/.julia/artifacts/5a3d28a9c8ef24dab596551d0b991b2f9d029ee7/lib/libhighs.1.15.dylib (unknown line)
+_ZN5Highs19calledOptimizeModelEv at /Users/benoitjeanson/.julia/artifacts/5a3d28a9c8ef24dab596551d0b991b2f9d029ee7/lib/libhighs.1.15.dylib (unknown line)
+_ZN17HighsLpRelaxation3runEb at /Users/benoitjeanson/.julia/artifacts/5a3d28a9c8ef24dab596551d0b991b2f9d029ee7/lib/libhighs.1.15.dylib (unknown line)
+_ZZN11HighsSearch24selectBranchingCandidateExRdS0_ENK3$_4clEb at /Users/benoitjeanson/.julia/artifacts/5a3d28a9c8ef24dab596551d0b991b2f9d029ee7/lib/libhighs.1.15.dylib (unknown line)
+_ZN11HighsSearch24selectBranchingCandidateExRdS0_ at /Users/benoitjeanson/.julia/artifacts/5a3d28a9c8ef24dab596551d0b991b2f9d029ee7/lib/libhighs.1.15.dylib (unknown line)
+_ZN11HighsSearch6branchEv at /Users/benoitjeanson/.julia/artifacts/5a3d28a9c8ef24dab596551d0b991b2f9d029ee7/lib/libhighs.1.15.dylib (unknown line)
+_ZN11HighsSearch4diveEx at /Users/benoitjeanson/.julia/artifacts/5a3d28a9c8ef24dab596551d0b991b2f9d029ee7/lib/libhighs.1.15.dylib (unknown line)
+_ZZZN14HighsMipSolver3runEvENK4$_22clERKNSt3__16vectorIiNS1_9allocatorIiEEEERNS2_IZNS_3runEvE11RestartVoteNS3_IS8_EEEEbiidENKUliE_clEi at /Users/benoitjeanson/.julia/artifacts/5a3d28a9c8ef24dab596551d0b991b2f9d029ee7/lib/libhighs.1.15.dylib (unknown line)
+_ZN14HighsMipSolver3runEv at /Users/benoitjeanson/.julia/artifacts/5a3d28a9c8ef24dab596551d0b991b2f9d029ee7/lib/libhighs.1.15.dylib (unknown line)
+_ZN5Highs12callSolveMipEv at /Users/benoitjeanson/.julia/artifacts/5a3d28a9c8ef24dab596551d0b991b2f9d029ee7/lib/libhighs.1.15.dylib (unknown line)
+_ZN5Highs19calledOptimizeModelEv at /Users/benoitjeanson/.julia/artifacts/5a3d28a9c8ef24dab596551d0b991b2f9d029ee7/lib/libhighs.1.15.dylib (unknown line)
+_ZN5Highs13optimizeModelEv at /Users/benoitjeanson/.julia/artifacts/5a3d28a9c8ef24dab596551d0b991b2f9d029ee7/lib/libhighs.1.15.dylib (unknown line)
+_ZN5Highs3runEv at /Users/benoitjeanson/.julia/artifacts/5a3d28a9c8ef24dab596551d0b991b2f9d029ee7/lib/libhighs.1.15.dylib (unknown line)
+Highs_run at /Users/benoitjeanson/.julia/packages/HiGHS/p8Q4m/src/gen/libhighs.jl:344 [inlined]
+_gc_safe_Highs_run at /Users/benoitjeanson/.julia/packages/HiGHS/p8Q4m/src/MOI_wrapper.jl:2254
+_Highs_run_workaround_issue_316 at /Users/benoitjeanson/.julia/packages/HiGHS/p8Q4m/src/MOI_wrapper.jl:2278 [inlined]
+#47 at /Users/benoitjeanson/.julia/packages/HiGHS/p8Q4m/src/MOI_wrapper.jl:2321 [inlined]
+disable_sigint at ./c.jl:167
+optimize! at /Users/benoitjeanson/.julia/packages/HiGHS/p8Q4m/src/MOI_wrapper.jl:2321
+jfptr_optimizeNOT._6027 at /Users/benoitjeanson/.julia/compiled/v1.12/HiGHS/WFic5_JbwET.dylib (unknown line)
+#optimize!#96 at /Users/benoitjeanson/.julia/packages/JuMP/Y8Mtc/src/optimizer_interface.jl:633
+optimize! at /Users/benoitjeanson/.julia/packages/JuMP/Y8Mtc/src/optimizer_interface.jl:569 [inlined]
+benders_cut_loop! at /Users/benoitjeanson/vsCode/TUD/IJEPES2026-OTSD/code/src/cutloop.jl:40
+unknown function (ip: 0x158660b9f) at (unknown file)
+#mastercutpool#531 at /Users/benoitjeanson/vsCode/TUD/IJEPES2026-OTSD/code/src/master.jl:418
+mastercutpool at /Users/benoitjeanson/vsCode/TUD/IJEPES2026-OTSD/code/src/master.jl:9 [inlined]
+macro expansion at ./timing.jl:461 [inlined]
+#solve_benders_phase#718 at /Users/benoitjeanson/vsCode/TUD/IJEPES2026-OTSD/code/src/phase.jl:43
+solve_benders_phase at /Users/benoitjeanson/vsCode/TUD/IJEPES2026-OTSD/code/src/phase.jl:14 [inlined]
+#run_benders_iterations!#720 at /Users/benoitjeanson/vsCode/TUD/IJEPES2026-OTSD/code/src/session.jl:57
+run_benders_iterations! at /Users/benoitjeanson/vsCode/TUD/IJEPES2026-OTSD/code/src/session.jl:27 [inlined]
+macro expansion at ./timing.jl:461 [inlined]
+#solve_otsd#724 at /Users/benoitjeanson/vsCode/TUD/IJEPES2026-OTSD/code/src/solve.jl:55
+solve_otsd at /Users/benoitjeanson/vsCode/TUD/IJEPES2026-OTSD/code/src/solve.jl:31
+unknown function (ip: 0x11cbbc15b) at (unknown file)
+top-level scope at ./timing.jl:461
+jl_toplevel_eval_flex at /Users/julia/.julia/scratchspaces/a66863c6-20e8-4ff4-8a62-49f30b1f605e/agent-cache/default-honeycrisp-XG3Q6T6R70.0/build/default-honeycrisp-XG3Q6T6R70-0/julialang/julia-release-1-dot-12/src/toplevel.c:1024
+jl_toplevel_eval_flex at /Users/julia/.julia/scratchspaces/a66863c6-20e8-4ff4-8a62-49f30b1f605e/agent-cache/default-honeycrisp-XG3Q6T6R70.0/build/default-honeycrisp-XG3Q6T6R70-0/julialang/julia-release-1-dot-12/src/toplevel.c:975
+ijl_toplevel_eval at /Users/julia/.julia/scratchspaces/a66863c6-20e8-4ff4-8a62-49f30b1f605e/agent-cache/default-honeycrisp-XG3Q6T6R70.0/build/default-honeycrisp-XG3Q6T6R70-0/julialang/julia-release-1-dot-12/src/toplevel.c:1047 [inlined]
+ijl_toplevel_eval_in at /Users/julia/.julia/scratchspaces/a66863c6-20e8-4ff4-8a62-49f30b1f605e/agent-cache/default-honeycrisp-XG3Q6T6R70.0/build/default-honeycrisp-XG3Q6T6R70-0/julialang/julia-release-1-dot-12/src/toplevel.c:1092
+eval at ./boot.jl:489
+include_string at ./loading.jl:2842
+_include at ./loading.jl:2902
+include at ./Base.jl:306
+exec_options at ./client.jl:317
+_start at ./client.jl:550
+jfptr__start_66711.1 at /Users/benoitjeanson/.julia/juliaup/julia-1.12.1+0.aarch64.apple.darwin14/lib/julia/sys.dylib (unknown line)
+jl_apply at /Users/julia/.julia/scratchspaces/a66863c6-20e8-4ff4-8a62-49f30b1f605e/agent-cache/default-honeycrisp-XG3Q6T6R70.0/build/default-honeycrisp-XG3Q6T6R70-0/julialang/julia-release-1-dot-12/src/./julia.h:2391 [inlined]
+true_main at /Users/julia/.julia/scratchspaces/a66863c6-20e8-4ff4-8a62-49f30b1f605e/agent-cache/default-honeycrisp-XG3Q6T6R70.0/build/default-honeycrisp-XG3Q6T6R70-0/julialang/julia-release-1-dot-12/src/jlapi.c:971
+jl_repl_entrypoint at /Users/julia/.julia/scratchspaces/a66863c6-20e8-4ff4-8a62-49f30b1f605e/agent-cache/default-honeycrisp-XG3Q6T6R70.0/build/default-honeycrisp-XG3Q6T6R70-0/julialang/julia-release-1-dot-12/src/jlapi.c:1139
+unknown function (ip: 0x0) at (unknown file)
+Allocations: 97931120 (Pool: 97930483; Big: 637); GC: 21
+[ PowerModels | Info]: removing 3 cost terms from generator 4: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 1: [1696.0624, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 5: [3044.1037, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 2: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 6: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 7: [3718.8979000000004, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 3: [3407.5557000000003, 0.0]

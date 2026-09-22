@@ -5,19 +5,15 @@ function init_cb(cb_data, cb_where::Cint)
     Gurobi.load_callback_variable_primal(cb_data, cb_where)
 end
 
-function get_v_0_openbranches(g, cb_data, m)
+function get_v_0_openbranches(g, sink::CutSink, m)
     v_0 = zeros(Bool, ne(g))
     openbranches = Set{ELabel}()
     for (i, br) in enumerate(edge_labels(g))
-        v = round(callback_value(cb_data, m[:v][br...]))
+        v = round(solution_value(sink, m[:v][br...]))
         v_0[i] = isapprox(v, 1.0)
         v == 0.0 && push!(openbranches, br)
     end
     v_0, openbranches
-end
-
-function get_cb_value(cb_data, m::Model, fieldname::Symbol, indices)
-    return Dict(id => callback_value(cb_data, m[fieldname][id...]) for id in indices)
 end
 
 function benders_subpb_res(m::Model)

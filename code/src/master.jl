@@ -190,16 +190,16 @@ function mastercutpool(ec::ElementaryCase, logfilename::String;
         m
     end
 
-    function _callback(cb_data, cb_where::Cint)
-        cb_where != GRB_CB_MIPSOL && return
+    # Separation. Given an integer-feasible topology, decide which contingencies need
+    # a cut and hand each one to `sink`. Nothing here knows how the topology was
+    # reached or how the cut is delivered, so both backends share it verbatim.
+    function _separate!(sink::CutSink)
         iteration += 1
-
-        init_cb(cb_data, cb_where)
-        v_0, openbranches = get_v_0_openbranches(g, cb_data, m)
+        v_0, openbranches = get_v_0_openbranches(g, sink, m)
         t1 = now()
         write_in_logfile(lfn, "Iteration $iteration \t$(canonicalize(t1-t0))\topen branches: $openbranches")
 
-        with_cutpool && apply_best_feasibility_cut!(m, bcpool, cb_data, v_0, iteration) && return
+        with_cutpool && apply_best_feasibility_cut!(m, bcpool, sink, v_0, iteration) && return
 
         bridge_to_pocket = create_bridge_to_pocket(ec, openbranches)
 
@@ -230,7 +230,7 @@ function mastercutpool(ec::ElementaryCase, logfilename::String;
         # if ov < best_known_obj - Δ_stop
             write_in_logfile(logfilename, "⚡ Early stop: ov=$(round(ov;digits=3)) < best_known=$(best_known_obj) - Δ=$(Δ_stop)")
             early_stopped[] = true
-            GRBterminate(backend(m))
+            GRBterminate(JuMP.backend(m))
             return
         end
 
@@ -257,7 +257,7 @@ function mastercutpool(ec::ElementaryCase, logfilename::String;
                         res_subpb = contingency_subproblem(ec, openbranches, contingency, bridge_to_pocket, bigM_π, bigM_flows; reduce_violations=true, monitored_branch=vb, tight_bigM=tight_bigM, θ_max_bigM=θ_max_bigM, bigM_bound_multiplier=bigM_bound_multiplier, backend=backend)
                         if res_subpb.is_feasible
                             ocut = OBendersCut(edg, vb, v_0, [res_subpb.reduced_cost[br...] for br in edg], :s_flows, res_subpb.obj)
-                            cb_apply_cut!(m, cb_data, ocut)
+                            apply_cut!(sink, ocut)
                             push!(collected_cuts, CutRecord(ocut, iteration, hamming(openbranches, warmstart_openings), openbranches))
                         else
                             # rare: f > α·p_max — disconnected island; fall back to feasibility cut
@@ -265,7 +265,7 @@ function mastercutpool(ec::ElementaryCase, logfilename::String;
                             res_feas = contingency_subproblem(ec, openbranches, contingency, bridge_to_pocket, bigM_π, bigM_flows; tight_bigM=tight_bigM, θ_max_bigM=θ_max_bigM, bigM_bound_multiplier=bigM_bound_multiplier, backend=backend)
                             if !res_feas.is_feasible
                                 fcut = FBendersCut(edg, contingency, v_0, [res_feas.reduced_cost[br...] for br in edg], res_feas.dual_obj)
-                                cb_apply_cut!(m, cb_data, fcut)
+                                apply_cut!(sink, fcut)
                                 push!(collected_cuts, CutRecord(fcut, iteration, hamming(openbranches, warmstart_openings), openbranches))
                             end
                             break
@@ -273,7 +273,7 @@ function mastercutpool(ec::ElementaryCase, logfilename::String;
                     end
                     if analytic_viol
                         ocuts = create_sflow_optimality_cuts(ec, openbranches, contingency, vb, sf, bridge_to_pocket)
-                        cb_apply_cuts!(m, cb_data, ocuts)
+                        apply_cuts!(sink, ocuts)
                         write_in_logfile(lfn, "analytic cuts: $(length(ocuts)) for $vb")
                     end
                 end
@@ -288,7 +288,7 @@ function mastercutpool(ec::ElementaryCase, logfilename::String;
                     end
                 else
                     fcut = FBendersCut(edg, contingency, v_0, [res_subpb.reduced_cost[br...] for br in edg], res_subpb.dual_obj)
-                    cb_apply_cut!(m, cb_data, fcut)
+                    apply_cut!(sink, fcut)
                     push!(collected_cuts, CutRecord(fcut, iteration, hamming(openbranches, warmstart_openings), openbranches))
 
                     with_cutpool && create_extra_feasibility_cuts_from_zeros!(bcpool, openbranches, contingency, res_subpb.reduced_cost, res_subpb.dual_obj;
@@ -303,9 +303,9 @@ function mastercutpool(ec::ElementaryCase, logfilename::String;
         # !isempty(v_ctg) && !is_reduceviolations && return
 
         ll_cuts = if cf_cuts === :closedform
-            lostload_optimality_cuts(m, cb_data, edg, v_ctg, bridge_to_pocket)
+            lostload_optimality_cuts(m, sink, edg, v_ctg, bridge_to_pocket)
         else
-            cuts, n_lp = lp_lostload_optimality_cuts(m, cb_data, ec, edg, v_0, openbranches,
+            cuts, n_lp = lp_lostload_optimality_cuts(m, sink, ec, edg, v_0, openbranches,
                 v_ctg, bridge_to_pocket, bigM_π, bigM_flows;
                 free_π=(cf_cuts === :lp_free), tight_bigM, θ_max_bigM, bigM_bound_multiplier)
             lp_opt_solves += n_lp
@@ -316,11 +316,18 @@ function mastercutpool(ec::ElementaryCase, logfilename::String;
         end
 
         if use_bypass_cuts
-            bp_cuts = bypass_cut_from_pockets(m, cb_data, g, openbranches, sbs, bridge_to_pocket, bypasspockets)
+            bp_cuts = bypass_cut_from_pockets(m, sink, g, openbranches, sbs, bridge_to_pocket, bypasspockets)
             for (cut, req) in bp_cuts
                 push!(collected_cuts, CutRecord(cut, iteration, hamming(openbranches, warmstart_openings), openbranches, req))
             end
         end
+    end
+
+    # Gurobi calls this on every integer-feasible incumbent.
+    function _callback(cb_data, cb_where::Cint)
+        cb_where != GRB_CB_MIPSOL && return
+        init_cb(cb_data, cb_where)
+        _separate!(LazySink(m, cb_data))
     end
 
     write_in_logfile(logfilename, "withcallbacks: $withcallbacks")
@@ -393,10 +400,9 @@ function mastercutpool(ec::ElementaryCase, logfilename::String;
     edg = collect(edge_labels(g))
     πstat = Dict(bus => 0 for bus in labels(g))
 
-    if withcallbacks
-        supports_lazy(backend) || error(
-            "$(name(backend)) cannot take lazy constraints; drive it with solve_otsd, " *
-            "which falls back to the cut-loop of `benders_cut_loop!`.")
+    # A backend without lazy constraints separates between master solves instead;
+    # `benders_cut_loop!` below drives the same `_separate!`.
+    if withcallbacks && supports_lazy(backend)
         enable_lazy!(m)
         MOI.set(m, Gurobi.CallbackFunction(), _callback)
     end
@@ -408,7 +414,11 @@ function mastercutpool(ec::ElementaryCase, logfilename::String;
     mip_focus > 0 && set_mip_focus!(backend, m, mip_focus)
     timeout > 0.0 && set_timeout!(backend, m, timeout)
 
-    optimize!(m)
+    if withcallbacks && !supports_lazy(backend)
+        benders_cut_loop!(m, _separate!, backend, logfilename, t0, timeout)
+    else
+        optimize!(m)
+    end
 
     has_sol = is_solved_and_feasible(m) || primal_status(m) == MOI.FEASIBLE_POINT
     openings = has_sol ? getopenings(m) : warmstart_openings
@@ -428,21 +438,21 @@ function mastercutpool(ec::ElementaryCase, logfilename::String;
      lp_feas_solves=lp_feas_solves, lp_opt_solves=lp_opt_solves, lp_solves=lp_feas_solves + lp_opt_solves)
 end
 
-function lostload_optimality_cuts(m, cb_data, edg, violating_ctg, bridge_to_pocket, πstat=nothing)
+function lostload_optimality_cuts(m, sink::CutSink, edg, violating_ctg, bridge_to_pocket, πstat=nothing)
     applied = OBendersCut[]
     for (br, pk) in bridge_to_pocket
         br in violating_ctg && continue
         !isnothing(πstat) && foreach(bus -> πstat[bus] += 1, pk.buses)
         ocut = create_pklostload_optimality_cut(edg, br, pk)
         isnothing(ocut) && continue
-        cb_apply_cut!(m, cb_data, ocut)
+        apply_cut!(sink, ocut)
         push!(applied, ocut)
     end
     applied
 end
 
 """
-    lp_lostload_optimality_cuts(m, cb_data, ec, edg, v_0, openbranches, violating_ctg,
+    lp_lostload_optimality_cuts(m, sink, ec, edg, v_0, openbranches, violating_ctg,
                                 bridge_to_pocket, bigM_π, bigM_flows; free_π=false, ...)
 
 LP counterpart of [`lostload_optimality_cuts`](@ref). Same candidate set — the bridges
@@ -453,7 +463,7 @@ through the generic connectivity block, so no property of the pocket enters the 
 
 Returns `(cuts, n_lp)`: the cuts applied, and how many subproblem LPs were solved.
 """
-function lp_lostload_optimality_cuts(m, cb_data, ec, edg, v_0, openbranches, violating_ctg,
+function lp_lostload_optimality_cuts(m, sink::CutSink, ec, edg, v_0, openbranches, violating_ctg,
                                      bridge_to_pocket, bigM_π, bigM_flows;
                                      free_π::Bool=false,
                                      tight_bigM::Bool=true,
@@ -473,7 +483,7 @@ function lp_lostload_optimality_cuts(m, cb_data, ec, edg, v_0, openbranches, vio
         res.is_feasible || continue
         res.obj ≤ atol && continue
         ocut = OBendersCut(edg, br, v_0, [res.reduced_cost[b...] for b in edg], :lostload, res.obj)
-        cb_apply_cut!(m, cb_data, ocut)
+        apply_cut!(sink, ocut)
         push!(applied, ocut)
     end
     applied, n_lp
@@ -482,12 +492,6 @@ end
 function modularity_cut!(m, g, openbranches)
     @constraint(m, sum(1 - m[:v][bus] for bus in edge_labels(g) if bus ∉ openbranches) ≤
                    (ne(g) - length(openbranches)) * sum(m[:v][bus] for bus in openbranches))
-end
-
-function cb_modularity_cut!(m, g, openbranches)
-    con = @build_constraint(
-        sum(1 - m[:v][bus] for bus in edge_labels(g) if bus ∉ openbranches) ≤ (ne(g) - length(openbranches)) * sum(m[:v][bus] for bus in openbranches))
-    MOI.submit(m, MOI.LazyConstraint(cb_data), con)
 end
 
 """
@@ -501,7 +505,7 @@ Generate pocket-topology bypass cuts. Returns ALL cuts (applied and deferred) as
   deferred (stored but not applied) otherwise. Both cases carry
   `required_openings = pk_openings` so future phases can test SBS compatibility.
 """
-function bypass_cut_from_pockets(m, cb_data, g, openbranches, sbs,
+function bypass_cut_from_pockets(m, sink::CutSink, g, openbranches, sbs,
                                   bridge_to_pocket, known_pockets::Vector{Pocket})
     all_cuts = Vector{Tuple{GenericCut, Set{ELabel}}}()
     for (bridge, pk) in bridge_to_pocket
@@ -518,7 +522,7 @@ function bypass_cut_from_pockets(m, cb_data, g, openbranches, sbs,
             # -sum_P v_i ≤ -1  ↔  sum_P v_i ≥ 1
             isempty(perimeter) && continue
             infeas_cut = GenericCut(perimeter, falses(length(perimeter)), fill(-1.0, length(perimeter)), -1.0)
-            cb_apply_cut!(m, cb_data, infeas_cut)
+            apply_cut!(sink, infeas_cut)
             push!(all_cuts, (infeas_cut, Set{ELabel}()))
             push!(known_pockets, pk)
             continue
@@ -544,7 +548,7 @@ function bypass_cut_from_pockets(m, cb_data, g, openbranches, sbs,
             continue
         end
 
-        cb_apply_cut!(m, cb_data, cut)
+        apply_cut!(sink, cut)
         push!(all_cuts, (cut, req))
     end
     all_cuts

@@ -1,0 +1,43 @@
+{
+    "instance": "57",
+    "cap_seconds": 900,
+    "backend": "gurobi",
+    "wall_seconds": 900.1,
+    "started_at": "2026-09-22T19:45:59.494",
+    "d_sol": 0,
+    "config": "NO-LOCALSEARCH",
+    "solver_version": "13.0.3",
+    "disabled": "5: local search",
+    "objective": 8.532,
+    "secure": true,
+    "julia_version": "1.12.1",
+    "openings": [
+        "1-15",
+        "13-15",
+        "14-15",
+        "26-27",
+        "30-31",
+        "38-49",
+        "4-5",
+        "4-6",
+        "53-54"
+    ],
+    "status": "done",
+    "lp_solves": 1245,
+    "H": 0,
+    "benders_iterations": 211,
+    "phases": [
+        {
+            "secure": true,
+            "iteration": 1,
+            "objective": 8.532,
+            "sbs_size": 78,
+            "seconds": 900,
+            "capped": true
+        }
+    ],
+    "k": 1,
+    "d_viol": 0,
+    "finished_at": "2026-09-22T20:00:59.586",
+    "seed": 1
+}

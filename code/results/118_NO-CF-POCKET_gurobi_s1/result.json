@@ -1,0 +1,58 @@
+{
+    "instance": "118",
+    "cap_seconds": 900,
+    "backend": "gurobi",
+    "wall_seconds": 37.3,
+    "started_at": "2026-09-22T19:39:12.704",
+    "d_sol": 0,
+    "config": "NO-CF-POCKET",
+    "solver_version": "13.0.3",
+    "disabled": "2: closed-form cuts → LP, pocket π",
+    "objective": 5.29,
+    "secure": true,
+    "julia_version": "1.12.1",
+    "openings": [
+        "12-14",
+        "30-38",
+        "40-41",
+        "40-42",
+        "49-50",
+        "49-51",
+        "54-55",
+        "54-56"
+    ],
+    "status": "done",
+    "lp_solves": 1188,
+    "H": 3,
+    "benders_iterations": 99,
+    "phases": [
+        {
+            "secure": true,
+            "iteration": 1,
+            "objective": 5.69,
+            "sbs_size": 61,
+            "seconds": 16.5,
+            "capped": false
+        },
+        {
+            "secure": true,
+            "iteration": 2,
+            "objective": 5.29,
+            "sbs_size": 61,
+            "seconds": 11.7,
+            "capped": false
+        },
+        {
+            "secure": true,
+            "iteration": 3,
+            "objective": 5.29,
+            "sbs_size": 61,
+            "seconds": 8.5,
+            "capped": false
+        }
+    ],
+    "k": 3,
+    "d_viol": 2,
+    "finished_at": "2026-09-22T19:39:50.159",
+    "seed": 1
+}

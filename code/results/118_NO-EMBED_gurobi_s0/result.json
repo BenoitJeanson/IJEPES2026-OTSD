@@ -1,0 +1,58 @@
+{
+    "instance": "118",
+    "cap_seconds": 900,
+    "backend": "gurobi",
+    "wall_seconds": 253.4,
+    "started_at": "2026-09-22T19:00:28.375",
+    "d_sol": 0,
+    "config": "NO-EMBED",
+    "solver_version": "13.0.3",
+    "disabled": "3: contingency embedding",
+    "objective": 5.29,
+    "secure": true,
+    "julia_version": "1.12.1",
+    "openings": [
+        "14-15",
+        "30-38",
+        "40-41",
+        "40-42",
+        "49-50",
+        "49-51",
+        "54-55",
+        "54-56"
+    ],
+    "status": "done",
+    "lp_solves": 5683,
+    "H": 3,
+    "benders_iterations": 1114,
+    "phases": [
+        {
+            "secure": true,
+            "iteration": 1,
+            "objective": 5.69,
+            "sbs_size": 61,
+            "seconds": 104.5,
+            "capped": false
+        },
+        {
+            "secure": true,
+            "iteration": 2,
+            "objective": 5.29,
+            "sbs_size": 61,
+            "seconds": 61.5,
+            "capped": false
+        },
+        {
+            "secure": true,
+            "iteration": 3,
+            "objective": 5.29,
+            "sbs_size": 61,
+            "seconds": 86.9,
+            "capped": false
+        }
+    ],
+    "k": 3,
+    "d_viol": 2,
+    "finished_at": "2026-09-22T19:04:41.929",
+    "seed": 0
+}
