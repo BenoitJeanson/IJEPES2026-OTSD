@@ -38,6 +38,32 @@ current candidate drawn bold white on top. Drag right and the neighbourhood the 
 actually lives in paints itself in; drag left and it un-paints. That view survives the
 one phase with 17,743 candidates as comfortably as the median one with 22.
 
+### The SBS is drawn, and it had to be dug out
+
+The switchable branch set is the surface the master is allowed to act on; everything
+outside it is fixed for that phase. So it is drawn as the surface: branches in the SBS
+sit forward, branches outside recede to near-invisible, and the ones this phase *added*
+to the SBS are picked out in teal. Toggle it with **SBS**.
+
+No text log records SBS *membership* — only `|SBS|` as a number. The tempting shortcut,
+taking the union of branches ever opened across a phase's candidates, is badly wrong:
+measured over all 480 phases it covers a **median 39 %** of the real set. That would
+show the search's footprint and pass it off as its permitted surface.
+
+So `tools/sbs.jl` reads the authoritative set out of the serialized solver state:
+`i<N>_state.jls` holds `accumulated_sbs` after phase *N* grew it. Phase 1's set is never
+serialized, so it is recomputed by calling TNROpt's own `sa_induced_followed` — the same
+call `ablation.jl` makes — rather than reimplementing it.
+
+**Cross-checks, both exact:** every recomputed and every deserialized set matches the
+logged `|SBS|` for all 162 runs and all 480 phases; and all 88,149 candidates lie inside
+the SBS their phase searched, which they must, since the master cannot open anything else.
+
+> **A labelling trap.** `result.json`'s `sbs_size` for phase *N* is the SBS **after**
+> phase *N* grew it — that is, the set phase *N+1* searches. The set phase *N* actually
+> searched is the previous one (for phase 1, `init_sbs`). The viewer always shows the
+> set the phase searched, and the `+n` beside it is what that phase added.
+
 ### The objective was not in the logs
 
 The callback logs record elapsed time, the open-branch set, the violated contingencies
@@ -86,7 +112,7 @@ These are all real properties of the data, surfaced in the UI rather than smooth
 | scrubber, `←` `→`, `shift`+arrow | move one / twenty-five candidates |
 | `space`, **play** | run the phase, 0.4× to 400× — **1× is 2.5 candidates per second** |
 | **ghost a run…** then pick one | overlay a second run's whole residency in violet |
-| **heat** / **violations** / **bus labels** | layers on and off |
+| **heat** / **violations** / **SBS** / **bus labels** | layers on and off |
 | drag, wheel — or one finger / two-finger pinch | pan, zoom |
 | ☰ and ⓘ (phone only) | the run list and the run details, as sheets |
 | **open in coordedit →** | send this exact candidate to the local tool for real flows |
@@ -116,15 +142,18 @@ Two parsing hazards worth recording, both handled:
 - The callback logs print Julia `Set` literals via `show`, whose iteration order is not
   stable. Everything is compared as a set of branch indices, never as a string.
 - **44 phases have two callback logs in the same directory** — those runs were executed
-  twice and both campaigns' logs coexist. `result.json` describes the later one, so the
-  parser pins the log by `manifest.started_at` rather than taking whichever sorts first.
+  twice and both campaigns' logs coexist. `result.json` describes the later one, so both
+  tools pin the log by the stamp *nearest* `manifest.started_at`. Nearest, not equal: the
+  filename stamp is read from the clock just before the manifest is written, and in
+  `118_H4_d2_hop1_REF_s3` the two differ by one second.
 
 ## Rebuilding the data
 
 Needs the raw campaign directory and the `coordedit` venv from the main repo:
 
 ```bash
-python tools/prep.py docs/data
+julia --project=/path/to/tnr tools/sbs.jl     # SBS membership out of the .jls
+python tools/prep.py docs/data                # everything else, merging the above
 ```
 
 ---

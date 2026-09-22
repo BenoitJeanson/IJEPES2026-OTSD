@@ -5,6 +5,7 @@ re-evaluated with coordedit's validated `pf.risk` (eval_risk) -- the campaign's
 objective is lost load (ov_lostload_coef=1, ov_n1violation_coef=null).
 """
 import os, re, sys, json, glob, csv
+import datetime as dt
 from concurrent.futures import ProcessPoolExecutor
 
 ROOT = os.environ.get('TNR_ROOT', '/Users/benoitjeanson/vsCode/TUD/tnr')
@@ -105,6 +106,13 @@ def risk_of(args):
 
 
 def main():
+    # tools/sbs.jl writes this: the SBS membership, which no text log records.
+    # `used[n]` is the set phase n searched in; `after[n]` is what it grew to.
+    sbs_path = os.environ.get('SBS_JSON', os.path.join(os.path.dirname(OUT), 'sbs.json'))
+    SBS = json.load(open(sbs_path)) if os.path.isfile(sbs_path) else {}
+    if not SBS:
+        print('  no sbs.json - run tools/sbs.jl first, or the SBS layer will be absent')
+
     os.makedirs(os.path.join(OUT, 'runs'), exist_ok=True)
     os.makedirs(os.path.join(OUT, 'net'), exist_ok=True)
     nets, idxs = {}, {}
@@ -125,8 +133,14 @@ def main():
         idx = idxs[s]
         # some dirs hold two campaigns' logs (the run was executed twice); the
         # manifest's start time picks the one result.json actually describes
-        stamp = re.sub(r'[-:]', '', man.get('started_at', ''))[:15]
-        stamp = stamp[:8] + '_' + stamp[9:15] if len(stamp) >= 15 else ''
+        # Files are stamped yyyy-mm-dd_HHMMSS from a clock read just before the
+        # manifest is written, so the two can differ by a second; and a directory
+        # may hold two campaigns. Take the stamp nearest the manifest's start time.
+        t0 = dt.datetime.fromisoformat(man['started_at'].split('.')[0])
+        stamps = sorted({m for f in os.listdir(rd)
+                         for m in re.findall(r'\d{4}-\d{2}-\d{2}_\d{6}', f)})
+        stamp = min(stamps, key=lambda x: abs(
+            dt.datetime.strptime(x, '%Y-%m-%d_%H%M%S') - t0)) if stamps else ''
         key = lambda lst: sorted({idx[(min(int(a), int(b)), max(int(a), int(b)))]
                                   for a, b in (o.split('-') for o in (lst or []))
                                   if (min(int(a), int(b)), max(int(a), int(b))) in idx})
@@ -136,8 +150,15 @@ def main():
             g = [x for x in g if os.path.basename(x).startswith(stamp)] or g
             frames = parse_cb(g[-1], idx) if g else []
             sol = key(it['openings'])
-            phases.append({'i': it['iteration'], 'obj': it['objective'], 'secure': it['secure'],
-                           'sbs': it['sbs_size'], 'lp': it['lp_solves'], 'sec': it['seconds'],
+            sb = SBS.get(d, {})
+            used = key(sb.get('used', {}).get(str(it['iteration'])) or [])
+            prev = key(sb.get('used', {}).get(str(it['iteration'] - 1)) or []) \
+                if it['iteration'] > 1 else []
+            phases.append({'sbs': used,
+                           'sbs_new': sorted(set(used) - set(prev)) if it['iteration'] > 1 else [],
+                           'sbs_after': key(sb.get('after', {}).get(str(it['iteration'])) or []),
+                           'i': it['iteration'], 'obj': it['objective'], 'secure': it['secure'],
+                           'lp': it['lp_solves'], 'sec': it['seconds'],
                            'cum': it['cumulative_seconds'], 'capped': it['capped'],
                            'sol': sol, 'frames': frames})
             for f in frames:

@@ -9,7 +9,7 @@
 <style>
 :root{
   --bg:#0e1116; --panel:#161b22; --line:#262d38; --ink:#e6edf3; --dim:#8b949e;
-  --acc:#58a6ff; --warm:#f0883e; --hot:#ff7b72; --cool:#3fb950; --ghost:#bc8cff;
+  --acc:#58a6ff; --warm:#f0883e; --hot:#ff7b72; --cool:#3fb950; --ghost:#bc8cff; --sbs:#2dd4bf;
 }
 *{box-sizing:border-box}
 html,body{height:100%}
@@ -183,6 +183,7 @@ a{color:var(--acc)}
     <div class="row">
       <button id="bheat" class="on">heat</button>
       <button id="bvctg" class="on">violations</button>
+      <button id="bsbs" class="on">SBS</button>
       <button id="blabel">bus labels</button>
     </div>
     <div class="row">
@@ -232,7 +233,7 @@ const el = (n, a = {}) => { const e = document.createElementNS(SVGNS, n);
 const S = {                       // everything the render reads
   index: null, nets: {}, run: null, phase: 0, frame: 0,
   heat: null, ghost: null, ghostHeat: null,
-  playing: false, showHeat: true, showVctg: true, showLabels: false,
+  playing: false, showHeat: true, showVctg: true, showLabels: false, showSBS: true,
   view: { k: 1, x: 0, y: 0 }
 };
 
@@ -316,6 +317,7 @@ function draw() {
   const open = new Set(f ? f.o : ph() ? ph().sol : []);
   const vctg = new Set(S.showVctg && f ? f.v : []);
   const gh = S.ghostHeat, ghMax = gh ? Math.max(1, ...gh.h.values()) : 1;
+  const inSBS = new Set(ph() ? ph().sbs : []), newSBS = new Set(ph() ? ph().sbs_new : []);
 
   const P = b => [geom.X(n.buses[b].xy[0]), geom.Y(n.buses[b].xy[1])];
   const byNum = {}; n.buses.forEach((b, i) => byNum[b.i] = i);
@@ -328,10 +330,18 @@ function draw() {
         'stroke-width': 2 + 7 * t, 'stroke-opacity': 0.13 + 0.3 * t, 'stroke-linecap': 'round' }));
     }
     const t = (res.h.get(i) || 0) / max;
-    const [col, w] = heatColor(t);
-    const ln = el('line', { x1, y1, x2, y2, stroke: col, 'stroke-width': w,
-      'stroke-linecap': 'round', 'data-e': i });
-    g.appendChild(ln);
+    let [col, w] = heatColor(t), op = 1;
+    if (S.showSBS && !inSBS.has(i)) {
+      // outside the SBS this phase searched: the master could never open it
+      col = '#1c212a'; w = 0.8; op = 0.45;
+    } else if (S.showSBS && t <= 0) {
+      col = '#4e5c72'; w = 1.6;                  // in the SBS, not yet visited
+    }
+    if (S.showSBS && newSBS.has(i))
+      g.appendChild(el('line', { x1, y1, x2, y2, stroke: 'var(--sbs)',
+        'stroke-width': 6, 'stroke-opacity': .3, 'stroke-linecap': 'round' }));
+    g.appendChild(el('line', { x1, y1, x2, y2, stroke: col, 'stroke-width': w,
+      'stroke-opacity': op, 'stroke-linecap': 'round', 'data-e': i }));
     if (vctg.has(i))
       g.appendChild(el('line', { x1, y1, x2, y2, stroke: 'var(--hot)', 'stroke-width': 4.5,
         'stroke-opacity': .95, 'stroke-dasharray': '7 5', 'stroke-linecap': 'round' }));
@@ -386,7 +396,8 @@ function hud(res) {
       row('cuts', f.c),
       row('t', (f.t / 1000).toFixed(1) + 's'),
       row('open', f.o.length),
-      row('painted', res.h.size)
+      row('painted', res.h.size),
+      row('SBS', ph().sbs.length)
     ].join('') : row('phase result', `${MW(p.obj)} MW`);
   } else
   $('#hud').innerHTML = f ? [
@@ -396,12 +407,17 @@ function hud(res) {
     row('cuts applied', f.c),
     row('elapsed', (f.t / 1000).toFixed(2) + ' s'),
     row('open', f.o.length),
-    row('branches painted', res.h.size)
+    row('branches painted', res.h.size),
+    row('SBS searched', ph().sbs.length + (ph().sbs_new.length ? ` (+${ph().sbs_new.length})` : ''))
   ].join('') : row('phase result', `${MW(p.solobj)} MW`);
   $('#legend').innerHTML =
     `<i style="border-color:#fff"></i>open in this candidate<br>` +
     `<i style="border-color:var(--hot);border-top-style:dashed"></i>violated contingency<br>` +
-    `<i style="border-color:hsl(24 80% 52%)"></i>opened often so far (heat)` +
+    `<i style="border-color:hsl(24 80% 52%)"></i>opened often so far (heat)<br>` +
+    (S.showSBS ? `<i style="border-color:#4e5c72"></i>in the SBS, not yet tried<br>` +
+      `<i style="border-color:#1c212a"></i>outside the SBS — cannot be opened` +
+      (ph() && ph().sbs_new.length ? `<br><i style="border-color:var(--sbs)"></i>added to the SBS this phase` : '')
+      : '') +
     (S.ghost ? `<br><i style="border-color:var(--ghost)"></i>ghost: ${S.ghost.id}` : '');
 }
 
@@ -519,7 +535,8 @@ function sidebar() {
   ].map(([k, v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join('');
   $('#phases').innerHTML = r.phases.map((q, i) =>
     `<div class="ph ${i === S.phase ? 'sel' : ''}" data-p="${i}">i${q.i}
-      <small>${MW(q.obj)}</small><small>${q.frames.length}f</small></div>`).join('');
+      <small>${MW(q.obj)}</small><small>${q.frames.length}f</small>
+      <small style="color:var(--sbs)">sbs ${q.sbs.length}</small></div>`).join('');
   $('#phases').querySelectorAll('.ph').forEach(d => d.onclick = () => {
     S.phase = +d.dataset.p; S.frame = 0; play(false); draw(); sidebar();
   });
@@ -593,7 +610,8 @@ $('#bstep0').onclick = () => { play(false); setFrame(0); };
 $('#bstep1').onclick = () => { play(false); setFrame(frames().length - 1); };
 $('#bstepm').onclick = () => { play(false); setFrame(S.frame - 1); };
 $('#bstepp').onclick = () => { play(false); setFrame(S.frame + 1); };
-for (const [id, key] of [['bheat', 'showHeat'], ['bvctg', 'showVctg'], ['blabel', 'showLabels']])
+for (const [id, key] of [['bheat', 'showHeat'], ['bvctg', 'showVctg'],
+                         ['blabel', 'showLabels'], ['bsbs', 'showSBS']])
   $('#' + id).onclick = e => { S[key] = !S[key]; e.target.classList.toggle('on', S[key]); draw(); };
 $('#bghost').onclick = e => { pickingGhost = !pickingGhost; e.target.classList.toggle('on', pickingGhost); };
 $('#bclear').onclick = () => { S.ghost = S.ghostHeat = null; draw(); sidebar(); runList(); };
