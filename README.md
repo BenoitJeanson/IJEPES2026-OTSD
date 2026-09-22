@@ -60,8 +60,9 @@ one phase with 17,743 candidates as comfortably as the median one with 22.
 
 The switchable branch set is the surface the master is allowed to act on; everything
 outside it is fixed for that phase. So it is drawn as the surface: branches in the SBS
-sit forward, branches outside it recede to near-invisible, and the ones that phase
-*added* carry a thicker teal underlay. In phase 1 the whole SBS is "added" — that is
+sit forward, branches outside it recede to a thin grey that still shows the network's
+shape, and the ones that phase *added* are drawn in bright teal — the stroke itself,
+not a halo behind it, or the untried-branch stroke would cover it. In phase 1 the whole SBS is "added" — that is
 the phase which brings it into being from the heuristic seed. Toggle it with **SBS**.
 
 Membership is per phase, not permanent: in `118_H4_d2_hop1_REF`, 17 branches that sit

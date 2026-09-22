@@ -481,18 +481,23 @@ function draw() {
         'stroke-linecap': 'round' }));
     }
     const t = (res.h.get(i) || 0) / max;
+    const inS = inSBS.has(i), isNew = S.showSBS && inS && newSBS.has(i);
     let [col, w] = heatColor(t), op = 1;
-    if (S.showSBS && !inSBS.has(i)) {
-      // outside the SBS this phase searched: the master could never open it
-      col = '#1c212a'; w = 0.8; op = 0.45;
+    if (S.showSBS && !inS) {
+      // outside the SBS this phase: recessed, but the network's shape still has to
+      // be readable, so this stays a visible line rather than a hint of one
+      col = '#3c4553'; w = 1.0; op = 0.8;
     } else if (S.showSBS && t <= 0) {
-      col = '#4e5c72'; w = 1.6;                  // in the SBS, not yet visited
+      // in the SBS and not yet tried. When it is also new to the SBS this phase,
+      // teal IS the stroke: as an underlay it was covered by this same line.
+      col = isNew ? '#2dd4bf' : '#6a7c96';
+      w = isNew ? 2.4 : 1.8;
     }
-    // "added this phase" is carried by a thicker teal underlay, and is guarded to
-    // SBS members so it can never contradict the faint outside-the-SBS styling
-    if (S.showSBS && inSBS.has(i) && newSBS.has(i))
+    // once a branch has been opened the heat colour takes the stroke, so a newly
+    // added branch keeps its teal as a halo wide enough to show around it
+    if (isNew && t > 0)
       g.appendChild(el('line', { x1, y1, x2, y2, stroke: 'var(--sbs)',
-        'stroke-width': 3.6, 'stroke-opacity': .42, 'stroke-linecap': 'round' }));
+        'stroke-width': w + 4, 'stroke-opacity': .55, 'stroke-linecap': 'round' }));
     g.appendChild(el('line', { x1, y1, x2, y2, stroke: col, 'stroke-width': w,
       'stroke-opacity': op, 'stroke-linecap': 'round', 'data-e': i }));
     if (vctg.has(i))
@@ -567,10 +572,10 @@ function hud(res) {
     `<i style="border-color:#fff"></i>open in this candidate<br>` +
     `<i style="border-color:var(--hot);border-top-style:dashed"></i>violated contingency<br>` +
     `<i style="border-color:hsl(24 80% 52%)"></i>opened often so far (heat)<br>` +
-    (S.showSBS ? `<i style="border-color:#4e5c72"></i>in the SBS this phase, not yet tried<br>` +
-      `<i style="border-color:#1c212a"></i>outside the SBS this phase` +
+    (S.showSBS ? `<i style="border-color:#6a7c96"></i>in the SBS this phase, not yet tried<br>` +
+      `<i style="border-color:#3c4553"></i>outside the SBS this phase` +
       (ph() && ph().sbs_new.length
-        ? `<br><i style="border-color:var(--sbs);border-top-width:5px"></i>added to the SBS this phase` : '')
+        ? `<br><i style="border-color:var(--sbs);border-top-width:4px"></i>added to the SBS this phase` : '')
       : '') +
     (S.ghost ? `<br><i style="border-color:var(--ghost);border-top-width:6px"></i>`
       + `reference: ${S.ghost.id}` : '');
