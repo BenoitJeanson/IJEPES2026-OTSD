@@ -142,7 +142,7 @@ These are all real properties of the data, surfaced in the UI rather than smooth
 |---|---|
 | scrubber, `←` `→`, `shift`+arrow | move one / twenty-five candidates |
 | `space`, **play** | run the phase, 0.4× to 400× — **1× is 2.5 candidates per second** |
-| **overlay a run…** then pick one | draw a second run's residency in violet, to compare where two searches went |
+| **overlay a run…** then pick one from the list | draw a second run's residency as a violet halo, to compare where two searches went |
 | **heat** / **violations** / **SBS** / **bus labels** | layers on and off |
 | drag, wheel — or one finger / two-finger pinch | pan, zoom |
 | click or drag the gantt | seek to that candidate |

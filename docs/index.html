@@ -33,6 +33,7 @@ button{background:#21262d;color:var(--ink);border:1px solid var(--line);border-r
 button:hover{background:#30363d}
 button.on{background:var(--acc);border-color:var(--acc);color:#04121f;font-weight:600}
 #runs{border:1px solid var(--line);border-radius:6px;overflow:auto;max-height:calc(100vh - 230px)}
+#runs.picking{border-color:var(--ghost);box-shadow:0 0 0 2px #bc8cff44}
 .run{padding:5px 8px;border-bottom:1px solid var(--line);cursor:pointer;font-size:12px;
   display:flex;justify-content:space-between;gap:6px;white-space:nowrap}
 .run:hover{background:#1c2230}
@@ -175,6 +176,8 @@ a{color:var(--acc)}
         <option value="nframes">sort: frames</option>
       </select>
     </div>
+    <p class="note" id="pickhint" hidden
+       style="color:var(--ghost);margin:0 0 6px">click a run below to overlay it</p>
     <div id="runs"></div>
     <p class="note" id="count"></p>
   </div>
@@ -346,10 +349,14 @@ function draw() {
 
   n.edges.forEach((e, i) => {
     const [x1, y1] = P(byNum[e.f]), [x2, y2] = P(byNum[e.t]);
-    if (gh) {                                  // ghost residency, drawn underneath
-      const t = (gh.h.get(i) || 0) / ghMax;
-      if (t > 0.02) g.appendChild(el('line', { x1, y1, x2, y2, stroke: 'var(--ghost)',
-        'stroke-width': 2 + 7 * t, 'stroke-opacity': 0.13 + 0.3 * t, 'stroke-linecap': 'round' }));
+    if (gh) {                    // overlaid run's residency, as a halo underneath
+      // sqrt, because normalising linearly against the busiest branch pinned almost
+      // every other one to the floor; and the floor must out-width the 4.2px stroke
+      // drawn on top of it, or the halo is invisible exactly where it matters
+      const t = Math.sqrt((gh.h.get(i) || 0) / ghMax);
+      if (t > 0.04) g.appendChild(el('line', { x1, y1, x2, y2, stroke: 'var(--ghost)',
+        'stroke-width': 5 + 11 * t, 'stroke-opacity': 0.18 + 0.5 * t,
+        'stroke-linecap': 'round' }));
     }
     const t = (res.h.get(i) || 0) / max;
     let [col, w] = heatColor(t), op = 1;
@@ -443,7 +450,8 @@ function hud(res) {
       (ph() && ph().sbs_new.length
         ? `<br><i style="border-color:var(--sbs);border-top-width:5px"></i>added to the SBS this phase` : '')
       : '') +
-    (S.ghost ? `<br><i style="border-color:var(--ghost)"></i>ghost: ${S.ghost.id}` : '');
+    (S.ghost ? `<br><i style="border-color:var(--ghost);border-top-width:6px"></i>`
+      + `overlaid: ${S.ghost.id}` : '');
 }
 
 /* Candidates are branch-and-cut nodes, not a descending trajectory: draw them as
@@ -692,7 +700,7 @@ function runList() {
     `<div class="run ${S.run && S.run.id === r.id ? 'sel' : ''}${S.ghost && S.ghost.id === r.id ? ' gh' : ''}"
        data-id="${r.id}"><b>${r.id}</b><span>${(r.obj * 100).toFixed(0)}</span></div>`).join('');
   $('#runs').querySelectorAll('.run').forEach(d => d.onclick = () => {
-    if (pickingGhost) { pickingGhost = false; $('#bghost').classList.remove('on'); loadRun(d.dataset.id, true); }
+    if (pickingGhost) { endPick(); loadRun(d.dataset.id, true); }
     else loadRun(d.dataset.id, false);
   });
   $('#count').textContent = `${rs.length} of ${S.index.runs.length} runs · `
@@ -819,8 +827,24 @@ $('#bstepp').onclick = () => { play(false); setFrame(S.frame + 1); };
 for (const [id, key] of [['bheat', 'showHeat'], ['bvctg', 'showVctg'],
                          ['blabel', 'showLabels'], ['bsbs', 'showSBS']])
   $('#' + id).onclick = e => { S[key] = !S[key]; e.target.classList.toggle('on', S[key]); draw(); };
-$('#bghost').onclick = e => { pickingGhost = !pickingGhost; e.target.classList.toggle('on', pickingGhost); };
-$('#bclear').onclick = () => { S.ghost = S.ghostHeat = null; draw(); sidebar(); runList(); };
+$('#bghost').onclick = e => {
+  pickingGhost = !pickingGhost;
+  e.target.classList.toggle('on', pickingGhost);
+  e.target.textContent = pickingGhost ? 'pick a run ↓' : 'overlay a run…';
+  $('#runs').classList.toggle('picking', pickingGhost);
+  $('#pickhint').hidden = !pickingGhost;
+  if (pickingGhost && phone()) sheet('left', true);   // the list lives in the other sheet
+};
+function endPick() {
+  pickingGhost = false;
+  $('#bghost').classList.remove('on');
+  $('#bghost').textContent = 'overlay a run…';
+  $('#runs').classList.remove('picking');
+  $('#pickhint').hidden = true;
+}
+$('#bclear').onclick = () => {
+  S.ghost = S.ghostHeat = null; endPick(); draw(); sidebar(); runList();
+};
 for (const id of ['fsys', 'fcfg', 'fH', 'fsort']) $('#' + id).onchange = runList;
 addEventListener('keydown', e => {
   if (e.target.tagName === 'SELECT' || e.target.tagName === 'INPUT') return;
