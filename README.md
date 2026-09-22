@@ -42,8 +42,14 @@ one phase with 17,743 candidates as comfortably as the median one with 22.
 
 The switchable branch set is the surface the master is allowed to act on; everything
 outside it is fixed for that phase. So it is drawn as the surface: branches in the SBS
-sit forward, branches outside recede to near-invisible, and the ones this phase *added*
-to the SBS are picked out in teal. Toggle it with **SBS**.
+sit forward, branches outside it recede to near-invisible, and the ones that phase
+*added* carry a thicker teal underlay. In phase 1 the whole SBS is "added" — that is
+the phase which brings it into being from the heuristic seed. Toggle it with **SBS**.
+
+Membership is per phase, not permanent: in `118_H4_d2_hop1_REF`, 17 branches that sit
+outside the SBS in phase 1 are inside it by phase 3, so a branch goes faint → teal →
+ordinary as the search widens its surface. Across all 480 phases a median of **63 %**
+of the network is outside the SBS.
 
 No text log records SBS *membership* — only `|SBS|` as a number. The tempting shortcut,
 taking the union of branches ever opened across a phase's candidates, is badly wrong:
@@ -72,11 +78,22 @@ often the branch is open, which separates two things at a glance: the solid bloc
 the top is the stable core the search never gives up, and the scatter below is what it
 churns through. Columns where the subproblem found **no violated contingency** — the
 feasible proposals — are washed green with a solid foot, and the phase's reported
-result is the blue column.
+result is the blue column — and those same feasible candidates are the green dots in
+the objective plot, the only ones the incumbent can step to.
 
 Click or drag anywhere on it to seek. Drag its top edge to resize; past about 8 px a
 row it grows a gutter with the branch names. **gantt** toggles it — on by default on
 desktop, off on a phone, where it also gets capped so it cannot starve the network.
+
+### The green line is the incumbent, not a running minimum
+
+The objective plot draws every candidate as a dot, but the line through them is the
+best **feasible** objective so far — feasible meaning the subproblem found no violated
+contingency. A running minimum over all candidates would track proposals the subproblem
+went on to reject, which bounds nothing. What you get instead is a step function that
+moves only when a feasible candidate beats the incumbent, and that lands on the phase
+result. Feasible candidates are the larger green dots; they are a median **30 %** of a
+phase's candidates, and every phase has at least one.
 
 ### The objective was not in the logs
 
@@ -125,13 +142,12 @@ These are all real properties of the data, surfaced in the UI rather than smooth
 |---|---|
 | scrubber, `←` `→`, `shift`+arrow | move one / twenty-five candidates |
 | `space`, **play** | run the phase, 0.4× to 400× — **1× is 2.5 candidates per second** |
-| **ghost a run…** then pick one | overlay a second run's whole residency in violet |
+| **overlay a run…** then pick one | draw a second run's residency in violet, to compare where two searches went |
 | **heat** / **violations** / **SBS** / **bus labels** | layers on and off |
 | drag, wheel — or one finger / two-finger pinch | pan, zoom |
 | click or drag the gantt | seek to that candidate |
 | drag the gantt's top edge, or a panel's inner edge | resize (remembered per browser) |
 | ☰ and ⓘ (phone only) | the run list and the run details, as sheets |
-| **open in coordedit →** | send this exact candidate to the local tool for real flows |
 
 `&play=1` starts a link playing, `&speed=5` picks the rate, and `&gantt=1` forces the
 matrix on.
@@ -145,7 +161,7 @@ candidate of a specific phase with a specific ghost, ready to paste into an emai
 No flows, no overloads, no N−1 panel. Those need the DC solver, which is Python, which
 means a server — and this had to be something you open from a link. `tools/coordedit`
 in the main repo already does all of that and was validated to 1e-14, so rather than
-build a second, subtly different copy, every frame carries a link into it.
+build a second, subtly different copy, this one stays out of that business.
 
 ## Data provenance
 
