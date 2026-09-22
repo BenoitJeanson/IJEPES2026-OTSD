@@ -95,6 +95,24 @@ Click or drag anywhere on it to seek. Drag its top edge to resize; past about 8 
 row it grows a gutter with the branch names. **gantt** toggles it — on by default on
 desktop, off on a phone, where it also gets capped so it cannot starve the network.
 
+### Two x-axes: what the search tried, and how long it took
+
+By default the objective plot and the gantt give every candidate an equal step — the
+right view for *what the search tried*. **time axis** rescales both to elapsed solve
+time within the phase, so a gantt column's width is the time that candidate took to
+produce, and a long pause becomes a wide band you can see.
+
+The two look very different, because candidates do not arrive evenly. Measured across
+all 480 phases: the longest gap within a phase is a median **10×** its median gap and
+up to **935×**, and a median **20 %** of a phase's wall time sits inside a single gap,
+up to **91 %**. `t` is milliseconds since the phase's solve began and is monotone in
+every phase, with no gaps in the record.
+
+Comparing the *shape* of time within one phase is sound. Comparing totals *between*
+runs is not — the wall-time caveat below still applies. The scrubber underneath always
+steps candidate by candidate, so in time mode it is deliberately not linear in the
+gantt's x.
+
 ### Comparing two runs
 
 **pin this run as reference** freezes the run you are looking at as a violet halo —
@@ -162,7 +180,8 @@ These are all real properties of the data, surfaced in the UI rather than smooth
 | scrubber, `←` `→`, `shift`+arrow | move one / twenty-five candidates |
 | `space`, **play** | run the phase, 0.4× to 400× — **1× is 2.5 candidates per second** |
 | **pin this run as reference**, then pick one from the list | the run you were viewing turns violet and stays as the reference; the run you pick comes to the front, drawn over it |
-| **heat** / **violations** / **SBS** / **bus labels** | layers on and off |
+| **heat** / **violations** / **SBS** / **bus labels** / **legend** | layers on and off |
+| **time axis** | rescale the plot and gantt from candidate index to elapsed solve time |
 | drag, wheel — or one finger / two-finger pinch | pan, zoom |
 | click or drag the gantt | seek to that candidate |
 | drag the gantt's top edge, or a panel's inner edge | resize (remembered per browser) |

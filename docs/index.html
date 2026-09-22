@@ -230,6 +230,17 @@ a{color:var(--acc)}
     <tr><td>NO-LOCALSEARCH</td><td>The whole outer loop — no Hamming bound, no SBS.</td></tr>
   </table>
 
+  <h4>The two x-axes</h4>
+  <p>By default the objective plot and the gantt put one candidate per equal step, which
+     is the right view for <i>what the search tried</i>. <b>time axis</b> rescales both to
+     elapsed solve time within the phase, so a column's width is the time that candidate
+     took. Candidates arrive very unevenly — the longest gap in a phase is typically 10×
+     the median one, and a median 20 % of a phase's wall time sits inside a single gap —
+     so the two views can look completely different. The scrubber underneath always steps
+     candidate by candidate.</p>
+  <p>Comparing the <i>shape</i> of time within one phase is sound. Comparing total times
+     <i>between</i> runs is not — see below.</p>
+
   <h4>Two things to read carefully</h4>
   <p><b>Wall time is confounded.</b> Configurations ran in a fixed order within each block,
      so timing carries machine drift. LP-solve and Benders-iteration counts are the
@@ -316,6 +327,7 @@ a{color:var(--acc)}
         <option value="400">400×</option>
       </select>
       <button id="bgantt">gantt</button>
+      <button id="bxtime" title="x-axis: candidate index, or elapsed solve time">time axis</button>
       <span id="pos" class="sp"></span>
     </div>
     <input type="range" id="scrub" min="0" max="0" value="0">
@@ -338,7 +350,7 @@ const S = {                       // everything the render reads
   index: null, nets: {}, run: null, phase: 0, frame: 0,
   heat: null, ghost: null, ghostHeat: null,
   playing: false, showHeat: true, showVctg: true, showLabels: false, showSBS: true,
-  showGantt: true, ganttH: 150, showLegend: true,
+  showGantt: true, ganttH: 150, showLegend: true, xTime: false,
   view: { k: 1, x: 0, y: 0 }
 };
 
@@ -539,6 +551,31 @@ function hud(res) {
 /* Candidates are branch-and-cut nodes, not a descending trajectory: draw them as
    a cloud with a running minimum, never as a line. */
 
+/* Candidates do not arrive evenly: within a phase the longest gap is a median 10x
+   the median gap, and a median 20% of the wall time sits in one gap. The x-axis can
+   therefore be candidate index (default, every candidate equally wide) or elapsed
+   time, where a column's width is the time that candidate took to produce.
+   `t` is milliseconds since the phase's solve began, and is monotone in every phase. */
+function axis(fr) {
+  const N = fr.length, tmax = N ? fr[N - 1].t : 0;
+  if (!S.xTime || !tmax) return {                       // by candidate
+    time: false, N,
+    a: i => i / N, b: i => (i + 1) / N, at: i => (N === 1 ? 0 : i / (N - 1)),
+    seek: u => Math.round(u * (N - 1))
+  };
+  return {                                              // by elapsed time
+    time: true, N, tmax,
+    a: i => (i ? fr[i - 1].t : 0) / tmax, b: i => fr[i].t / tmax,
+    at: i => fr[i].t / tmax,
+    seek: u => {
+      const t = u * tmax;
+      let lo = 0, hi = N - 1;
+      while (lo < hi) { const m = (lo + hi) >> 1; if (fr[m].t < t) lo = m + 1; else hi = m; }
+      return lo;
+    }
+  };
+}
+
 /* ---------------------------------------------------------------- gantt --- */
 /* One row per branch this phase ever opened, ordered by how often; one column
    per candidate. Columns where the subproblem found no violated contingency are
@@ -564,13 +601,14 @@ function buildGantt(p, W, H) {
   const rh = H / rows.length;
   // a label gutter only once rows are tall enough to carry 9px type
   const gut = rh >= 8 ? 50 : 0, PW = W - gut;
-  const cw = Math.max(1, PW / N);
-  const col = i => gut + (N === 1 ? 0 : i / N * PW);
+  const ax = axis(fr);
+  const col = i => gut + ax.a(i) * PW;
+  const wid = i => Math.max(1, (ax.b(i) - ax.a(i)) * PW);
 
   // feasible candidates: the subproblem returned no violated contingency
   // a light wash so the column is scannable, plus a solid foot so it is unmistakable
   for (let i = 0; i < N; i++) if (!fr[i].v.length) {
-    const w = Math.max(1, cw);
+    const w = wid(i);
     x.fillStyle = 'rgba(63,185,80,.13)'; x.fillRect(col(i), 0, w, H);
     x.fillStyle = 'rgba(63,185,80,.85)'; x.fillRect(col(i), H - 3, w, 3);
   }
@@ -578,7 +616,7 @@ function buildGantt(p, W, H) {
   const idx = new Map(rows.map((e, r) => [e, r]));
   x.fillStyle = '#f0883e';
   for (let i = 0; i < N; i++) {
-    const cx = col(i), w = Math.max(1, cw);
+    const cx = col(i), w = wid(i);
     for (const e of fr[i].o) {
       const r = idx.get(e);
       if (r !== undefined) x.fillRect(cx, r * rh, w, Math.max(1, rh - (rh > 3 ? 1 : 0)));
@@ -621,20 +659,22 @@ function gantt() {
   g.setTransform(dpr, 0, 0, dpr, 0, 0);
   g.clearRect(0, 0, W, H);
 
-  const key = S.run.id + '#' + S.phase + '#' + W + 'x' + H;
+  const key = S.run.id + '#' + S.phase + '#' + W + 'x' + H + '#' + (S.xTime ? 't' : 'i');
   if (!ganttCache || ganttCache.key !== key) ganttCache = { key, ...buildGantt(p, W, H) };
   g.drawImage(ganttCache.bmp, 0, 0, W, H);
 
-  if (fr.length) {                       // cursor, aligned with the scrubber below
+  if (fr.length) {
     const gu = ganttCache.gut || 0;
-    const cx = gu + (fr.length === 1 ? 0 : S.frame / (fr.length - 1) * (W - gu - 1));
+    const cx = gu + axis(fr).at(S.frame) * (W - gu - 1);
     g.fillStyle = '#58a6ff'; g.fillRect(cx - 0.5, 0, 1.5, H);
   }
   const feas = fr.filter(f => !f.v.length).length;
   $('#gleft').textContent =
     `${ganttCache.rows.length} of ${p.sbs.length} SBS branches ever opened`;
+  const ax = axis(fr);
   $('#gright').innerHTML = `<span style="color:var(--cool)">${feas} feasible</span>`
     + ` · ${fr.length} candidates`
+    + (ax.time ? ` · <b>x = time</b>, ${fmtT(ax.tmax)} total` : ' · x = candidate')
     + (ganttCache.sol >= 0 ? ` · <span style="color:var(--acc)">result at ${ganttCache.sol + 1}</span>`
                            : ' · result not among them');
 }
@@ -642,7 +682,8 @@ function gantt() {
 let plotCache = null;
 function plot() {
   const sv = $('#plot'), fr = frames(), p = ph();
-  const key = S.run.id + '#' + S.phase + '#' + (sv.clientWidth || 0);
+  const key = S.run.id + '#' + S.phase + '#' + (sv.clientWidth || 0)
+            + '#' + (S.xTime ? 't' : 'i');
   if (!fr.length) { sv.innerHTML = ''; plotCache = null;
     $('#plotnote').textContent = 'no candidates logged for this phase'; return; }
 
@@ -660,7 +701,8 @@ function plot() {
     let hi = Math.max(q98, solOK ? p.solobj : -Infinity);
     const clipped = js.filter(v => v > hi).length;
     if (hi === lo) { hi += .5; lo -= .5; } else { const m = (hi - lo) * .08; lo -= m; hi += m; }
-    const X = i => L + i / Math.max(1, fr.length - 1) * (W - L - R);
+    const ax = axis(fr);
+    const X = i => L + ax.at(i) * (W - L - R);
     const Y = v => T + (hi - v) / (hi - lo) * (H - T - B);
 
     sv.setAttribute('viewBox', `0 0 ${W} ${H}`);
@@ -711,7 +753,7 @@ function plot() {
       'font-size': 9.5, 'text-anchor': anc || 'start' }); t.textContent = str; sv.appendChild(t); };
     txt(L, T - 3, `${(hi * 100).toFixed(0)} MW`);
     txt(L, H - 4, `${(lo * 100).toFixed(0)} MW`);
-    txt(W - R, H - 4, `${fr.length} candidates`, 'end');
+    txt(W - R, H - 4, ax.time ? `${fmtT(ax.tmax)} of solving` : `${fr.length} candidates`, 'end');
     if (clipped) txt(W - R, T - 3, `${clipped} above`, 'end');
 
     const sol = fr.findIndex(f => same(f.o, p.sol));
@@ -732,6 +774,8 @@ function plot() {
   cur.setAttribute('x1', x); cur.setAttribute('x2', x);
 }
 
+const fmtT = ms => ms >= 60000 ? `${Math.round(ms / 60000)} min`
+  : ms >= 1000 ? `${(ms / 1000).toFixed(ms < 10000 ? 1 : 0)} s` : `${Math.round(ms)} ms`;
 const same = (a, b) => a.length === b.length && a.every((v, i) => v === b[i]);
 
 function transport() {
@@ -837,6 +881,14 @@ function tick() {
 const LS = { get: k => { try { return localStorage.getItem(k); } catch (e) { return null; } },
              set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} } };
 
+$('#bxtime').onclick = e => {
+  S.xTime = !S.xTime;
+  e.target.classList.toggle('on', S.xTime);
+  LS.set('xtime', S.xTime ? '1' : '0');
+  plotCache = ganttCache = null;
+  draw();
+};
+
 $('#bgantt').onclick = e => {
   S.showGantt = !S.showGantt;
   e.target.classList.toggle('on', S.showGantt);
@@ -851,8 +903,8 @@ $('#bgantt').onclick = e => {
     const r = cv.getBoundingClientRect();
     const gu = (ganttCache && ganttCache.gut) || 0;
     const px = (e.touches ? e.touches[0].clientX : e.clientX) - r.left - gu;
-    const t = Math.max(0, Math.min(1, px / Math.max(1, r.width - gu)));
-    play(false); setFrame(Math.round(t * (fr.length - 1)));
+    const u = Math.max(0, Math.min(1, px / Math.max(1, r.width - gu)));
+    play(false); setFrame(axis(fr).seek(u));
   };
   cv.addEventListener('mousedown', e => { down = true; seek(e); });
   addEventListener('mousemove', e => down && seek(e));
@@ -1052,6 +1104,9 @@ $('#phases').addEventListener('click', () => sheet(null));
   setTimeout(refit, 350);
   if (q.get('sheet')) sheet(q.get('sheet'), true);
   S.ganttH = +LS.get('ganttH') || 150;
+  if (LS.get('xtime') === '1') S.xTime = true;
+  if (q.get('xtime')) S.xTime = q.get('xtime') !== '0';
+  $('#bxtime').classList.toggle('on', S.xTime);
   if (LS.get('gantt') === '0' || (phone() && LS.get('gantt') === null)) S.showGantt = false;
   if (q.get('gantt')) S.showGantt = q.get('gantt') !== '0';
   $('#bgantt').classList.toggle('on', S.showGantt);
