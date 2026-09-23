@@ -147,14 +147,17 @@ const CUT_VIOLATION_TOL = 1e-6
 # In the tree, hand every cut to the solver: one that already holds costs nothing.
 apply_cut!(s::LazySink, bc) = MOI.submit(s.m, MOI.LazyConstraint(s.cb_data), cut_constraint(s.m, bc))
 
-# In the loop, add only what the current solution violates, and count it: that count
-# is what tells the loop whether the round achieved anything.
-function apply_cut!(s::DirectSink, bc)
+# Everywhere else, take only what the current point violates. `dry` sinks count
+# without adding, which is how a solution is judged acceptable without changing the
+# model underneath the solver.
+function apply_cut!(s::AccumulatingSink, bc)
     cut_violation(s, bc) > CUT_VIOLATION_TOL || return nothing
-    add_constraint(s.m, cut_constraint(s.m, bc))
+    is_dry(s) || add_cut_to_model!(s, cut_constraint(s.m, bc))
     s.added[] += 1
     nothing
 end
+
+add_cut_to_model!(s::AccumulatingSink, con) = add_constraint(s.m, con)
 
 apply_cuts!(s::CutSink, bcs) = foreach(bc -> apply_cut!(s, bc), bcs)
 

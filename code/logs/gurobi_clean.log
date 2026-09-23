@@ -1,0 +1,7 @@
+Set parameter Username
+Academic license - for non-commercial use only - expires 2027-04-20
+[ Info: Campaign: 42 cells, results in /Users/benoitjeanson/vsCode/TUD/IJEPES2026-OTSD/code/experiments/../results
+[ Info: [1/42] ▶ 57_REF_gurobi_s0  cap=900s  elapsed=empty period
+[ Info: opening case `pglib_opf_case57_ieee.m`
+[ Info: ── 57_REF_gurobi_s0  iter 1  |SBS|=66  |cuts|=0
+[ Info:   ▷ 57_REF_gurobi_s0_i001  H=3  warm=7  cuts=0  |SBS|=66

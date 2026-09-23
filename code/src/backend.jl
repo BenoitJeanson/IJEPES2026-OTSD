@@ -42,12 +42,26 @@ Base.@kwdef struct HiGHSBackend <: Backend
     max_rounds::Int = 200
 end
 
-"Can this backend accept a cut from inside the branch-and-cut tree?"
+"""
+    SCIPBackend(; threads = 1)
+
+The published algorithm without a licence. SCIP has no lazy-constraint callback, but
+it has the mechanism that generalises one — a constraint handler — so cuts still
+enter at integer-feasible nodes inside a single branch-and-cut tree. See `scip.jl`.
+SCIP's MIP search is sequential; `threads` reaches its LP solves only.
+"""
+Base.@kwdef struct SCIPBackend <: Backend
+    threads::Int = 1
+end
+
+"Can this backend take a cut at an integer-feasible node, inside one tree?"
 supports_lazy(::GurobiBackend) = true
+supports_lazy(::SCIPBackend) = true
 supports_lazy(::HiGHSBackend) = false
 
 "Short identifier used in run tags and result records."
 backend_name(::GurobiBackend) = "gurobi"
+backend_name(::SCIPBackend) = "scip"
 backend_name(::HiGHSBackend) = "highs"
 
 # ── Model construction ────────────────────────────────────────────────────────
@@ -68,6 +82,13 @@ function new_model(b::GurobiBackend; log_path::String = "")
     m
 end
 
+function new_model(b::SCIPBackend; log_path::String = "")
+    m = direct_model(SCIP.Optimizer())
+    set_optimizer_attribute(m, "display/verblevel", 0)
+    set_optimizer_attribute(m, "lp/threads", b.threads)
+    m
+end
+
 function new_model(b::HiGHSBackend; log_path::String = "")
     m = direct_model(HiGHS.Optimizer())
     set_optimizer_attribute(m, "output_flag", false)
@@ -79,14 +100,32 @@ end
 # ── Attributes that both solvers have under different names ───────────────────
 
 set_seed!(::GurobiBackend, m, seed::Int) = set_attribute(m, "Seed", seed)
+set_seed!(::SCIPBackend, m, seed::Int) = set_attribute(m, "randomization/randomseedshift", seed)
 set_seed!(::HiGHSBackend, m, seed::Int) = set_attribute(m, "random_seed", seed)
 
 set_timeout!(::GurobiBackend, m, seconds::Real) = set_attribute(m, "TimeLimit", Float64(seconds))
+set_timeout!(::SCIPBackend, m, seconds::Real) = set_attribute(m, "limits/time", Float64(seconds))
 set_timeout!(::HiGHSBackend, m, seconds::Real) = set_attribute(m, "time_limit", Float64(seconds))
 
 "Emphasis on finding good incumbents early. Gurobi only; HiGHS has no equivalent."
 set_mip_focus!(::GurobiBackend, m, focus::Int) = set_attribute(m, "MIPFocus", focus)
+set_mip_focus!(::SCIPBackend, _, _) = nothing
 set_mip_focus!(::HiGHSBackend, _, _) = nothing
+
+"""
+    lp_backend(backend) -> Backend
+
+Which solver solves the contingency subproblems. They are pure LPs, and the
+feasibility cut is read off the dual ray of an infeasible one, so the only
+requirement is that the solver hands back a Farkas certificate.
+
+Gurobi and HiGHS both do. SCIP does not expose one through MathOptInterface, so a
+SCIP master pairs with HiGHS subproblems — both open source, and invisible to the
+algorithm: the cuts and the order they are generated in are unchanged.
+"""
+lp_backend(b::GurobiBackend) = b
+lp_backend(b::HiGHSBackend) = b
+lp_backend(b::SCIPBackend) = HiGHSBackend(threads = b.threads)
 
 """
     request_infeasibility_certificate!(backend, m)
@@ -99,6 +138,9 @@ request_infeasibility_certificate!(::GurobiBackend, m) = set_optimizer_attribute
 # HiGHS returns a dual ray only from the simplex solve itself: if presolve proves
 # infeasibility first there is no basis to read a certificate from, and the dual
 # objective comes back empty. Presolve is therefore off on the subproblem LPs.
+# SCIP's subproblem LPs are solved through the same path; it returns a dual ray
+# without being asked, as HiGHS does.
+request_infeasibility_certificate!(::SCIPBackend, m) = nothing
 request_infeasibility_certificate!(::HiGHSBackend, m) = set_optimizer_attribute(m, "presolve", "off")
 
 "Announce that the model will receive lazy constraints. Gurobi requires this up front."
@@ -115,6 +157,8 @@ function solver_version(::GurobiBackend)
     "$(major[]).$(minor[]).$(technical[])"
 end
 
+solver_version(::SCIPBackend) = string(SCIP.SCIPmajorVersion(), ".", SCIP.SCIPminorVersion(),
+                                       ".", SCIP.SCIPtechVersion())
 solver_version(::HiGHSBackend) = unsafe_string(HiGHS.Highs_version())
 
 """

@@ -38,6 +38,8 @@ using Printf
 
 using Gurobi
 using HiGHS
+using SCIP
+
 
 # ── Graph model ───────────────────────────────────────────────────────────────
 export ELabel, VLabel, PGLibtograph, scale_branch_limits!, balance!
@@ -59,7 +61,7 @@ export CutSink, LazySink, DirectSink, benders_cut_loop!
 export SessionState, run_benders_iterations!, sa_induced_followed, extend_sbs_by_hops
 
 # ── Backends ──────────────────────────────────────────────────────────────────
-export Backend, GurobiBackend, HiGHSBackend, solve_otsd
+export Backend, GurobiBackend, SCIPBackend, HiGHSBackend, solve_otsd
 export backend_name, solver_version, supports_lazy
 
 # Gurobi is held in a single environment for the life of the session: a licence
@@ -89,6 +91,7 @@ include("blocks.jl")
 include("benders_commons.jl")
 include("cutpool.jl")
 include("cutloop.jl")
+include("scip.jl")
 include("subproblem.jl")
 include("master.jl")
 

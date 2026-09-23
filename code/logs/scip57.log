@@ -1,0 +1,34 @@
+Set parameter Username
+Academic license - for non-commercial use only - expires 2027-04-20
+Precompiling packages...
+   5393.3 ms  ✓ OTSD
+  1 dependency successfully precompiled in 6 seconds. 131 already precompiled.
+[ Info: opening case `pglib_opf_case57_ieee.m`
+[ Info: ── SCIP57  iter 1  |SBS|=66  |cuts|=0
+[ Info:   ▷ SCIP57_i001  H=3  warm=7  cuts=0  |SBS|=66
+WARNING: ignore partial solution (0) because unknown rate is too large (0.982081 > 0.85)
+[ Info:     ✓ obj=8.472  iter=79  t=29.7s  secure=true
+[ Info:   ↑ improvement: Inf → 8.472
+[ Info:   |SBS| 66 → 67
+[ Info: ── SCIP57  iter 2  |SBS|=67  |cuts|=1766
+[ Info:   ▷ SCIP57_i002  H=3  warm=6  cuts=1766  |SBS|=67
+WARNING: ignore partial solution (0) because unknown rate is too large (0.982081 > 0.85)
+[ Info:     ✓ obj=7.449  iter=51  t=13.4s  secure=true
+[ Info:   ↑ improvement: 8.472 → 7.449
+[ Info:   |SBS| 67 → 67
+[ Info: ── SCIP57  iter 3  |SBS|=67  |cuts|=2792
+[ Info:   ▷ SCIP57_i003  H=3  warm=5  cuts=2792  |SBS|=67
+WARNING: ignore partial solution (0) because unknown rate is too large (0.982081 > 0.85)
+[ Info:     ✓ obj=7.382  iter=17  t=13.2s  secure=true
+[ Info:   ↑ improvement: 7.449 → 7.382
+[ Info:   |SBS| 67 → 67
+[ PowerModels | Info]: removing 3 cost terms from generator 4: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 1: [1696.0624, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 5: [3044.1037, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 2: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 6: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 7: [3718.8979000000004, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 3: [3407.5557000000003, 0.0]
+
+=== SCIP IEEE-57: obj=7.382 ref=7.382 secure=true wall=65.0s lp=147 benders=147
+    openings: [("31", "32"), ("4", "5"), ("4", "6"), ("7", "29")]

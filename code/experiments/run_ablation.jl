@@ -17,15 +17,14 @@ gurobi_cells = [
     for sys in ("57", "118"), cfg in CONFIG_ORDER, seed in 0:2
 ]
 
-# HiGHS: the same on IEEE-57, and on IEEE-118 only the configurations that are cheap
-# under Gurobi. Re-solving the master per round costs more than the callback, and a
-# licence-free path is a portability claim, not a performance one.
-const HIGHS_118 = ["REF", "NO-CF-POCKET", "NO-CF-FREE", "NO-INHERIT"]
+# HiGHS: a portability claim, not a performance one. Re-solving the master once per
+# cut round costs far more than the callback, so this is deliberately a handful of
+# cells with a generous cap — enough to show the package runs without a commercial
+# licence and returns a secure topology, not enough to compare runtimes.
 highs_cells = vcat(
-    [cell(IEEE57, cfg; backend = HiGHSBackend(threads = 4), seed = 0, cap = 900)
-     for cfg in CONFIG_ORDER],
-    [cell(IEEE118, cfg; backend = HiGHSBackend(threads = 4), seed = 0, cap = 900)
-     for cfg in HIGHS_118],
+    [cell(IEEE57, cfg; backend = HiGHSBackend(threads = 4), seed = 0, cap = 2400)
+     for cfg in ("REF", "NO-CF-POCKET", "NO-INHERIT")],
+    [cell(IEEE118, "REF"; backend = HiGHSBackend(threads = 4), seed = 0, cap = 2400)],
 )
 
 cells = WHICH == "gurobi" ? vec(gurobi_cells) :

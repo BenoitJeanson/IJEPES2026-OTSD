@@ -1,0 +1,189 @@
+Set parameter Username
+Academic license - for non-commercial use only - expires 2027-04-20
+[ Info: Campaign: 4 cells, results in /Users/benoitjeanson/vsCode/TUD/IJEPES2026-OTSD/code/experiments/../results
+[ Info: [1/4] ▶ 57_REF_highs_s0  cap=2400s  elapsed=empty period
+[ Info: opening case `pglib_opf_case57_ieee.m`
+[ Info: ── 57_REF_highs_s0  iter 1  |SBS|=66  |cuts|=0
+[ Info:   ▷ 57_REF_highs_s0_i001  H=3  warm=7  cuts=0  |SBS|=66
+[ Info:     ✓ obj=8.472  iter=10  t=59.6s  secure=true
+[ Info:   ↑ improvement: Inf → 8.472
+[ Info:   |SBS| 66 → 67
+[ Info: ── 57_REF_highs_s0  iter 2  |SBS|=67  |cuts|=214
+[ Info:   ▷ 57_REF_highs_s0_i002  H=3  warm=6  cuts=214  |SBS|=67
+[ Info:     ✓ obj=7.449  iter=4  t=21.5s  secure=true
+[ Info:   ↑ improvement: 8.472 → 7.449
+[ Info:   |SBS| 67 → 67
+[ Info: ── 57_REF_highs_s0  iter 3  |SBS|=67  |cuts|=252
+[ Info:   ▷ 57_REF_highs_s0_i003  H=3  warm=5  cuts=252  |SBS|=67
+[ Info:     ✓ obj=7.382  iter=15  t=123.9s  secure=true
+[ Info:   ↑ improvement: 7.449 → 7.382
+[ Info:   |SBS| 67 → 67
+[ Info: [2/4] ▶ 57_NO-CF-POCKET_highs_s0  cap=2400s  elapsed=3 minutes, 30 seconds, 162 milliseconds
+[ Info: opening case `pglib_opf_case57_ieee.m`
+[ Info: ── 57_NO-CF-POCKET_highs_s0  iter 1  |SBS|=66  |cuts|=0
+[ Info:   ▷ 57_NO-CF-POCKET_highs_s0_i001  H=3  warm=7  cuts=0  |SBS|=66
+[ Info:     ✓ obj=8.472  iter=10  t=49.1s  secure=true
+[ Info:   ↑ improvement: Inf → 8.472
+[ Info:   |SBS| 66 → 67
+[ Info: ── 57_NO-CF-POCKET_highs_s0  iter 2  |SBS|=67  |cuts|=206
+[ Info:   ▷ 57_NO-CF-POCKET_highs_s0_i002  H=3  warm=6  cuts=206  |SBS|=67
+[ Info:     ✓ obj=7.449  iter=4  t=16.9s  secure=true
+[ Info:   ↑ improvement: 8.472 → 7.449
+[ Info:   |SBS| 67 → 67
+[ Info: ── 57_NO-CF-POCKET_highs_s0  iter 3  |SBS|=67  |cuts|=244
+[ Info:   ▷ 57_NO-CF-POCKET_highs_s0_i003  H=3  warm=5  cuts=244  |SBS|=67
+[ Info:     ✓ obj=7.382  iter=15  t=116.3s  secure=true
+[ Info:   ↑ improvement: 7.449 → 7.382
+[ Info:   |SBS| 67 → 67
+[ Info: [3/4] ▶ 57_NO-INHERIT_highs_s0  cap=2400s  elapsed=6 minutes, 32 seconds, 671 milliseconds
+[ Info: opening case `pglib_opf_case57_ieee.m`
+[ Info: ── 57_NO-INHERIT_highs_s0  iter 1  |SBS|=66  |cuts|=0
+[ Info:   ▷ 57_NO-INHERIT_highs_s0_i001  H=3  warm=7  cuts=0  |SBS|=66
+[ Info:     ✓ obj=8.472  iter=10  t=50.2s  secure=true
+[ Info:   ↑ improvement: Inf → 8.472
+[ Info:   |SBS| 66 → 67
+[ Info: ── 57_NO-INHERIT_highs_s0  iter 2  |SBS|=67  |cuts|=0
+[ Info:   ▷ 57_NO-INHERIT_highs_s0_i002  H=3  warm=6  cuts=0  |SBS|=67
+[ Info:     ✓ obj=7.449  iter=7  t=38.4s  secure=true
+[ Info:   ↑ improvement: 8.472 → 7.449
+[ Info:   |SBS| 67 → 67
+[ Info: ── 57_NO-INHERIT_highs_s0  iter 3  |SBS|=67  |cuts|=0
+[ Info:   ▷ 57_NO-INHERIT_highs_s0_i003  H=3  warm=5  cuts=0  |SBS|=67
+[ Info:     ✓ obj=7.382  iter=22  t=160.2s  secure=true
+[ Info:   ↑ improvement: 7.449 → 7.382
+[ Info:   |SBS| 67 → 67
+[ Info: [4/4] ▶ 118_REF_highs_s0  cap=2400s  elapsed=10 minutes, 41 seconds, 598 milliseconds
+[ Info: opening case `pglib_opf_case118_ieee.m`
+[ Info: ── 118_REF_highs_s0  iter 1  |SBS|=56  |cuts|=0
+[ Info:   ▷ 118_REF_highs_s0_i001  H=3  warm=10  cuts=0  |SBS|=56
+[ Info:     ✓ obj=5.69  iter=43  t=1342.3s  secure=true
+[ Info:   ↑ improvement: Inf → 5.69
+[ Info:   |SBS| 56 → 61
+[ Info: ── 118_REF_highs_s0  iter 2  |SBS|=61  |cuts|=485
+[ Info:   ▷ 118_REF_highs_s0_i002  H=3  warm=9  cuts=485  |SBS|=61
+[ Info:     ✓ obj=5.29  iter=5  t=264.8s  secure=true
+[ Info:   ↑ improvement: 5.69 → 5.29
+[ Info:   |SBS| 61 → 61
+[ Info: ── 118_REF_highs_s0  iter 3  |SBS|=61  |cuts|=546
+[ Info:   ▷ 118_REF_highs_s0_i003  H=3  warm=8  cuts=546  |SBS|=61
+[ Info:     ✓ obj=5.29  iter=11  t=903.8s  secure=true
+[ Info:   |SBS| 61 → 61
+[ PowerModels | Info]: removing 3 cost terms from generator 4: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 1: [1696.0624, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 5: [3044.1037, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 2: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 6: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 7: [3718.8979000000004, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 3: [3407.5557000000003, 0.0]
+
+==============================================================================================
+sys   config          backend  seed  objective secure   wall (s)   LPs     status
+----------------------------------------------------------------------------------------------
+57    REF             highs    0     7.382     true     205.2      63      done
+==============================================================================================
+
+[ PowerModels | Info]: removing 3 cost terms from generator 4: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 1: [1696.0624, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 5: [3044.1037, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 2: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 6: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 7: [3718.8979000000004, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 3: [3407.5557000000003, 0.0]
+
+==============================================================================================
+sys   config          backend  seed  objective secure   wall (s)   LPs     status
+----------------------------------------------------------------------------------------------
+57    REF             highs    0     7.382     true     205.2      63      done
+57    NO-CF-POCKET    highs    0     7.382     true     182.4      475     done
+==============================================================================================
+
+[ PowerModels | Info]: removing 3 cost terms from generator 4: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 1: [1696.0624, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 5: [3044.1037, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 2: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 6: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 7: [3718.8979000000004, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 3: [3407.5557000000003, 0.0]
+
+==============================================================================================
+sys   config          backend  seed  objective secure   wall (s)   LPs     status
+----------------------------------------------------------------------------------------------
+57    REF             highs    0     7.382     true     205.2      63      done
+57    NO-CF-POCKET    highs    0     7.382     true     182.4      475     done
+57    NO-INHERIT      highs    0     7.382     true     248.9      49      done
+==============================================================================================
+
+[ PowerModels | Info]: removing 3 cost terms from generator 32: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 29: [3266.8781000000004, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 1: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 54: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 2: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 41: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 51: [3504.3401000000003, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 53: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 27: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 42: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 33: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 28: [3478.1778000000004, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 50: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 52: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 26: [1605.6042000000002, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 10: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 24: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 25: [2486.1868, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 23: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 49: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 5: [2498.342, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 31: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 43: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 39: [3407.2633000000005, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 34: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 44: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 17: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 37: [2460.0771999999997, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 47: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 9: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 12: [2222.098, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 20: [2420.2306, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 6: [12458.1564, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 14: [2599.3982, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 7: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 8: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 19: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 4: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 22: [2727.7342999999996, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 11: [2894.8321, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 35: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 13: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 15: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 16: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 40: [2460.5101999999997, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 21: [1667.3942, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 38: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 46: [2864.9471, 0.0]
+[ PowerModels | Info]: removing 1 cost terms from generator 45: [1261.217, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 36: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 48: Float64[]
+[ PowerModels | Info]: removing 3 cost terms from generator 18: Float64[]
+[ PowerModels | Info]: removing 1 cost terms from generator 30: [2575.8442, 0.0]
+[ PowerModels | Info]: removing 3 cost terms from generator 3: Float64[]
+
+==============================================================================================
+sys   config          backend  seed  objective secure   wall (s)   LPs     status
+----------------------------------------------------------------------------------------------
+57    REF             highs    0     7.382     true     205.2      63      done
+57    NO-CF-POCKET    highs    0     7.382     true     182.4      475     done
+57    NO-INHERIT      highs    0     7.382     true     248.9      49      done
+118   REF             highs    0     5.29      true     2511.4     64      done
+==============================================================================================
+
+
+==============================================================================================
+sys   config          backend  seed  objective secure   wall (s)   LPs     status
+----------------------------------------------------------------------------------------------
+57    REF             highs    0     7.382     true     205.2      63      done
+57    NO-CF-POCKET    highs    0     7.382     true     182.4      475     done
+57    NO-INHERIT      highs    0     7.382     true     248.9      49      done
+118   REF             highs    0     5.29      true     2511.4     64      done
+==============================================================================================
+

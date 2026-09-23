@@ -254,7 +254,7 @@ function mastercutpool(ec::ElementaryCase, logfilename::String;
                     sf = abs(flow(sa_res, contingency, vb)) - g[vb...].p_max
                     if dual_viol
                         lp_feas_solves += 1
-                        res_subpb = contingency_subproblem(ec, openbranches, contingency, bridge_to_pocket, bigM_π, bigM_flows; reduce_violations=true, monitored_branch=vb, tight_bigM=tight_bigM, θ_max_bigM=θ_max_bigM, bigM_bound_multiplier=bigM_bound_multiplier, backend=backend)
+                        res_subpb = contingency_subproblem(ec, openbranches, contingency, bridge_to_pocket, bigM_π, bigM_flows; reduce_violations=true, monitored_branch=vb, tight_bigM=tight_bigM, θ_max_bigM=θ_max_bigM, bigM_bound_multiplier=bigM_bound_multiplier, backend=lp_backend(backend))
                         if res_subpb.is_feasible
                             ocut = OBendersCut(edg, vb, v_0, [res_subpb.reduced_cost[br...] for br in edg], :s_flows, res_subpb.obj)
                             apply_cut!(sink, ocut)
@@ -262,7 +262,7 @@ function mastercutpool(ec::ElementaryCase, logfilename::String;
                         else
                             # rare: f > α·p_max — disconnected island; fall back to feasibility cut
                             lp_feas_solves += 1
-                            res_feas = contingency_subproblem(ec, openbranches, contingency, bridge_to_pocket, bigM_π, bigM_flows; tight_bigM=tight_bigM, θ_max_bigM=θ_max_bigM, bigM_bound_multiplier=bigM_bound_multiplier, backend=backend)
+                            res_feas = contingency_subproblem(ec, openbranches, contingency, bridge_to_pocket, bigM_π, bigM_flows; tight_bigM=tight_bigM, θ_max_bigM=θ_max_bigM, bigM_bound_multiplier=bigM_bound_multiplier, backend=lp_backend(backend))
                             if !res_feas.is_feasible
                                 fcut = FBendersCut(edg, contingency, v_0, [res_feas.reduced_cost[br...] for br in edg], res_feas.dual_obj)
                                 apply_cut!(sink, fcut)
@@ -278,7 +278,7 @@ function mastercutpool(ec::ElementaryCase, logfilename::String;
                     end
                 end
             else
-                res_subpb = contingency_subproblem(ec, openbranches, contingency, bridge_to_pocket, bigM_π, bigM_flows, 0e-5; tight_bigM=tight_bigM, θ_max_bigM=θ_max_bigM, bigM_bound_multiplier=bigM_bound_multiplier, backend=backend)
+                res_subpb = contingency_subproblem(ec, openbranches, contingency, bridge_to_pocket, bigM_π, bigM_flows, 0e-5; tight_bigM=tight_bigM, θ_max_bigM=θ_max_bigM, bigM_bound_multiplier=bigM_bound_multiplier, backend=lp_backend(backend))
                 lp_feas_solves += 1
                 if res_subpb.is_feasible
                     # Expected for every non-violating contingency once screening is ablated.
@@ -402,9 +402,15 @@ function mastercutpool(ec::ElementaryCase, logfilename::String;
 
     # A backend without lazy constraints separates between master solves instead;
     # `benders_cut_loop!` below drives the same `_separate!`.
+    # Both lazy backends inject cuts at integer-feasible nodes inside one tree; they
+    # differ only in the interface the solver offers for it.
     if withcallbacks && supports_lazy(backend)
-        enable_lazy!(m)
-        MOI.set(m, Gurobi.CallbackFunction(), _callback)
+        if backend isa SCIPBackend
+            register_benders_handler!(m, g, _separate!)
+        else
+            enable_lazy!(m)
+            MOI.set(m, Gurobi.CallbackFunction(), _callback)
+        end
     end
 
     t0 = now()

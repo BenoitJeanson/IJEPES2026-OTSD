@@ -1,17 +1,24 @@
-# ── Where separated cuts go ───────────────────────────────────────────────────
-#
-# A cut is built once and delivered in one of two ways. Inside a branch-and-cut tree
-# it is submitted as a lazy constraint against the callback handle; between master
-# solves it is simply added to the model. `cut_constraint` is the single definition
-# of what each cut family says, so the two paths cannot drift apart.
-
 """
     CutSink
 
-Where separated cuts go, and where the incumbent is read from. [`LazySink`](@ref)
-talks to a solver callback, [`DirectSink`](@ref) to a solved model.
+Where separated cuts go, and where the incumbent is read from.
+
+Two kinds. [`LazySink`](@ref) hands a cut straight to a solver that is waiting for
+one, inside the branch-and-cut tree; a cut that happens to hold already is absorbed
+harmlessly, so nothing is filtered. The others accumulate cuts into the model and
+must filter: a cut that is valid but not *violated* at the current point changes
+nothing, and adding it anyway makes progress indistinguishable from deadlock.
 """
 abstract type CutSink end
+
+"""
+    AccumulatingSink
+
+A sink that adds cuts to the model rather than answering a solver's request for one.
+Cuts are filtered by violation and counted, and that count is what tells the caller
+whether anything was achieved.
+"""
+abstract type AccumulatingSink <: CutSink end
 
 "Cuts submitted as lazy constraints from inside the tree (Gurobi)."
 struct LazySink{D} <: CutSink
@@ -19,13 +26,14 @@ struct LazySink{D} <: CutSink
     cb_data::D
 end
 
-"Cuts added to the master between solves (HiGHS, and any solver without callbacks)."
-struct DirectSink <: CutSink
+"Cuts added to the master between solves (a solver with no callback at all)."
+struct DirectSink <: AccumulatingSink
     m::Model
     added::Base.RefValue{Int}
+    dry::Bool
 end
 
-DirectSink(m::Model) = DirectSink(m, Ref(0))
+DirectSink(m::Model; dry::Bool = false) = DirectSink(m, Ref(0), dry)
 
 model(s::CutSink) = s.m
 
@@ -33,6 +41,8 @@ model(s::CutSink) = s.m
 solution_value(s::LazySink, var) = callback_value(s.cb_data, var)
 solution_value(s::DirectSink, var) = value(var)
 
-"How many cuts this sink has received. Meaningful for `DirectSink`; drives the loop."
-cuts_added(s::DirectSink) = s.added[]
+"How many cuts this sink has taken. Zero means the point was already cut-feasible."
+cuts_added(s::AccumulatingSink) = s.added[]
 
+"When true, count violated cuts but do not add them — used to answer \"is this solution acceptable?\"."
+is_dry(s::AccumulatingSink) = s.dry
