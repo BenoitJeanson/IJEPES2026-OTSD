@@ -5,3 +5,53 @@ Academic license - for non-commercial use only - expires 2027-04-20
 [ Info: opening case `pglib_opf_case57_ieee.m`
 [ Info: ── 57_REF_gurobi_s0  iter 1  |SBS|=66  |cuts|=0
 [ Info:   ▷ 57_REF_gurobi_s0_i001  H=3  warm=7  cuts=0  |SBS|=66
+[ Info:     ✓ obj=8.472  iter=18  t=9.8s  secure=true
+[ Info:   ↑ improvement: Inf → 8.472
+[ Info:   |SBS| 66 → 67
+[ Info: ── 57_REF_gurobi_s0  iter 2  |SBS|=67  |cuts|=391
+[ Info:   ▷ 57_REF_gurobi_s0_i002  H=3  warm=6  cuts=391  |SBS|=67
+[ Info:     ✓ obj=7.449  iter=15  t=1.1s  secure=true
+[ Info:   ↑ improvement: 8.472 → 7.449
+[ Info:   |SBS| 67 → 67
+[ Info: ── 57_REF_gurobi_s0  iter 3  |SBS|=67  |cuts|=613
+[ Info:   ▷ 57_REF_gurobi_s0_i003  H=3  warm=5  cuts=613  |SBS|=67
+[ Info:     ✓ obj=7.382  iter=8  t=0.7s  secure=true
+[ Info:   ↑ improvement: 7.449 → 7.382
+[ Info:   |SBS| 67 → 67
+[ Info: [2/42] ▶ 118_REF_gurobi_s0  cap=900s  elapsed=16 seconds, 742 milliseconds
+[ Info: opening case `pglib_opf_case118_ieee.m`
+[ Info: ── 118_REF_gurobi_s0  iter 1  |SBS|=56  |cuts|=0
+[ Info:   ▷ 118_REF_gurobi_s0_i001  H=3  warm=10  cuts=0  |SBS|=56
+[ Info:     ✓ obj=5.69  iter=56  t=7.8s  secure=true
+[ Info:   ↑ improvement: Inf → 5.69
+[ Info:   |SBS| 56 → 61
+[ Info: ── 118_REF_gurobi_s0  iter 2  |SBS|=61  |cuts|=666
+[ Info:   ▷ 118_REF_gurobi_s0_i002  H=3  warm=9  cuts=666  |SBS|=61
+[ Info:     ✓ obj=5.29  iter=18  t=4.3s  secure=true
+[ Info:   ↑ improvement: 5.69 → 5.29
+[ Info:   |SBS| 61 → 61
+[ Info: ── 118_REF_gurobi_s0  iter 3  |SBS|=61  |cuts|=875
+[ Info:   ▷ 118_REF_gurobi_s0_i003  H=3  warm=8  cuts=875  |SBS|=61
+[ Info:     ✓ obj=5.29  iter=13  t=6.1s  secure=true
+[ Info:   |SBS| 61 → 61
+[ Info: [3/42] ▶ 57_NO-SCREEN_gurobi_s0  cap=900s  elapsed=35 seconds, 626 milliseconds
+[ Info: opening case `pglib_opf_case57_ieee.m`
+[ Info: ── 57_NO-SCREEN_gurobi_s0  iter 1  |SBS|=66  |cuts|=0
+[ Info:   ▷ 57_NO-SCREEN_gurobi_s0_i001  H=3  warm=7  cuts=0  |SBS|=66
+[ Info:     ✓ obj=8.472  iter=18  t=6.3s  secure=true
+[ Info:   ↑ improvement: Inf → 8.472
+[ Info:   |SBS| 66 → 67
+[ Info: ── 57_NO-SCREEN_gurobi_s0  iter 2  |SBS|=67  |cuts|=391
+[ Info:   ▷ 57_NO-SCREEN_gurobi_s0_i002  H=3  warm=6  cuts=391  |SBS|=67
+[ Info:     ✓ obj=7.449  iter=15  t=5.6s  secure=true
+[ Info:   ↑ improvement: 8.472 → 7.449
+[ Info:   |SBS| 67 → 67
+[ Info: ── 57_NO-SCREEN_gurobi_s0  iter 3  |SBS|=67  |cuts|=613
+[ Info:   ▷ 57_NO-SCREEN_gurobi_s0_i003  H=3  warm=5  cuts=613  |SBS|=67
+[ Info:     ✓ obj=7.382  iter=8  t=3.0s  secure=true
+[ Info:   ↑ improvement: 7.449 → 7.382
+[ Info:   |SBS| 67 → 67
+[ Info: [4/42] ▶ 118_NO-SCREEN_gurobi_s0  cap=900s  elapsed=50 seconds, 715 milliseconds
+[ Info: opening case `pglib_opf_case118_ieee.m`
+[ Info: ── 118_NO-SCREEN_gurobi_s0  iter 1  |SBS|=56  |cuts|=0
+[ Info:   ▷ 118_NO-SCREEN_gurobi_s0_i001  H=3  warm=10  cuts=0  |SBS|=56
