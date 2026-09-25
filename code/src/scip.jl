@@ -52,10 +52,30 @@ mutable struct BendersConshdlr <: SCIP.AbstractConstraintHandler
     vars::Vector{MOI.VariableIndex}
 end
 
-"Run separation against `sol`, adding cuts unless `dry`; return how many were violated."
+"""
+    _separate_count(ch, sol; dry) -> Int
+
+Run separation against `sol`, adding cuts unless `dry`; return how many were violated.
+
+Nothing may throw out of here. SCIP calls the handler from its own C frame, and a
+Julia exception unwinding through it is undefined behaviour — in practice it corrupts
+SCIP's state and the process dies a cell or two later, which is how a campaign came to
+report "all done" over a stage that had crashed. A candidate we cannot evaluate is
+reported as unacceptable instead, which is both safe and true: `-1` is returned so the
+caller reads it as violated, and SCIP rejects the solution or branches elsewhere.
+
+`DisconnectedTopology` is the expected case — SCIP asks about candidates that have not
+yet cleared `base_connectivity!`. Anything else is a real bug, so it is logged once
+rather than swallowed silently.
+"""
 function _separate_count(ch::BendersConshdlr, sol; dry::Bool)
     sink = ConshdlrSink(ch.m, ch.o, sol; dry)
-    ch.separate!(sink)
+    try
+        ch.separate!(sink)
+    catch e
+        e isa DisconnectedTopology || @error "separation failed on a SCIP candidate" exception = (e, catch_backtrace())
+        return -1
+    end
     cuts_added(sink)
 end
 
@@ -65,7 +85,12 @@ function SCIP.check(ch::BendersConshdlr, constraints, sol, checkintegrality,
 end
 
 function _enforce(ch::BendersConshdlr)
-    _separate_count(ch, C_NULL; dry = false) == 0 ? SCIP.SCIP_FEASIBLE : SCIP.SCIP_CONSADDED
+    n = _separate_count(ch, C_NULL; dry = false)
+    # `CONSADDED` promises SCIP a constraint it can make progress on. A failed
+    # separation added none, so it must report plain infeasibility instead and let
+    # SCIP branch — claiming otherwise sends it looking for progress that never comes.
+    n < 0 && return SCIP.SCIP_INFEASIBLE
+    n == 0 ? SCIP.SCIP_FEASIBLE : SCIP.SCIP_CONSADDED
 end
 
 SCIP.enforce_lp_sol(ch::BendersConshdlr, constraints, nusefulconss, solinfeasible) =

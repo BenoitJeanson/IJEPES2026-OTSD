@@ -6,7 +6,7 @@ abstract type GridCase end
 """
 A `RichCase` is a `GridCase` with additional information for drawing.
 `trippings`: is a list of trippings for which the order is important.
-`bus_orig` is stored in the inner `GridCase` (e.g. `ElementaryCase` or `EquivalentCase`).
+`bus_orig` is stored in the inner `GridCase` — here always an `ElementaryCase`.
 """
 struct RichCase{T<:GridCase}
     gc        ::T

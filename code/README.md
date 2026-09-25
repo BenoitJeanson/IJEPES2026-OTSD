@@ -33,44 +33,84 @@ IEEE-57 at its own operating point returns 7.382. Both are checked by `Pkg.test(
 The component ablation:
 
 ```bash
-julia --project=. experiments/run_ablation.jl gurobi
+julia --project=. experiments/run_ablation.jl gurobi   # 42 cells: 7 configs × 2 systems × 3 seeds
+julia --project=. experiments/run_ablation.jl scip     # the same, without a licence
+```
+
+The `p_c` sensitivity study, which asks whether a non-uniform contingency weighting
+changes the outcome:
+
+```bash
+julia --project=. experiments/run_pc.jl          # 12 runs, then results/PC.md
+julia --project=. experiments/run_pc.jl --report # re-render from disk
 ```
 
 Results land one JSON per run under `results/`. A run already on disk is skipped, so
-an interrupted campaign resumes where it stopped.
+an interrupted campaign resumes where it stopped. Run campaigns **serially**: wall
+time is one of the reported quantities, and contention distorts it — IEEE-118 at the
+reference measured 17 s alone and 27 s against a second job.
 
-## Two solvers
+## Two solvers, one algorithm
 
-| | `GurobiBackend` | `HiGHSBackend` |
+| | `GurobiBackend` | `SCIPBackend` |
 |---|---|---|
 | licence | commercial | none |
-| cuts enter | from a lazy-constraint callback, inside one branch-and-cut tree | between master solves |
-| reproduces the published numbers | yes, exactly | no — see below |
+| cuts enter | from a lazy-constraint callback | from a constraint handler |
+| | at integer-feasible nodes, inside one branch-and-cut tree | the same |
+| reproduces the published numbers | yes, exactly | yes, exactly |
 
 The decomposition wants one thing its solver may not offer: the ability to add a cut
-the moment an integer-feasible topology appears. Gurobi provides it, and the whole
-search then fits in a single tree. HiGHS does not — `kHighsCallbackMipDefineLazyConstraints`
-exists in the enum, but `HighsCallbackDataIn` carries no channel for a new row and the
-Julia wrapper exposes none. The HiGHS backend therefore solves the master to
-optimality, separates against its solution, adds whatever that solution violates, and
-solves again, until a round finds nothing to add.
+the moment an integer-feasible topology appears, so that the whole search fits in a
+single branch-and-cut tree. Gurobi provides it directly. SCIP has no lazy-constraint
+callback — and `MOI.LazyConstraintCallback` is unsupported there, which is where a
+first look stops — but it has the mechanism a lazy callback is a special case of: a
+*constraint handler*, one level below MathOptInterface.
+
+A handler is asked two questions during the search: `check`, is this candidate
+solution acceptable, and `enforce_lp_sol`, it is not, so do something about it. That
+is the Benders contract. `check` runs the separation without adding anything and
+answers on the count; `enforce_lp_sol` runs it for real and reports `SCIP_CONSADDED`.
+See [`src/scip.jl`](src/scip.jl).
 
 Both backends drive the *same* separation routine (`_separate!` in
-[`src/master.jl`](src/master.jl)) and build cuts from the same `cut_constraint`
-definitions, so the cuts cannot drift apart. What differs is when they arrive, and
-that changes the search: expect different topologies where the restricted problem has
-ties, and expect the licence-free path to be substantially slower, because every
-round discards the tree and re-solves from scratch.
+[`src/master.jl`](src/master.jl)), build cuts from the same `cut_constraint`
+definitions, and receive them at the same points in the same kind of search. This is
+the same algorithm on either solver, not a portable approximation of it. At the
+published operating point it reproduces exactly on both systems — 7.382 and 5.29,
+both secure, openings identical to the Gurobi run.
 
-One consequence worth stating plainly: a cut that is valid but not *violated* at the
-current point makes no progress. Inside a tree the solver absorbs it harmlessly; in a
-loop it must be filtered out, or every round re-adds the same inert cuts and the loop
-cannot tell convergence from deadlock. `cut_violation` in
-[`src/cutpool.jl`](src/cutpool.jl) is that filter.
+SCIP's MIP search is sequential, so expect it to be slower: measured serially here,
+42 s against 12 s on IEEE-57 and 276 s against 19 s on IEEE-118.
+
+What the two do *not* share is how a tie is broken. The objective does not price an
+opening that carries no flow, so a topology can be optimal in several ways, and the
+two solvers enumerate a degenerate restricted problem in different orders. In the
+ablation configurations this shows: every one reaches 7.382, secure, but four of the
+six reach it with one or two extra branches open. The reference configuration —
+the one the paper reports — lands on the same openings on both solvers.
+
+One detail that is not bookkeeping: the handler declares **variable locks** for every
+branch variable. Without them SCIP's dual presolve concludes that nothing constrains
+those variables, fixes them at a bound, and returns a wrong answer *silently*. The two
+`misc/allow{strong,weak}dualreds` flags go off for the same reason.
+
+### HiGHS is here, but not as a master
+
+The feasibility cut is read off the Farkas dual of an infeasible subproblem LP, and
+SCIP does not expose one through MathOptInterface. HiGHS does, so a SCIP master pairs
+with HiGHS subproblems (`lp_backend` in [`src/backend.jl`](src/backend.jl)) — with
+**presolve off**, since a presolve-proved infeasibility leaves no basis to read a
+certificate from. Both are open source, and the pairing is invisible to the
+algorithm: the cuts, and the order they are generated in, are unchanged.
+
+HiGHS cannot host the master. `kHighsCallbackMipDefineLazyConstraints` exists in the
+enum as an undocumented placeholder, but `HighsCallbackDataIn` carries no channel for
+a new row and no C function adds one. `HiGHSLPBackend` is therefore not a master
+backend, and the master rejects it rather than silently solving without cuts.
 
 ## What is here, and what is not
 
-About 4 400 lines. The research monorepo this was extracted from carries roughly
+About 3 700 lines. The research monorepo this was extracted from carries roughly
 13 000, and the difference is all work that belongs to other papers: substation
 reconfiguration, a Dantzig–Wolfe decomposition, a magnitude search, network
 equivalents, and the plotting stack.
@@ -83,16 +123,16 @@ equivalents, and the plotting stack.
 | `master.jl` | the master problem and the separation routine |
 | `subproblem.jl` | the contingency LP and its duals |
 | `cutpool.jl`, `cutsink.jl` | the two cut families, and how a cut is delivered |
-| `cutloop.jl` | Benders without callbacks |
+| `scip.jl` | the constraint handler that takes the place of the lazy callback |
 | `sbs.jl`, `phase.jl`, `session.jl` | the switchable branch set and the local search |
 | `backend.jl` | what differs between solvers |
 
-Two type families in `placeholders.jl` are defined but never populated:
-substation configurations and network equivalents. The model builders accept them
-because they are shared with those other lines of work, and every use is guarded by
-an emptiness test. They are kept rather than removed because taking the arguments out
-means editing model-building code, and the value of this package is that its model is
-the published one.
+Nothing here is carried for another line of work. Earlier versions of this package
+kept substation configurations and network equivalents as empty types that every model
+builder accepted and every use guarded with an emptiness test; they are gone, along
+with the `subbus` index on the energization variables, which existed only so that a
+bus could be split. What remains is the model the paper describes, with no argument
+that the published runs never set.
 
 ### The network has no parallel circuits
 

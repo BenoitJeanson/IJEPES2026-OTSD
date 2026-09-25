@@ -34,37 +34,3 @@ function benders_subpb_res(m::Model)
     end
 end
 
-function identify_most_often_overloaded(
-    rc,
-    openbranches,
-    contingencies;
-    bridge_to_pocket::Union{Nothing,Dict{ELabel,Pocket}} = nothing,
-)
-    SA_res = secured_dcpf(
-        rc.gc,
-        Set(openbranches),
-        contingencies;
-        bridge_to_pocket,
-    )
-    br_to_overloads = Dict{ELabel,Vector{NamedTuple}}()
-    for cbr in contingencies, br in edge_labels(g)
-        flow = abs(flow(SA_res, cbr, br))
-        limit = rc.gc.g[br...].p_max
-        flow ≤ limit && continue
-        br_to_overloads[br] = push!(
-            get!(br_to_overloads, (contingency = br, ol = flow / limit), NamedTuple[]),
-            cbr,
-        )
-    end
-    isempty(br_to_overloads) && return nothing
-    most_constrained = findmax(length, br_to_overloads)[2]
-    branch_overloads = br_to_overloads[most_constrained]
-    ol, big_contingency = findmax(bo -> bo.ol, branch_overloads)
-    @info "br_to_overloads: $(br_to_overloads)\nmost_constrained: $most_constrained,\tbig_contingency: $big_contingency,\tol: $ol"
-    return (
-        branch = most_constrained,
-        contingencies = br_to_overloads[most_constrained],
-        big_contingency = big_contingency,
-    )
-end
-

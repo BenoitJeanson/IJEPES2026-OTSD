@@ -22,133 +22,34 @@ end
 
 
 
-function dcpf(
-    ec::ElementaryCase;
-    outages::Set{ELabel} = Set{ELabel}(),
-    tripping::Union{Nothing,ELabel} = nothing,
-    connectivitiy_to_check::Bool = true,
-    slack_buses::Union{Nothing,Vector{VLabel}} = nothing,
-    slack_phases::Union{Nothing,Vector{Float64}} = nothing,
-)::Union{Nothing,NamedTuple}
+"""
+    DisconnectedTopology(outages)
 
-    g = ec.g
-    bus_orig = ec.bus_orig
+The reduced susceptance matrix is singular: with `outages` open, some buses are no
+longer reachable from the reference bus, so their angles are not determined.
 
-    (_fixed_buses, _fixed_phases) =
-        (!isnothing(slack_buses) && !isnothing(slack_phases)) ?
-        (slack_buses, slack_phases) : ([bus_orig], [0.0])
-
-    fixed_set = Set(_fixed_buses)
-
-    A = incidence_matrix(g; oriented = true)
-    _buses = VLabel[]
-    _edges = ELabel[]
-    apply_imbalance_correction = false
-
-    if connectivitiy_to_check && !(isempty(outages) && isnothing(tripping))
-        openbranches =
-            isnothing(tripping) ? outages : union(outages, Set{ELabel}([tripping]))
-        # Union of CCs reachable from any fixed bus (handles cases where one fixed
-        # bus is isolated by the outage but others still reach the free buses)
-        cc_buses_union = Set{VLabel}()
-        cc_edges_union = Set{ELabel}()
-        for fb in _fixed_buses
-            cc = connectedcomponent(g, fb, openbranches)
-            union!(cc_buses_union, cc.buses)
-            union!(cc_edges_union, cc.edges)
-        end
-
-        cc_bus_ids = Int[]
-        for (i, bus) in enumerate(labels(g))
-            bus ∉ cc_buses_union && continue
-            push!(_buses, bus)
-            push!(cc_bus_ids, i)
-        end
-
-        cc_edge_ids = Int[]
-        for (j, edge) in enumerate(edge_labels(g))
-            edge ∉ cc_edges_union && continue
-            push!(_edges, edge)
-            push!(cc_edge_ids, j)
-        end
-
-        A = A[cc_bus_ids, cc_edge_ids]
-        apply_imbalance_correction = length(_fixed_buses) == 1
-    else
-        append!(_buses, labels(g))
-        append!(_edges, edge_labels(g))
-    end
-
-    D = spdiagm(map(e -> g[e...].b, _edges))
-    B = A * D * A'
-
-    bus_to_local    = Dict(bus => i for (i, bus) in enumerate(_buses))
-    fixed_local_ids = [bus_to_local[bus] for bus in _fixed_buses]
-    free_local_ids  = [i for (i, bus) in enumerate(_buses) if bus ∉ fixed_set]
-
-    p_free = [g[bus] for bus in _buses if bus ∉ fixed_set]
-
-    if apply_imbalance_correction
-        imbalance = sum(p_free) + g[_fixed_buses[1]]
-        gen =
-            sum(p for p in p_free if p ≤ 0) +
-            (g[_fixed_buses[1]] ≤ 0 ? g[_fixed_buses[1]] : 0)
-        if gen ≠ 0
-            foreach(
-                i -> p_free[i] ≤ 0 && (p_free[i] -= p_free[i] * imbalance / gen),
-                eachindex(p_free),
-            )
-        else
-            @error "connected component cannot be balanced without generation"
-            return
-        end
-    end
-
-    B_free = B[free_local_ids, free_local_ids]
-    rhs = p_free - B[free_local_ids, fixed_local_ids] * _fixed_phases
-    ϕ_free = B_free \ rhs
-
-    ϕ_all = zeros(length(_buses))
-    for (i, j) in zip(eachindex(ϕ_free), free_local_ids)
-        ϕ_all[j] = ϕ_free[i]
-    end
-    for (phase, j) in zip(_fixed_phases, fixed_local_ids)
-        ϕ_all[j] = phase
-    end
-
-    flows = D * A' * ϕ_all
-
-    d_ϕ = Dict(b => 0.0 for b in labels(g))
-    foreach(kv -> d_ϕ[kv[2]] = ϕ_all[kv[1]], enumerate(_buses))
-
-    d_flows = Dict(e => 0.0 for e in edge_labels(g))
-    foreach(kv -> (d_flows[kv[2]] = flows[kv[1]]), enumerate(_edges))
-
-    d_p = Dict(b => 0.0 for b in labels(g))
-    foreach(
-        kv -> d_p[kv[2]] = p_free[kv[1]],
-        enumerate(bus for bus in _buses if bus ∉ fixed_set),
-    )
-    for bus in _fixed_buses
-        d_p[bus] =
-            sum(br_sign[2] * d_flows[br_sign[1]] for br_sign in incident_signed(g, bus))
-    end
-
-    return (flows = d_flows, ϕ = d_ϕ, p = d_p)
+A master that enforces `base_connectivity!` never produces such a topology, and the
+Gurobi path never raises this. SCIP's constraint handler is consulted on candidate
+solutions before they have cleared every other handler, so it can be asked about one —
+and an exception crossing back into SCIP's C frame is undefined behaviour, which is
+why `scip.jl` catches this rather than letting it escape.
+"""
+struct DisconnectedTopology <: Exception
+    outages::Set{ELabel}
 end
 
-function dcpf!(
-    ec::ElementaryCase;
-    outages::Set{ELabel} = Set{ELabel}(),
-    tripping::Union{Nothing,ELabel} = nothing,
-    kwargs...,
-)
-    pf_res = dcpf(ec; outages = outages, tripping = tripping, kwargs...)
-    setflows!(ec, [pf_res.flows[br] for br in edge_labels(ec.g)])
-    for bus in labels(ec.g)
-        ec.g[bus] = pf_res.p[bus]
+Base.showerror(io::IO, e::DisconnectedTopology) =
+    print(io, "DisconnectedTopology: the network is not connected to the reference bus ",
+              "with ", length(e.outages), " branches open")
+
+"Solve for the bus angles, reporting a disconnected topology as such."
+function _solve_angles(A, b, outages)
+    try
+        A \ b
+    catch e
+        e isa LinearAlgebra.SingularException || rethrow()
+        throw(DisconnectedTopology(outages))
     end
-    pf_res
 end
 
 function secured_dcpf(
@@ -246,14 +147,14 @@ function secured_dcpf(
             )
 
             ϕ_wo_orig = zeros(nv(g) - 1)
-            ϕ_wo_orig[inbus_ids] =
-                B_wo_orig[inbus_ids, inbus_ids] \ (p_wo_orig[inbus_ids] + δp[inbus_ids])
+            ϕ_wo_orig[inbus_ids] = _solve_angles(
+                B_wo_orig[inbus_ids, inbus_ids], p_wo_orig[inbus_ids] + δp[inbus_ids], _outages)
             flows = ϕ_to_flows * ϕ_wo_orig
             br ≠ BASECONTINGENCY && (flows[e_id] = 0)
             res_flows[i, :] = flows
 
         else            # no imbalance to handle
-            ϕ_wo_orig = B_wo_orig \ p_wo_orig
+            ϕ_wo_orig = _solve_angles(B_wo_orig, p_wo_orig, _outages)
             flows = ϕ_to_flows * ϕ_wo_orig
             br ≠ BASECONTINGENCY && (flows[e_id] = 0)
             res_flows[i, :] = flows
@@ -319,12 +220,6 @@ end
 
 function violating_contingencies(sr::SA_result)
     Set(ctg for (ctg, i) in sr.contingencies if !isempty(violated_branches(sr, ctg)))
-end
-
-function most_violated_branch(sr::SA_result, contingency::ELabel)
-    branches = collect(violated_branches(sr, contingency))
-    _, br = max_overload(sr, contingency, branches)
-    br
 end
 
 function identify_most_constraining_contingency(sr::SA_result)

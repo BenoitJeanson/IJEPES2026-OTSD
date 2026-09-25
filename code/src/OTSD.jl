@@ -9,15 +9,16 @@ of the research code that produced the published numbers, reduced to what the
 experiments need — the graph model, the DC security analysis, the master problem, the
 two cut families, and the local search around them.
 
-Two solver backends are available, described in `src/backend.jl`:
+Two solver backends run the master, described in `src/backend.jl`:
 
   * `GurobiBackend` — the algorithm as published: one branch-and-cut tree, cuts
     injected from a lazy-constraint callback on every incumbent.
-  * `HiGHSBackend`  — a licence-free path. HiGHS cannot accept lazy constraints from
-    Julia, so the master is re-solved between rounds of cut generation.
+  * `SCIPBackend`   — the same algorithm without a licence. SCIP has no lazy-constraint
+    callback but has the mechanism that generalises one, a constraint handler, so cuts
+    still enter at integer-feasible nodes inside one tree.
 
-Both drive the same separation routine, so the cuts are identical by construction;
-only the moment at which they enter the master differs.
+Both drive the same separation routine and build cuts from the same definitions, so
+the algorithm is the same one; only the solver interface differs.
 
 Entry point: [`solve_otsd`](@ref).
 """
@@ -55,13 +56,13 @@ export reduced_sa, secured_dcpf, create_bridge_to_pocket, violating_contingencie
 
 # ── Benders ───────────────────────────────────────────────────────────────────
 export BendersCut, CutRecord, mastercutpool, solve_benders_phase
-export CutSink, LazySink, DirectSink, benders_cut_loop!
+export CutSink, LazySink, AccumulatingSink
 
 # ── Local search ──────────────────────────────────────────────────────────────
 export SessionState, run_benders_iterations!, sa_induced_followed, extend_sbs_by_hops
 
 # ── Backends ──────────────────────────────────────────────────────────────────
-export Backend, GurobiBackend, SCIPBackend, HiGHSBackend, solve_otsd
+export Backend, GurobiBackend, SCIPBackend, HiGHSLPBackend, solve_otsd
 export backend_name, solver_version, supports_lazy
 
 # Gurobi is held in a single environment for the life of the session: a licence
@@ -72,14 +73,13 @@ function __init__()
     try
         GRB_ENV_REF[] = Gurobi.Env(Dict{String,Any}())
     catch e
-        @warn "No Gurobi environment; the HiGHS backend remains available." exception = e
+        @warn "No Gurobi environment; SCIPBackend runs the same algorithm without one." exception = e
     end
 end
 
 include("grid.jl")
 include("gridcase.jl")
 include("elementarycase.jl")
-include("placeholders.jl")
 include("pocket.jl")
 include("case.jl")
 
@@ -90,7 +90,6 @@ include("cutsink.jl")
 include("blocks.jl")
 include("benders_commons.jl")
 include("cutpool.jl")
-include("cutloop.jl")
 include("scip.jl")
 include("subproblem.jl")
 include("master.jl")

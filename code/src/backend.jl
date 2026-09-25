@@ -1,21 +1,28 @@
 # ── Solver backends ───────────────────────────────────────────────────────────
 #
 # The decomposition needs one thing from its solver that is not portable: a way to
-# add a cut once an integer-feasible topology appears. Gurobi offers it as a
-# lazy-constraint callback, so the whole search fits in one branch-and-cut tree.
-# HiGHS does not — `kHighsCallbackMipDefineLazyConstraints` exists in the enum, but
-# `HighsCallbackDataIn` carries no channel for a new row and the Julia wrapper
-# exposes none. On HiGHS the master is therefore re-solved between rounds of cut
-# generation.
+# add a cut once an integer-feasible topology appears, so that the whole search fits
+# in a single branch-and-cut tree. Gurobi offers it directly, as a lazy-constraint
+# callback. SCIP has no such callback but has the mechanism a callback is a special
+# case of — a constraint handler (`scip.jl`) — and reaches the same place.
 #
-# The separation itself is shared: see `separate_cuts` in `master.jl`. Only the
-# moment at which a cut reaches the master differs between the two.
+# Both master backends therefore run the *same* algorithm. The separation itself is
+# shared code either way (`_separate!` in `master.jl`); only the interface through
+# which a cut reaches the solver differs.
+#
+# HiGHS appears here in one role only: it solves the contingency LPs under a SCIP
+# master, because SCIP does not expose a Farkas certificate. It cannot host the
+# master — `kHighsCallbackMipDefineLazyConstraints` exists in the enum, but
+# `HighsCallbackDataIn` carries no channel for a new row and the Julia wrapper
+# exposes none.
 
 """
     Backend
 
-How the master problem is solved. Concrete backends are [`GurobiBackend`](@ref) and
-[`HiGHSBackend`](@ref); [`supports_lazy`](@ref) distinguishes them.
+Which solver runs a problem. The master backends are [`GurobiBackend`](@ref) and
+[`SCIPBackend`](@ref), and both take cuts inside one branch-and-cut tree
+([`supports_lazy`](@ref)). [`HiGHSLPBackend`](@ref) is not a master backend: it
+solves the contingency LPs for a SCIP master.
 """
 abstract type Backend end
 
@@ -30,16 +37,15 @@ Base.@kwdef struct GurobiBackend <: Backend
 end
 
 """
-    HiGHSBackend(; threads = 4, max_rounds = 200)
+    HiGHSLPBackend(; threads = 4)
 
-A licence-free path. Cuts are added between master solves rather than inside the
-tree, so the master is re-solved once per round until a round produces no cut. The
-cuts are the same; the search that finds them is not, and neither are the runtimes.
-`max_rounds` bounds the loop.
+Not a master backend. HiGHS solves the contingency LPs under a [`SCIPBackend`](@ref)
+master, because the feasibility cut is read off the Farkas dual of an infeasible LP
+and SCIP does not expose one through MathOptInterface. Passing this to the master
+is rejected — HiGHS cannot take a cut from inside a branch-and-cut tree.
 """
-Base.@kwdef struct HiGHSBackend <: Backend
+Base.@kwdef struct HiGHSLPBackend <: Backend
     threads::Int = 4
-    max_rounds::Int = 200
 end
 
 """
@@ -54,15 +60,20 @@ Base.@kwdef struct SCIPBackend <: Backend
     threads::Int = 1
 end
 
-"Can this backend take a cut at an integer-feasible node, inside one tree?"
+"""
+    supports_lazy(backend) -> Bool
+
+Can this backend take a cut at an integer-feasible node, inside one tree? True of
+every backend that may host the master; the master rejects one for which it is false.
+"""
 supports_lazy(::GurobiBackend) = true
 supports_lazy(::SCIPBackend) = true
-supports_lazy(::HiGHSBackend) = false
+supports_lazy(::HiGHSLPBackend) = false
 
 "Short identifier used in run tags and result records."
 backend_name(::GurobiBackend) = "gurobi"
 backend_name(::SCIPBackend) = "scip"
-backend_name(::HiGHSBackend) = "highs"
+backend_name(::HiGHSLPBackend) = "highs-lp"
 
 # ── Model construction ────────────────────────────────────────────────────────
 
@@ -89,7 +100,7 @@ function new_model(b::SCIPBackend; log_path::String = "")
     m
 end
 
-function new_model(b::HiGHSBackend; log_path::String = "")
+function new_model(b::HiGHSLPBackend; log_path::String = "")
     m = direct_model(HiGHS.Optimizer())
     set_optimizer_attribute(m, "output_flag", false)
     set_optimizer_attribute(m, "threads", b.threads)
@@ -97,20 +108,15 @@ function new_model(b::HiGHSBackend; log_path::String = "")
     m
 end
 
-# ── Attributes that both solvers have under different names ───────────────────
+# ── Attributes the two masters have under different names ─────────────────────
+#
+# Set on the master only, so there is nothing to define for the LP backend.
 
 set_seed!(::GurobiBackend, m, seed::Int) = set_attribute(m, "Seed", seed)
 set_seed!(::SCIPBackend, m, seed::Int) = set_attribute(m, "randomization/randomseedshift", seed)
-set_seed!(::HiGHSBackend, m, seed::Int) = set_attribute(m, "random_seed", seed)
 
 set_timeout!(::GurobiBackend, m, seconds::Real) = set_attribute(m, "TimeLimit", Float64(seconds))
 set_timeout!(::SCIPBackend, m, seconds::Real) = set_attribute(m, "limits/time", Float64(seconds))
-set_timeout!(::HiGHSBackend, m, seconds::Real) = set_attribute(m, "time_limit", Float64(seconds))
-
-"Emphasis on finding good incumbents early. Gurobi only; HiGHS has no equivalent."
-set_mip_focus!(::GurobiBackend, m, focus::Int) = set_attribute(m, "MIPFocus", focus)
-set_mip_focus!(::SCIPBackend, _, _) = nothing
-set_mip_focus!(::HiGHSBackend, _, _) = nothing
 
 """
     lp_backend(backend) -> Backend
@@ -119,13 +125,13 @@ Which solver solves the contingency subproblems. They are pure LPs, and the
 feasibility cut is read off the dual ray of an infeasible one, so the only
 requirement is that the solver hands back a Farkas certificate.
 
-Gurobi and HiGHS both do. SCIP does not expose one through MathOptInterface, so a
-SCIP master pairs with HiGHS subproblems — both open source, and invisible to the
-algorithm: the cuts and the order they are generated in are unchanged.
+Gurobi does. SCIP does not expose one through MathOptInterface, so a SCIP master
+pairs with HiGHS subproblems — both open source, and invisible to the algorithm: the
+cuts and the order they are generated in are unchanged.
 """
 lp_backend(b::GurobiBackend) = b
-lp_backend(b::HiGHSBackend) = b
-lp_backend(b::SCIPBackend) = HiGHSBackend(threads = b.threads)
+lp_backend(b::HiGHSLPBackend) = b
+lp_backend(b::SCIPBackend) = HiGHSLPBackend(threads = b.threads)
 
 """
     request_infeasibility_certificate!(backend, m)
@@ -141,7 +147,7 @@ request_infeasibility_certificate!(::GurobiBackend, m) = set_optimizer_attribute
 # SCIP's subproblem LPs are solved through the same path; it returns a dual ray
 # without being asked, as HiGHS does.
 request_infeasibility_certificate!(::SCIPBackend, m) = nothing
-request_infeasibility_certificate!(::HiGHSBackend, m) = set_optimizer_attribute(m, "presolve", "off")
+request_infeasibility_certificate!(::HiGHSLPBackend, m) = set_optimizer_attribute(m, "presolve", "off")
 
 "Announce that the model will receive lazy constraints. Gurobi requires this up front."
 enable_lazy!(m) = MOI.set(m, MOI.RawOptimizerAttribute("LazyConstraints"), 1)
@@ -159,12 +165,12 @@ end
 
 solver_version(::SCIPBackend) = string(SCIP.SCIPmajorVersion(), ".", SCIP.SCIPminorVersion(),
                                        ".", SCIP.SCIPtechVersion())
-solver_version(::HiGHSBackend) = unsafe_string(HiGHS.Highs_version())
+solver_version(::HiGHSLPBackend) = unsafe_string(HiGHS.Highs_version())
 
 """
     default_backend() -> Backend
 
-`GurobiBackend` when a licence is present, `HiGHSBackend` otherwise, so the examples
-run for a reader without a commercial solver.
+`GurobiBackend` when a licence is present, `SCIPBackend` otherwise, so the examples
+run for a reader without a commercial solver — and run the same algorithm.
 """
-default_backend() = isassigned(GRB_ENV_REF) ? GurobiBackend() : HiGHSBackend()
+default_backend() = isassigned(GRB_ENV_REF) ? GurobiBackend() : SCIPBackend()

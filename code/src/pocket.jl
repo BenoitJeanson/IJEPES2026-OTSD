@@ -41,23 +41,6 @@ function Pocket(g::MetaGraph, buses::Set{VLabel}, branches::Set{ELabel}, d::Floa
     pk = Pocket(buses, branches, pk_innerbranches(buses, g), d)
 end
 
-function create_systematic_pocket(g::MetaGraph)::Vector{Pocket}
-    sp = Pocket[]
-    for bus in labels(g)
-        max(g[bus], 0) ≠ 0 &&
-            push!(sp, Pocket(g, Set([bus]), Set(incident(g, bus)), g[bus]))
-    end
-
-    for br in edge_labels(g)
-        f, t = from(br), to(br)
-        branches = union(Set(incident(g, f)), Set(incident(g, t)))
-        filter!(b -> b ≠ br, branches)
-        d = max(g[f], 0) + max(g[t], 0)
-        d ≠ 0 && push!(sp, Pocket(g, Set{VLabel}([f, t]), branches, d))
-    end
-    sp
-end
-
 
 """
     create_bridge_to_pocket(ec::ElementaryCase, outages::Set{ELabel}=Set{ELabel}()) -> Dict{ELabel,Pocket}
@@ -128,67 +111,4 @@ function create_bridge_to_pocket(
         bridge_to_pocket[bridge] = Pocket(g, buses, outages)
     end
     bridge_to_pocket
-end
-
-"""
-Create a pocket that contains the bus_orig and for which the branches are the bridges and borders of the pockets that are not embeded to a bigger one.
-"""
-function create_bus_orig_pocket(
-    ec::ElementaryCase,
-    bridge_to_pocket::Dict{ELabel,Pocket},
-)::Pocket
-    g = ec.g;
-    bus_orig = ec.bus_orig
-    pocket_borders = Set([br for pk in values(bridge_to_pocket) for br in pk.branches])
-    pocket_bridges = Set(keys(bridge_to_pocket))
-    union!(pocket_borders, pocket_bridges)
-
-    function _r_visit_graph(bus, buses, branches, innerbranches)
-        bus in buses && return 0
-        push!(buses, bus)
-        d = max(g[bus], 0)
-        for br in incident(g, bus)
-            if br in pocket_borders
-                br ∉ branches && push!(branches, br)
-                continue
-            end
-            br ∉ innerbranches && push!(innerbranches, br)
-            d += _r_visit_graph(opposite(br, bus), buses, branches, innerbranches)
-        end
-        return d
-    end
-    buses, branches, innerbranches = Set{VLabel}(), Set{ELabel}(), Set{ELabel}()
-    d = _r_visit_graph(bus_orig, buses, branches, innerbranches)
-    Pocket(buses, branches, innerbranches, d)
-end
-
-"""
-Input: bus_orig: if pocket is the main pocket, then the bus_orig is the one of the main one else it is the bus of the bridge that is in the pocket.
-"""
-function create_pocket_subgraph(
-    ec::ElementaryCase,
-    openbranches::Set{ELabel},
-    pk::Pocket,
-    bridge::ELabel,
-)
-    g = ec.g;
-    bus_orig = ec.bus_orig
-    dcpf_res = dcpf(ec; outages = collect(openbranches))
-    h = _initgraph()
-    for bus in pk.buses
-        h[bus] = g[bus]
-    end
-    if bridge == case_to_branch(BASECASEID)
-        for br in pk.branches
-            busin = from(br) in pk.buses ? from(br) : to(br)
-            h[busin] += (busin == from(br) ? 1 : -1) * dcpf_res.flows[br...]
-        end
-    else
-        h[bus_orig] += (bus_orig == from(bridge) ? 1 : -1) * dcpf_res.flows[bridge...]
-    end
-
-    for br in pk.innerbranches
-        h[br...] = g[br...]
-    end
-    return h
 end

@@ -1,18 +1,17 @@
 
 const ZEROSTAB = 0
 
-function contingency_subproblem(ec::ElementaryCase, outages::Set{ELabel}, contingency::ELabel, bridge_to_pocket::Dict{ELabel,Pocket}, bigM_π::Float64, bigM_flows::Float64, margin=0e-2;
+function contingency_subproblem(ec::ElementaryCase, outages::Set{ELabel}, contingency::ELabel, bridge_to_pocket::Dict{ELabel,Pocket}, margin=0e-2;
     include_base_connectivity::Bool=false,
     reduce_violations::Bool=false,
     monitored_branch::ELabel=("", ""),
-    tight_bigM::Bool=false,
     θ_max_bigM::Real=π,
     bigM_bound_multiplier::Real=2.0,
     free_π::Bool=false,
     backend::Backend=default_backend())
     g = ec.g; bus_orig = ec.bus_orig
 
-    function _build_model(g::MetaGraph, outages::Set{ELabel}, contingency::ELabel, bridge_to_pocket, bigM_π, bigM_flows, tight_bigM, θ_max_bigM, bigM_bound_multiplier)
+    function _build_model(g::MetaGraph, outages::Set{ELabel}, contingency::ELabel, bridge_to_pocket, θ_max_bigM, bigM_bound_multiplier)
 
         case = branch_to_case(contingency)
 
@@ -39,19 +38,15 @@ function contingency_subproblem(ec::ElementaryCase, outages::Set{ELabel}, contin
         @variable(m, θf[[case], busfrom in labels(g), outneighbor_labels(g, busfrom)])
         @variable(m, θt[[case], busfrom in labels(g), outneighbor_labels(g, busfrom)])
         align_feeder_to_bus_angles!(m, g, [case])
-        create_energization_state_variables!(m, g, [case], SubstationConfs(), false)
+        create_energization_state_variables!(m, g, [case], false)
         align_feeder_to_bus_energization_state!(m, g, [case])
         @variable(m, σ[[case]])
 
         phase_reference!(m, bus_orig, [case])
         bus_KCL!(m, g, bus_orig, [case])
         balance_N_1cases!(m, g, [case])
-        if tight_bigM
-            bigM = compute_tight_bigM(g; θ_max=θ_max_bigM, bigM_bound_multiplier=bigM_bound_multiplier)
-            ohm!(m, g, [case], bigM)
-        else
-            ohm!(m, g, [case], bigM_flows)
-        end
+        bigM = compute_tight_bigM(g; θ_max=θ_max_bigM, bigM_bound_multiplier=bigM_bound_multiplier)
+        ohm!(m, g, [case], bigM)
         # `free_π` drops the graph-derived de-energization and replaces it with the
         # generic connectivity block, so nothing about the pocket enters the LP.
         if free_π
@@ -73,7 +68,7 @@ function contingency_subproblem(ec::ElementaryCase, outages::Set{ELabel}, contin
         m
     end
 
-    m = _build_model(g, outages, contingency, bridge_to_pocket, bigM_π, bigM_flows, tight_bigM, θ_max_bigM, bigM_bound_multiplier)
+    m = _build_model(g, outages, contingency, bridge_to_pocket, θ_max_bigM, bigM_bound_multiplier)
     request_infeasibility_certificate!(backend, m)
     optimize!(m)
 

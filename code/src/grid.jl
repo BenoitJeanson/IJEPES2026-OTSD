@@ -1,4 +1,10 @@
 
+# Domain-wide constants. They live here, with the label types, because `grid.jl` is
+# the first file included: several files that use them are included well before the
+# model builders in `blocks.jl`, where these used to sit.
+const BASECASEID = "-"
+const NULLEDGE = ("", "")
+
 const ELabel = Tuple{String,String}
 const VLabel = String
 
@@ -33,9 +39,6 @@ to(e::ELabel) = e[2]
 str(e::ELabel) = e[1] * "-" * e[2]
 str(branches::Union{AbstractSet{ELabel},AbstractVector{ELabel}}) = join(str.(branches), ", ")
 
-lsrc(g::MetaGraph, e::Graphs.SimpleEdge) = label_for(g, src(e))
-ldst(g::MetaGraph, e::Graphs.SimpleEdge) = label_for(g, dst(e))
-
 incident_signed(g::MetaGraph, bus::VLabel) = Iterators.flatten((
     (((busin, bus), 1) for busin in inneighbor_labels(g, bus)),
     (((bus, busout), -1) for busout in outneighbor_labels(g, bus)),
@@ -64,24 +67,6 @@ function _initgraph(;
         edge_data_type = Branch,
         graph_data = (edge_label_builder = edge_label_builder,),
     )
-end
-
-function build_simple_grid(; micro = true)
-    g = _initgraph()
-    g["1"] = micro ? -2 : -3
-    for i = 2:(micro ? 3 : 4)
-        g["$i"] = 1
-    end
-    g["1", "2"] = Branch(1, 1)
-    g["2", "3"] = Branch(1, 1)
-    if micro
-        g["1", "3"] = Branch(1, 1)
-    else
-        g["3", "4"] = Branch(1, 1)
-        g["2", "4"] = Branch(1, 1)
-        g["1", "4"] = Branch(1, 1)
-    end
-    g
 end
 
 function PGLibtograph(
@@ -148,44 +133,6 @@ function balance!(g::MetaGraph, btype::BalanceType = gen_proportional)
     end #TODO oter types
 end
 
-function check_flow_consistency(g; v::Bool = false)
-    flows = Dict(l => g[l...].p for l in edge_labels(g))
-    injections = Dict(l => g[l] for l in labels(g))
-
-    # Initialize net flows for each node
-    net_flows = Dict{String,Float64}()
-
-    # Update net flows based on branch flows
-    for ((from, to), flow) in flows
-        net_flows[from] = get(net_flows, from, 0.0) - flow
-        net_flows[to] = get(net_flows, to, 0.0) + flow
-    end
-
-    # Compare with injections
-    consistent = true
-
-    v && println("\nComparison with injections:")
-    for (node, injection) in injections
-        net_flow = get(net_flows, node, 0.0)
-
-        v && println(
-            "Node $node: Injection = $injection, Net Flow = $net_flow, Difference = $(injection - net_flow)",
-        )
-        if abs(injection - net_flow) > 1e-9  # Tolerance for floating-point comparison
-            consistent = false
-        end
-    end
-
-    if v
-        if consistent
-            println("\nThe flows and injections are consistent.")
-        else
-            println("\nThe flows and injections are not consistent.")
-        end
-    end
-    consistent
-end
-
 function scale_branch_limits!(g::MetaGraph, ratio)
     for br in edge_labels(g)
         g[br...].p_max *= ratio
@@ -223,28 +170,6 @@ function connectedcomponent(g::MetaGraph, bus::VLabel, outages::Set{ELabel})
     buses, edges = Set{VLabel}(), Set{ELabel}()
     _expand!(buses, edges, bus)
     return (buses = buses, edges = edges)
-end
-
-function connectedbusessets(g::MetaGraph, outages = Set{ELabel}())::Vector{Set{VLabel}}
-    remaining = Set(labels(g))
-    ccs = Vector{Set{VLabel}}()
-    while !isempty(remaining)
-        component = Set{VLabel}()
-        stack = [first(remaining)]
-        while !isempty(stack)
-            bus = pop!(stack)
-            bus ∈ remaining || continue
-            push!(component, bus)
-            delete!(remaining, bus)
-            for br in incident(g, bus)
-                br in outages && continue
-                nb = opposite(br, bus)
-                nb ∈ remaining && push!(stack, nb)
-            end
-        end
-        push!(ccs, component)
-    end
-    return ccs
 end
 
 function edge_distance_map(g::MetaGraph)

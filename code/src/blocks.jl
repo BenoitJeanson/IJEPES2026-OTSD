@@ -1,6 +1,3 @@
-const BIG_M = 1e3
-const BASECASEID = "-"
-const NULLEDGE = ("", "")
 
 """
     branch_to_case(case::ELabel)
@@ -83,45 +80,6 @@ function init_model(backend::Backend, logfilename::String = "", message::String 
 end
 
 """
-    create_branch_opening_variables!(m::Model, g::MetaGraph, cases, allow_branch_openings::Bool)
-
-Create branch opening variables and contingency-aware branch status expressions.
-
-Arguments:
-- `m`: JuMP model.
-- `g`: network graph.
-- `cases`: contingency identifiers.
-- `allow_branch_openings`: whether binary opening variables are decision variables.
-
-Returns:
-- `Nothing`.
-
-Side effects:
-- Adds variable `:v` (if enabled) and expression `:w` to `m`.
-"""
-function create_branch_opening_variables!(
-    m::Model,
-    g::MetaGraph,
-    cases,
-    allow_branch_openings::Bool,
-)
-    if allow_branch_openings
-        @variable(m, v[busfrom in labels(g), outneighbor_labels(g, busfrom)], Bin)
-        @expression(
-            m,
-            w[c in cases, busfrom in labels(g), busto in outneighbor_labels(g, busfrom)],
-            case_to_branch(c) == (busfrom, busto) ? 0 : v[busfrom, busto]
-        )
-    else
-        @expression(
-            m,
-            w[c in cases, busfrom in labels(g), busto in outneighbor_labels(g, busfrom)],
-            case_to_branch(c) == (busfrom, busto) ? 0 : 1
-        )
-    end
-end
-
-"""
     base_connectivity!(m::Model, g::MetaGraph, fixed_buses::Vector{VLabel}, big_M; ...)
 
 Add base-case connectivity constraints, optionally with bus-split activation logic.
@@ -141,63 +99,18 @@ function base_connectivity!(
     m::Model,
     g::MetaGraph,
     fixed_buses::Vector{VLabel},
-    bus_splits::SubstationConfs = SubstationConfs(),
     allow_branch_openings::Bool = true,
-    eqset::EquivalentSet = EquivalentSet(),
 )
 
-    big_M = ne(g) + sum(length(conf.subbus2br) for conf in values(bus_splits);init=0) + 1
-
-    # Precompute connectivity flow pairs per boundary bus — single pass over eqset.
-    # Ungated — equivalent paths are always available.
-    eq_in  = Dict{VLabel,Vector{Tuple{Int,VLabel,VLabel}}}()
-    eq_out = Dict{VLabel,Vector{Tuple{Int,VLabel,VLabel}}}()
-    for (q, eq) in enumerate(eqset.eqs), cc in eq.cc, bus in cc.buses
-        ins  = get!(eq_in, bus, [])
-        outs = get!(eq_out, bus, [])
-        for bj in cc.buses
-            bj == bus && continue
-            push!(ins, (q, bj, bus))
-            push!(outs, (q, bus, bj))
-        end
-    end
-    _eq_cf(bus) =
-        sum(m[:c_flows_eq][p] for p in get(eq_in, bus, ()); init = 0) -
-        sum(m[:c_flows_eq][p] for p in get(eq_out, bus, ()); init = 0)
+    big_M = ne(g) + 1
 
     for bus in labels(g)
         bus in fixed_buses && continue
-        if haskey(bus_splits, bus)
-            for (r, conf) in enumerate(bus_splits[bus]), subbus in keys(conf.subbus2br)
-                brin  = [br for br in conf.subbus2br[subbus] if to(br) == bus]
-                brout = [br for br in conf.subbus2br[subbus] if from(br) == bus]
-                @constraint(
-                    m,
-                    sum(m[:c_flows][br...] for br in brin) -
-                    sum(m[:c_flows][br...] for br in brout) - 1 ≤
-                    big_M * (1 - m[:v_bus][bus, r])
-                )
-                @constraint(
-                    m,
-                    -sum(m[:c_flows][br...] for br in brin) +
-                    sum(m[:c_flows][br...] for br in brout) +
-                    1 ≤ big_M * (1 - m[:v_bus][bus, r])
-                )
-            end
-        else
-            @constraint(
-                m,
-                sum(m[:c_flows][busfrom, bus] for busfrom in inneighbor_labels(g, bus)) -
-                sum(m[:c_flows][bus, busto] for busto in outneighbor_labels(g, bus)) +
-                _eq_cf(bus) == 1
-            )
-        end
-    end
-
-    # Connector buses: no branches in g, connectivity only through equivalents.
-    for bus in keys(eqset.connectors)
-        bus in fixed_buses && continue
-        @constraint(m, _eq_cf(bus) == 1)
+        @constraint(
+            m,
+            sum(m[:c_flows][busfrom, bus] for busfrom in inneighbor_labels(g, bus)) -
+            sum(m[:c_flows][bus, busto] for busto in outneighbor_labels(g, bus)) == 1
+        )
     end
 
     if allow_branch_openings
@@ -233,28 +146,14 @@ function compute_tight_bigM(
     (bigM_ohm = bigM_ohm, bigM_bound = bigM_bound)
 end
 
-"""
-    add_angle_bounds!(m, g, cases, θ_max)
-
-Add box constraints θ_i ∈ [-θ_max, θ_max] to all phase-angle variables.
-Required whenever tight big-M is used: angle bounds are what make bigM_ohm valid
-for open branches (including de-energized buses whose angles are otherwise free).
-"""
-function add_angle_bounds!(m::Model, g::MetaGraph, cases, θ_max::Real)
-    @constraint(m, [c in cases, bus in labels(g)], m[:ϕ][c, bus] ≥ -θ_max)
-    @constraint(m, [c in cases, bus in labels(g)], m[:ϕ][c, bus] ≤ θ_max)
-end
-
 """Convenience overload of `base_connectivity!` for one fixed reference bus."""
 function base_connectivity!(
     m::Model,
     g::MetaGraph,
     bus_orig::String,
-    bus_splits::SubstationConfs = SubstationConfs(),
     allow_branch_openings::Bool = true,
-    eqset::EquivalentSet = EquivalentSet(),
 )
-    base_connectivity!(m, g, [bus_orig], bus_splits, allow_branch_openings, eqset)
+    base_connectivity!(m, g, [bus_orig], allow_branch_openings)
 end
 
 """
@@ -383,133 +282,6 @@ function flows!(
 end
 
 """
-    bus_KCL!(m::Model, g::MetaGraph, fixed_buses::Vector{VLabel}, bus_splits::SubstationConfs, cases::Vector{String}, big_M)
-
-Add KCL constraints with optional bus-split dependent deactivation using big-M.
-
-Returns:
-- `Nothing`.
-
-Side effects:
-- Adds KCL constraints to `m`.
-"""
-function bus_KCL!(
-    m::Model,
-    g::MetaGraph,
-    fixed_buses::Vector{VLabel},
-    bus_splits::SubstationConfs,
-    cases::Vector{String},
-    big_M::Float64,
-    eqset::EquivalentSet = EquivalentSet(),
-)
-
-    _eq_flows(bus, c) = sum(
-        m[:flows_e][c, (q, bus)] for (q, eq) in enumerate(eqset.eqs) if bus in eq.buses;
-        init = 0,
-    )
-
-    for bus in labels(g)
-        bus in fixed_buses && continue
-        if haskey(bus_splits, bus)
-            for (r, conf) in enumerate(bus_splits[bus]), subbus in keys(conf.subbus2br)
-                brin  = [br for br in conf.subbus2br[subbus] if to(br) == bus]
-                brout = [br for br in conf.subbus2br[subbus] if from(br) == bus]
-                @constraint(
-                    m,
-                    [c in cases],
-                    (subbus == 1 ? m[:load][c, bus] - m[:gen][c, bus] : 0) -
-                    sum(m[:flows][c, br...] for br in brin) +
-                    sum(m[:flows][c, br...] for br in brout) ≤
-                    big_M * (1 - m[:v_bus][bus, r])
-                )
-                @constraint(
-                    m,
-                    [c in cases],
-                    -(subbus == 1 ? m[:load][c, bus] - m[:gen][c, bus] : 0) +
-                    sum(m[:flows][c, br...] for br in brin) -
-                    sum(m[:flows][c, br...] for br in brout) ≤
-                    big_M * (1 - m[:v_bus][bus, r])
-                )
-            end
-        else
-            @constraint(
-                m,
-                [c in cases],
-                m[:load][c, bus] - m[:gen][c, bus] ==
-                sum(m[:flows][c, busfrom, bus] for busfrom in inneighbor_labels(g, bus)) -
-                sum(m[:flows][c, bus, busto] for busto in outneighbor_labels(g, bus)) +
-                _eq_flows(bus, c)
-            )
-        end
-    end
-end
-
-function bus_KCL!(
-    m::Model,
-    g::MetaGraph,
-    fixed_buses::Vector{VLabel},
-    bus_splits::SubstationConfs,
-    cases::Vector{String},
-    big_M::NamedTuple,
-    eqset::EquivalentSet = EquivalentSet(),
-)
-
-    _eq_flows(bus, c) = sum(
-        m[:flows_e][c, (q, bus)] for (q, eq) in enumerate(eqset.eqs) if bus in eq.buses;
-        init = 0,
-    )
-
-    for bus in labels(g)
-        bus in fixed_buses && continue
-        if haskey(bus_splits, bus)
-            bigMBound = sum(big_M.bigM_bound[br] for br in incident(g, bus))
-            for (r, conf) in enumerate(bus_splits[bus]), subbus in keys(conf.subbus2br)
-                brin  = [br for br in conf.subbus2br[subbus] if to(br) == bus]
-                brout = [br for br in conf.subbus2br[subbus] if from(br) == bus]
-                @constraint(
-                    m,
-                    [c in cases],
-                    (subbus == 1 ? m[:load][c, bus] - m[:gen][c, bus] : 0) -
-                    sum(m[:flows][c, br...] for br in brin) +
-                    sum(m[:flows][c, br...] for br in brout) ≤
-                    bigMBound * (1 - m[:v_bus][bus, r])
-                )
-                @constraint(
-                    m,
-                    [c in cases],
-                    -(subbus == 1 ? m[:load][c, bus] - m[:gen][c, bus] : 0) +
-                    sum(m[:flows][c, br...] for br in brin) -
-                    sum(m[:flows][c, br...] for br in brout) ≤
-                    bigMBound * (1 - m[:v_bus][bus, r])
-                )
-            end
-        else
-            @constraint(
-                m,
-                [c in cases],
-                m[:load][c, bus] - m[:gen][c, bus] ==
-                sum(m[:flows][c, busfrom, bus] for busfrom in inneighbor_labels(g, bus)) -
-                sum(m[:flows][c, bus, busto] for busto in outneighbor_labels(g, bus)) +
-                _eq_flows(bus, c)
-            )
-        end
-    end
-end
-
-"""Convenience overload of `bus_KCL!` for one fixed bus with bus splits."""
-function bus_KCL!(
-    m::Model,
-    g::MetaGraph,
-    bus_orig::VLabel,
-    bus_splits::SubstationConfs,
-    cases::Vector{String},
-    big_M,
-    eqset::EquivalentSet = EquivalentSet(),
-)
-    bus_KCL!(m, g, [bus_orig], bus_splits, cases, big_M, eqset)
-end
-
-"""
     bus_KCL!(m::Model, g::MetaGraph, fixed_buses::Vector{VLabel}, cases::Vector{String})
 
 Add standard KCL constraints for all non-fixed buses.
@@ -551,26 +323,6 @@ Returns:
 Side effects:
 - Adds constraints to `m`.
 """
-function ohm!(m::Model, g::MetaGraph, cases::Vector{String}, big_M::Float64)
-    @constraint(m, [c in cases], m[:flows][c, :, :] .≤ (m[:w][c, :, :]) .* big_M)
-    @constraint(m, [c in cases], m[:flows][c, :, :] .≥ -(m[:w][c, :, :]) .* big_M)
-
-    @constraint(
-        m,
-        [c in cases, busfrom in labels(g), busto in outneighbor_labels(g, busfrom)],
-        m[:flows][c, busfrom, busto] -
-        sum(g[busfrom, busto].b * (m[:θt][c, busfrom, busto] - m[:θf][c, busfrom, busto])) ≤
-        big_M * (1 - m[:w][c, busfrom, busto])
-    )
-    @constraint(
-        m,
-        [c in cases, busfrom in labels(g), busto in outneighbor_labels(g, busfrom)],
-        m[:flows][c, busfrom, busto] -
-        sum(g[busfrom, busto].b * (m[:θt][c, busfrom, busto] - m[:θf][c, busfrom, busto])) ≥
-        -big_M * (1 - m[:w][c, busfrom, busto])
-    )
-end
-
 function ohm!(m::Model, g::MetaGraph, cases::Vector{String}, big_M::NamedTuple)
     for c in cases, br in edge_labels(g)
         bigM_ohm = big_M.bigM_ohm[br]
@@ -681,7 +433,7 @@ function flowslimit_slack!(m::Model, g::MetaGraph, branch::ELabel)
 end
 
 """
-    create_energization_state_variables!(m::Model, g::MetaGraph, n_1cases, bus_splits::SubstationConfs, is_π_binary::Bool; no_deenergization::Bool=false)
+    create_energization_state_variables!(m::Model, g::MetaGraph, n_1cases, is_π_binary::Bool; no_deenergization::Bool=false)
 
 Create bus/feeder energization variables (or fixed expressions when de-energization is disabled).
 
@@ -695,18 +447,13 @@ function create_energization_state_variables!(
     m::Model,
     g::MetaGraph,
     n_1cases,
-    bus_splits::SubstationConfs,
     is_π_binary::Bool;
     no_deenergization::Bool = false,
 )
     if no_deenergization
         @expression(
             m,
-            π[
-                n_1cases,
-                bus in labels(g),
-                subbus in (haskey(bus_splits, bus) ? subbuses(bus_splits[bus]) : 1:1),
-            ],
+            π[n_1cases, bus in labels(g)],
             1
         )
         @expression(
@@ -724,11 +471,7 @@ function create_energization_state_variables!(
     if is_π_binary
         @variable(
             m,
-            π[
-                n_1cases,
-                bus in labels(g),
-                subbus in (haskey(bus_splits, bus) ? subbuses(bus_splits[bus]) : 1:1),
-            ],
+            π[n_1cases, bus in labels(g)],
             Bin
         )
         @variable(
@@ -744,13 +487,7 @@ function create_energization_state_variables!(
     else
         @variable(
             m,
-            0 ≤
-            π[
-                n_1cases,
-                bus in labels(g),
-                subbus in (haskey(bus_splits, bus) ? subbuses(bus_splits[bus]) : 1:1),
-            ] ≤
-            1
+            0 ≤ π[n_1cases, bus in labels(g)] ≤ 1
         )#, Bin)
         @variable(
             m,
@@ -811,32 +548,6 @@ function warmstart_openings!(m::Model, g::MetaGraph, warmstart_openings::Set{ELa
     end
 end
 
-function multi_warmstart_openings!(
-    m::Model,
-    g::MetaGraph,
-    primary::Set{ELabel},
-    extras::Vector{Set{ELabel}},
-)
-    isempty(primary) && return
-    all_starts = [primary; extras]
-    n = length(all_starts)
-    grb = JuMP.unsafe_backend(m)  # Gurobi.Optimizer (direct_model only)
-
-    # NumStart and StartNumber are Gurobi model attributes, not solver parameters.
-    # set_optimizer_attribute maps to GRBsetparam which only handles parameters.
-    Gurobi.GRBsetintattr(grb.inner, "NumStart", n)
-    for (k, sol) in enumerate(all_starts)
-        sol_set = Set(sol)
-        Gurobi.GRBsetintattr(grb.inner, "StartNumber", k - 1)  # 0-indexed
-        for br in edge_labels(g)
-            col = Gurobi.column(grb, JuMP.index(m[:v][br...])) - 1  # 0-indexed
-            val = br in sol_set ? 0.0 : 1.0  # 0=open, 1=closed
-            Gurobi.GRBsetdblattrelement(grb.inner, "Start", col, val)
-        end
-    end
-    Gurobi.GRBsetintattr(grb.inner, "StartNumber", 0)
-end
-
 """
     balance_basecase!(m::Model, g::MetaGraph, basecase::String)
 
@@ -857,12 +568,10 @@ function balance_basecase!(m::Model, g::MetaGraph, basecase::String)
 end
 
 """
-    balance_N_1cases!(m::Model, g::MetaGraph, n_1cases::Vector{String}, σ_max=2.0, eqset=EquivalentSet(), eqset_of=_->eqset)
+    balance_N_1cases!(m::Model, g::MetaGraph, n_1cases::Vector{String}, σ_max=2.0)
 
-Add N-1 load/generation balance constraints using energization variables and scaling variable `σ`.
-`eqset_of(c)` resolves the (possibly contingency-specific) `EquivalentSet` used for case `c`
-(see `add_equivalent_constraints!`); its `cc` grouping can differ per case, so the per-CC
-balance coefficients are recomputed per case rather than shared.
+Add N-1 load/generation balance constraints using energization variables and scaling
+variable `σ`.
 
 Returns:
 - `Nothing`.
@@ -875,78 +584,9 @@ function balance_N_1cases!(
     g::MetaGraph,
     n_1cases::Vector{String},
     σ_max = 2.0,
-    eqset::EquivalentSet = EquivalentSet(),
-    eqset_of::Function = _ -> eqset,
 )
     @constraint(m, m[:σ][:] .≤ σ_max)
-    if isempty(eqset.eqs)
-        @constraint(m, [c in n_1cases], sum(m[:load][c, :]) == sum(m[:gen][c, :]))
-    else
-        # McCormick linearization: slope_p_e[(c,q,cc_id)] = π_cc[(c,q,cc_id)] · σ[c]
-        for c in n_1cases, (q, eq) in enumerate(eqset_of(c).eqs), cc_id in eachindex(eq.cc)
-            @constraint(m, m[:slope_p_e][(c, q, cc_id)] ≤ σ_max * m[:π_cc][(c, q, cc_id)])
-            @constraint(m, m[:slope_p_e][(c, q, cc_id)] ≤ m[:σ][c])
-            @constraint(
-                m,
-                m[:slope_p_e][(c, q, cc_id)] ≥
-                m[:σ][c] - σ_max * (1 - m[:π_cc][(c, q, cc_id)])
-            )
-        end
-
-        # Per-CC balance coefficients, recomputed per case from eqset_of(c)
-        cc_data(c) = [
-            (
-                q,
-                cc_id,
-                sum(eq.p[i] for (i, bus) in enumerate(eq.buses) if bus in cc.buses),
-                sum(eq.gen_slope[i] for (i, bus) in enumerate(eq.buses) if bus in cc.buses),
-            ) for (q, eq) in enumerate(eqset_of(c).eqs) for (cc_id, cc) in enumerate(eq.cc)
-        ]
-
-        # Connector bus contributions: their load/gen is absent from labels(g) but must
-        # appear in the balance.  Load connectors (inj > 0) scale as π_conn (shed when
-        # de-energized).  Generator connectors (inj < 0) scale as σ·π_conn = slope_conn
-        # (McCormick).  Both are 0 when de-energized.  Connector injections are fixed
-        # across eqset variants, so these stay keyed to the nominal eqset.
-        conn_load_items = haskey(m, :π_conn) ? [(bus, inj) for (bus, inj) in eqset.connectors if inj > 0] : []
-        conn_gen_items  = haskey(m, :π_conn) && haskey(m, :slope_conn) ? [(bus, inj) for (bus, inj) in eqset.connectors if inj < 0] : []
-
-        for (bus, inj) in conn_gen_items
-            @constraint(
-                m,
-                [c in n_1cases],
-                m[:slope_conn][c, bus] ≤ σ_max * m[:π_conn][c, bus]
-            )
-            @constraint(m, [c in n_1cases], m[:slope_conn][c, bus] ≤ m[:σ][c])
-            @constraint(
-                m,
-                [c in n_1cases],
-                m[:slope_conn][c, bus] ≥ m[:σ][c] - σ_max * (1 - m[:π_conn][c, bus])
-            )
-        end
-
-        # Balance: load = gen + Σ_cc [(rhs - rhs_slope)·π_cc + rhs_slope·slope_p_e]
-        #   + connector load/gen contributions
-        # When π_cc=1 and all connectors energized: reduces to σ=1 balance  ✓
-        # When π_cc=0 or π_conn=0: de-energized contribution = 0             ✓
-        for c in n_1cases
-            @constraint(
-                m,
-                sum(m[:load][c, :]) +
-                sum(inj * m[:π_conn][c, bus] for (bus, inj) in conn_load_items; init = 0.0) +
-                sum(
-                    (rhs - rhs_slope) * m[:π_cc][(c, q, cc_id)] +
-                    rhs_slope * m[:slope_p_e][(c, q, cc_id)] for
-                    (q, cc_id, rhs, rhs_slope) in cc_data(c)
-                ) ==
-                sum(m[:gen][c, :]) +
-                sum(
-                    -inj * m[:slope_conn][c, bus] for (bus, inj) in conn_gen_items;
-                    init = 0.0,
-                )
-            )
-        end
-    end
+    @constraint(m, [c in n_1cases], sum(m[:load][c, :]) == sum(m[:gen][c, :]))
     for bus in labels(g)
         p = g[bus]
         big_M = σ_max * abs(p)
@@ -955,119 +595,17 @@ function balance_N_1cases!(
                 @constraint(m, m[:load][c, bus] == 0)
                 @constraint(
                     m,
-                    m[:gen][c, bus] + m[:σ][c] * p ≤ big_M * (1 - m[:π][c, bus, 1])
+                    m[:gen][c, bus] + m[:σ][c] * p ≤ big_M * (1 - m[:π][c, bus])
                 )
                 @constraint(
                     m,
-                    -(m[:gen][c, bus] + m[:σ][c] * p) ≤ big_M * (1 - m[:π][c, bus, 1])
+                    -(m[:gen][c, bus] + m[:σ][c] * p) ≤ big_M * (1 - m[:π][c, bus])
                 )
-                @constraint(m, m[:gen][c, bus] ≤ big_M * m[:π][c, bus, 1])
-                @constraint(m, -m[:gen][c, bus] ≤ big_M * m[:π][c, bus, 1])
+                @constraint(m, m[:gen][c, bus] ≤ big_M * m[:π][c, bus])
+                @constraint(m, -m[:gen][c, bus] ≤ big_M * m[:π][c, bus])
             else
                 @constraint(m, m[:gen][c, bus] == 0)
-                @constraint(m, m[:load][c, bus] == m[:π][c, bus, 1] * p)
-            end
-        end
-    end
-end
-
-"""
-    balance_N_1cases!(m::Model, g::MetaGraph, n_1cases::Vector{String}, π::Function)
-
-Add N-1 load/generation balance constraints using external energization function `π(c, bus)`.
-
-Returns:
-- `Nothing`.
-
-Side effects:
-- Adds balance constraints to `m`.
-"""
-function balance_N_1cases!(
-    m::Model,
-    g::MetaGraph,
-    n_1cases::Vector{String},
-    π::Function,
-    eqset::EquivalentSet = EquivalentSet(),
-)
-    @assert isempty(eqset.eqs) "balance_N_1cases! with π::Function does not support equivalents yet"
-    @constraint(m, [c in n_1cases], sum(m[:load][c, :]) == sum(m[:gen][c, :]))
-    for bus in labels(g)
-        p = g[bus]
-        for c in n_1cases
-            if p < 0
-                @constraint(m, m[:load][c, bus] == 0)
-                @constraint(m, m[:gen][c, bus] == -π(c, bus) * m[:σ][c] * p)
-            else
-                @constraint(m, m[:gen][c, bus] == 0)
-                @constraint(m, m[:load][c, bus] == π(c, bus) * p)
-            end
-        end
-    end
-end
-
-"""
-    structural_bridge_lostload!(m::Model, g::MetaGraph, bus_orig::VLabel, bridge_to_pocket::Dict{ELabel,Pocket})
-
-Add structural lower bounds on lost load for bridge-induced pockets.
-
-Returns:
-- Iterator/keys of processed bridge entries.
-
-Side effects:
-- Adds constraints on `m[:lostload]`.
-"""
-function structural_bridge_lostload!(
-    m::Model,
-    g::MetaGraph,
-    bus_orig::VLabel,
-    bridge_to_pocket::Dict{ELabel,Pocket},
-)
-    for (br, pk) in bridge_to_pocket
-        pk.d ≤ 0 && continue
-        @constraint(m, m[:lostload][br...] ≥ pk.d)
-    end
-    keys(bridge_to_pocket)
-end
-
-"""
-    balance_N_1cases_opf!(m::Model, g::MetaGraph, n_1cases::Vector{String}, big_M)
-
-Add N-1 balance constraints with OPF adjustment variables.
-
-Returns:
-- `Nothing`.
-
-Side effects:
-- Adds constraints coupling `:load`, `:gen`, `:opfd`, `:opfg`, `:σ`, and `:π`.
-"""
-function balance_N_1cases_opf!(m::Model, g::MetaGraph, n_1cases::Vector{String}, big_M)
-    @constraint(m, [c in n_1cases], sum(m[:load][c, :]) .== sum(m[:gen][c, :]))
-    for bus in labels(g)
-        p = g[bus]
-        for c in n_1cases
-            if p < 0
-                @constraint(m, m[:load][c, bus] + m[:opfd][c, bus] == 0)
-                @constraint(
-                    m,
-                    m[:gen][c, bus] + m[:opfg][c, bus] + m[:σ][c] * p ≤
-                    big_M * (1 - m[:π][c, bus, 1])
-                )
-                @constraint(
-                    m,
-                    -(m[:gen][c, bus] + m[:opfg][c, bus] + m[:σ][c] * p) ≤
-                    big_M * (1 - m[:π][c, bus, 1])
-                )
-                @constraint(
-                    m,
-                    m[:gen][c, bus] + m[:opfg][c, bus] ≤ big_M * m[:π][c, bus, 1]
-                )
-                @constraint(
-                    m,
-                    -(m[:gen][c, bus] + m[:opfg][c, bus]) ≤ big_M * m[:π][c, bus, 1]
-                )
-            else
-                @constraint(m, m[:gen][c, bus] + m[:opfg][c, bus] == 0)
-                @constraint(m, m[:load][c, bus] + m[:opfd][c, bus] == m[:π][c, bus, 1] * p)
+                @constraint(m, m[:load][c, bus] == m[:π][c, bus] * p)
             end
         end
     end
@@ -1090,7 +628,7 @@ function align_N_1_energization!(
     fixed_buses::Vector{VLabel},
     n_1cases::Vector{String},
 )
-    @constraint(m, [bus in fixed_buses], m[:π][:, bus, 1] .== 1)
+    @constraint(m, [bus in fixed_buses], m[:π][:, bus] .== 1)
     for busfrom in labels(g), busto in outneighbor_labels(g, busfrom)
         @constraint(
             m,
@@ -1139,7 +677,7 @@ function pocket_π_to_0!(
         pocket = bridge_to_pocket[cbr]
         @constraint(
             m,
-            sum(m[:π][case, bus, 1] for bus in pocket.buses) ≤
+            sum(m[:π][case, bus] for bus in pocket.buses) ≤
             length(pocket.buses) * sum(m[:w][case, br...] for br in pocket.branches)
         )
     end
@@ -1178,7 +716,7 @@ function n_1_connectivity!(
     @constraint(
         m,
         [c in n_1cases, bus in labels(g); !(bus in fixed_buses)],
-        m[:π][c, bus, 1] ==
+        m[:π][c, bus] ==
         sum(sign * m[:n_1c_flows][c, br...] for (br, sign) in incident_signed(g, bus))
     )
     @constraint(
@@ -1191,30 +729,6 @@ function n_1_connectivity!(
         [c in n_1cases, br in edge_labels(g)],
         m[:n_1c_flows][c, br...] ≥ -big_M * m[:w][c, br...]
     )
-end
-
-"""
-    forced_branch_status!(m::Model, g::MetaGraph, branches::Union{Nothing,Vector{ELabel}})
-
-Force branch statuses in the master topology variable `m[:v]` for selected branches.
-
-Returns:
-- `Nothing`.
-
-Side effects:
-- Adds fixing constraints to `m` when `branches` is provided.
-"""
-function forced_branch_status!(m::Model, g::MetaGraph, branches::Union{Nothing,Set{ELabel},Dict{ELabel,Bool}})
-    isnothing(branches) && return
-    if branches isa Dict{ELabel,Bool}
-        for (br, status) in branches
-            @constraint(m, m[:v][br...] == status)
-        end
-        return
-    end
-    for br in edge_labels(g)
-        @constraint(m, m[:v][br...] == !(br in branches))
-    end
 end
 
 """
@@ -1250,24 +764,6 @@ function max_overload(model::Model, g::MetaGraph, case::String, branches::Vector
 end
 
 """
-    max_overloaded_case(model::Model, g::MetaGraph, branches::Vector{ELabel}, cases::Vector{String})
-
-Return the case with the highest overload among candidates.
-
-Returns:
-- Tuple `(Float64, String)`.
-"""
-function max_overloaded_case(
-    model::Model,
-    g::MetaGraph,
-    branches::Vector{ELabel},
-    cases::Vector{String},
-)
-    maxval, index = findmax(case -> max_overload(model, g, case, branches)[1], cases)
-    maxval, cases[index]
-end
-
-"""
     getopenings(m::Model)
 
 Return the set of open branches from binary decision values.
@@ -1278,35 +774,4 @@ Returns:
 getopenings(m::Model) =
     haskey(m, :v) ? Set(br for br in eachindex(m[:v]) if round(value(m[:v][br])) == 0) :
     Set{ELabel}()
-
-"""
-    getactivebussplitids(m::Model)
-
-Return active bus-split index per bus from solved bus-split binaries.
-
-Returns:
-- `Dict{VLabel,Int}`.
-"""
-function getactivebussplitids(m::Model)
-    Dict{VLabel,Int}(
-        bus => r for
-        (bus, r) in eachindex(m[:v_bus]) if round(value(m[:v_bus][bus, r])) == 1
-    )
-end
-
-"""
-    getactivebussplits(m::Model)
-
-Return active bus-split configurations from solved bus-split binaries.
-
-Returns:
-- `SubstationConf`.
-"""
-function getactivebussplits(m::Model)::SubstationConf
-    !haskey(m.ext[:ots], :bus_splits) && return SubstationConf()
-    SubstationConf(
-        bus => m.ext[:ots].bus_splits[bus][r] for
-        (bus, r) in eachindex(m[:v_bus]) if round(value(m[:v_bus][bus, r])) == 1
-    )
-end
 

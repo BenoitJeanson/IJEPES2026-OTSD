@@ -60,9 +60,17 @@ include(joinpath(@__DIR__, "..", "experiments", "instances.jl"))
     end
 
     @testset "backends" begin
+        # Both master backends take a cut inside the tree; that is what makes them
+        # the same algorithm. HiGHS is here as the subproblem LP solver only, and
+        # the master must refuse it rather than silently solving without cuts.
         @test supports_lazy(GurobiBackend())
-        @test !supports_lazy(HiGHSBackend())
-        @test backend_name(HiGHSBackend()) == "highs"
-        @test !isempty(solver_version(HiGHSBackend()))
+        @test supports_lazy(SCIPBackend())
+        @test !supports_lazy(HiGHSLPBackend())
+        @test backend_name(SCIPBackend()) == "scip"
+        @test !isempty(solver_version(SCIPBackend()))
+
+        # A SCIP master pairs with HiGHS subproblems: SCIP exposes no Farkas dual.
+        @test OTSD.lp_backend(SCIPBackend()) isa HiGHSLPBackend
+        @test OTSD.lp_backend(GurobiBackend()) isa GurobiBackend
     end
 end

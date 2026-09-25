@@ -19,7 +19,8 @@ Keyword arguments:
                    which is valid but slower than the heuristic seed the paper uses.
   * `embed`      — contingencies embedded in the master from the outset.
   * `inherit`    — carry cuts across phases.
-  * `backend`    — [`GurobiBackend`](@ref) or [`HiGHSBackend`](@ref).
+  * `backend`    — [`GurobiBackend`](@ref) or [`SCIPBackend`](@ref); both run the
+                   same algorithm, the second without a licence.
   * `seed`       — solver seed.
   * `timeout`    — wall-clock cap in seconds for the whole search; `0` for none.
 

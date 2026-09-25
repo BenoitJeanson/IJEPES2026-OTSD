@@ -30,6 +30,15 @@ const CONFIGS = Dict(
 const CONFIG_ORDER = ["REF", "NO-SCREEN", "NO-CF-POCKET", "NO-CF-FREE",
                       "NO-EMBED", "NO-INHERIT", "NO-LOCALSEARCH"]
 
+"Commit the campaign ran from, so a figure can be traced back to the code that made it."
+function git_sha()
+    try
+        strip(read(`git -C $(@__DIR__) rev-parse --short HEAD`, String))
+    catch
+        "unknown"
+    end
+end
+
 """
     run_cell(instance, config; backend, seed, cap, outdir) -> Dict
 
@@ -41,8 +50,8 @@ different operating point, not `H = 3` with a switch flipped, so the record says
 """
 function run_cell(inst::Instance, cfgid::String;
                   backend::Backend, seed::Int = 0, cap::Real = 900,
-                  outdir::String = "results")
-    opts = CONFIGS[cfgid]
+                  outdir::String = "results",
+                  opts::NamedTuple = CONFIGS[cfgid])
     p = PAPER_OPERATING_POINT
 
     local_search = get(opts, :local_search, true)
@@ -62,6 +71,7 @@ function run_cell(inst::Instance, cfgid::String;
         "backend" => backend_name(backend), "solver_version" => solver_version(backend),
         "seed" => seed, "H" => H, "k" => k, "d_viol" => d_viol, "d_sol" => d_sol,
         "cap_seconds" => cap, "julia_version" => string(VERSION),
+        "git_sha" => git_sha(), "threads" => backend.threads,
         "started_at" => string(now()), "status" => "running",
     )
 
@@ -92,7 +102,13 @@ function run_cell(inst::Instance, cfgid::String;
     end
 
     rec["finished_at"] = string(now())
-    open(io -> JSON3.pretty(io, rec), joinpath(dir, "result.json"), "w")
+    # Write through a temporary file and rename. A rename is atomic, so a reader never
+    # sees a half-written record and a process killed mid-write leaves no 0-byte file
+    # that the campaign would later mistake for a finished cell.
+    final = joinpath(dir, "result.json")
+    tmp = final * ".tmp"
+    open(io -> JSON3.pretty(io, rec), tmp, "w")
+    mv(tmp, final; force = true)
     rec
 end
 
@@ -117,11 +133,15 @@ function run_campaign(cells; outdir::String = "results")
         end
         @info "[$i/$(length(cells))] ▶ $tag  cap=$(c.cap)s  elapsed=$(canonicalize(now() - t0))"
         push!(records, run_cell(c.instance, c.config;
-                                backend = c.backend, seed = c.seed, cap = c.cap, outdir))
+                                backend = c.backend, seed = c.seed, cap = c.cap, outdir,
+                                opts = c.opts === nothing ? CONFIGS[c.config] : c.opts))
         summarise(records)
     end
     records
 end
+
+"How many of `records` did not finish — the number a campaign should exit nonzero on."
+failed_count(records) = count(r -> get(r, "status", "") != "done", records)
 
 "Print what is on disk so far. Safe to call at any point."
 function summarise(records)
@@ -141,6 +161,13 @@ function summarise(records)
     println("="^94, "\n")
 end
 
-"A cell specification."
-cell(inst, config; backend, seed = 0, cap = 900) =
-    (; instance = inst, config, backend, seed, cap)
+"""
+    cell(inst, config; backend, seed, cap, opts)
+
+A cell specification. `opts` overrides the `CONFIGS` entry for `config`, for a study
+whose options are not the same on every system — `run_pc.jl` weights each contingency
+by a `p_c` computed from that system's own branch data, so the options cannot live in
+a table keyed by configuration name alone.
+"""
+cell(inst, config; backend, seed = 0, cap = 900, opts = nothing) =
+    (; instance = inst, config, backend, seed, cap, opts)

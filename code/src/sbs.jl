@@ -5,56 +5,6 @@ min_hop(br::ELabel, targets, edm) =
 extend_sbs_by_hops(sbs, all_branches, edm; d::Int=1) =
     Set(br for br in all_branches if min_hop(br, sbs, edm) ≤ d)
 
-"""
-Fixed-core SBS: branches within `d_fixed` hops of violated branches and
-violating N-1 contingencies. Computed once at startup.
-"""
-function compute_fixed_sbs(rc::RichCase, all_branches::Vector{ELabel}, edm; d_fixed::Int=2)
-    BASECONTINGENCY = ELabel(("", ""))
-    sa0 = secured_dcpf(rc.gc)
-    viol_dict = violated_branches(sa0)
-    all_viol = union((v for v in values(viol_dict))...)
-    viol_ctgs = Set(k for (k, v) in viol_dict if k ≠ BASECONTINGENCY && !isempty(v))
-    # targets   = union(all_viol, viol_ctgs)
-    targets = all_viol
-    @info "Fixed SBS targets: $(length(all_viol)) violated branches + $(length(viol_ctgs)) violating contingencies"
-    extend_sbs_by_hops(targets, all_branches, edm; d=d_fixed)
-end
-
-"""
-Canonical dynamic SBS builder.
-Returns fixed_sbs ∪ d_dynamic-hop neighborhood of current_openings.
-"""
-function build_sbs(all_branches::Vector{ELabel}, fixed_sbs::Set{ELabel},
-    current_openings, edm; d_dynamic::Int=3)
-    ops_set = Set{ELabel}(current_openings)
-    dynamic_sbs = extend_sbs_by_hops(ops_set, all_branches, edm; d=d_dynamic)
-    union(fixed_sbs, dynamic_sbs)
-end
-
-"""
-Solution-induced SBS: for each open branch, close it and run SA; collect induced violations.
-SBS = current_openings ∪ d_induced-hop neighborhood of all induced violations.
-Returns NamedTuple (sbs, sbs_size, n_viol, per_branch).
-"""
-function solution_induced_sbs(rc::RichCase, all_branches::Vector{ELabel}, edm,
-    openings; d_induced::Int=1)
-    all_induced = Set{ELabel}()
-    per_branch = Pair{ELabel,Set{ELabel}}[]
-    for b in openings
-        partial = setdiff(Set{ELabel}(openings), (b,))
-        sa_b = secured_dcpf(rc.gc, partial)
-        vd = violated_branches(sa_b)
-        viols_b = isempty(vd) ? Set{ELabel}() : union(values(vd)...)
-        push!(per_branch, b => viols_b)
-        union!(all_induced, viols_b)
-    end
-    hop_nbhd = isempty(all_induced) ? Set{ELabel}() :
-               extend_sbs_by_hops(all_induced, all_branches, edm; d=d_induced)
-    sbs = union(Set{ELabel}(openings), hop_nbhd)
-    (sbs=sbs, sbs_size=length(sbs), n_viol=length(all_induced), per_branch=per_branch)
-end
-
 
 function follow_the_flows(sa_res::SA_result, contingency::ELabel, branch::ELabel, max_hops::Int=typemax(Int))::Set{ELabel}
     function _r_follows!(branches, br, is_forward, remaining_hops)

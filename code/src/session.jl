@@ -37,7 +37,6 @@ function run_benders_iterations!(state::SessionState, rc::RichCase,
                                   logdir_abs::String,
                                   warmstart_hop_sbs::Int = 0,
                                   use_cut_inheritance::Bool = true,
-                                  withcallbacks::Bool = true,
                                   timeout::Float64 = 0.0,
                                   solver_kwargs::NamedTuple = NamedTuple(),
 )
@@ -57,10 +56,7 @@ function run_benders_iterations!(state::SessionState, rc::RichCase,
         r = solve_benders_phase(rc, label, H, state.best_openings, initial_cuts, state.accumulated_sbs;
             logdir, timestamp,
             contingencies_in_master,
-            tight_bigM           = true,
             bigM_bound_multiplier = 2.0,
-            use_bypass_cuts      = false,
-            withcallbacks,
             seed,
             timeout,
             solver_kwargs...)
