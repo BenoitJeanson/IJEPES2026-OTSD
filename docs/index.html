@@ -85,6 +85,7 @@ table.kv td:last-child{text-align:right;font-variant-numeric:tabular-nums}
   background:transparent;border-color:var(--hl);color:var(--hl)}
 .hit line{stroke:transparent;fill:none;pointer-events:stroke}
 #hlbar .rk{color:var(--risk)}
+#hlbar .ov{color:var(--hot)}
 #ledger{background:rgba(22,27,34,.94);border:1px solid var(--line);border-radius:7px;
   font-size:11.5px;font-variant-numeric:tabular-nums;min-width:216px;max-width:100%;
   display:flex;flex-direction:column;min-height:0}
@@ -272,6 +273,11 @@ a{color:var(--acc)}
       The campaign behind the paper's numbers ran <code>d_sol = 0</code>.</td></tr>
     <tr><td>objective</td><td>Load at risk, per unit on a <b>100 MVA</b> base — so 5.29 p.u.
       is 529 MW. Shown in MW with p.u. underneath.</td></tr>
+    <tr><td>violated contingency</td><td>A branch whose outage would overload something
+      on top of this candidate's topology — what the Benders subproblem reports as
+      <code>v_ctg</code>, drawn red and dashed. Point at one to see the branches it
+      overloads and their loading. The logs record only which contingencies failed, so the
+      overloads are precomputed with the same DC solve the campaign used.</td></tr>
     <tr><td>bridge / pocket</td><td>A live branch whose own outage would split the grid.
       The side that falls off is its <b>pocket</b>, and the load stranded there is what that
       bridge contributes to the objective. A bridge can sit inside another bridge's pocket;
@@ -730,6 +736,15 @@ function hitLayer() {
   return hitC.g;
 }
 
+/* What a violated contingency actually breaks. The logs name the contingency and
+   never what it overloaded, so the overloads are precomputed (tools/overloads.py,
+   coordedit's dcpf) and ride along with the frame as `b`, aligned with `v`. */
+const overloads = () => {
+  const f = cur(); if (!f || !f.b || S.hl == null) return null;
+  const k = f.v.indexOf(S.hl);
+  return k < 0 ? null : f.b[k];
+};
+
 function paintHL() {
   const g = hlLayer(); g.textContent = '';
   const B = S.showBrg && S.run && ph() ? bridges() : null;
@@ -747,6 +762,23 @@ function paintHL() {
       g.appendChild(el('circle', { cx: c[0], cy: c[1], r: c[2] + 4, fill: 'none',
         stroke: 'var(--risk)', 'stroke-width': 1.5, 'stroke-opacity': .85,
         'vector-effect': 'non-scaling-stroke' })); });
+  }
+  const ov = overloads();
+  if (ov) for (const [e, pct] of ov) {               // solid red: the effect, not the cause
+    const q = EP[e]; if (!q) continue;
+    // a wide wash plus a crisp core: the wash alone is too near the bridge pink
+    g.appendChild(el('line', { x1: q[0], y1: q[1], x2: q[2], y2: q[3], stroke: 'var(--hot)',
+      'stroke-width': 13, 'stroke-opacity': .32, 'stroke-linecap': 'round',
+      'vector-effect': 'non-scaling-stroke' }));
+    g.appendChild(el('line', { x1: q[0], y1: q[1], x2: q[2], y2: q[3], stroke: 'var(--hot)',
+      'stroke-width': 2.2, 'stroke-linecap': 'round', 'vector-effect': 'non-scaling-stroke' }));
+    const a = Math.atan2(q[3] - q[1], q[2] - q[0]);
+    const t = el('text', { x: (q[0] + q[2]) / 2 + 9 * Math.sin(a),
+      y: (q[1] + q[3]) / 2 - 9 * Math.cos(a) + 3.5, fill: 'var(--hot)', 'font-size': 10.5,
+      'font-weight': 600, 'text-anchor': 'middle', stroke: 'var(--bg)', 'stroke-width': 3.2,
+      'paint-order': 'stroke' });
+    t.textContent = pct + ' %';
+    g.appendChild(t);
   }
   const p = S.hl != null && EP[S.hl];
   if (!p) return;
@@ -772,10 +804,14 @@ function hlbar() {
   let n = 0; for (const f of p.frames) if (f.o.indexOf(S.hl) >= 0) n++;
   b.hidden = false;
   const B = S.showBrg ? bridges() : null, it = B && B.byEdge.get(S.hl);
+  const ov = overloads();
   b.innerHTML = `branch <b>${e.f}\u2013${e.t}</b> \u00b7 `
     + (n ? `opened in <b>${n}</b> of ${p.frames.length} candidates this phase`
          : p.sbs.indexOf(S.hl) >= 0 ? 'in the SBS, never opened this phase'
                                     : 'outside the SBS this phase')
+    + (ov ? `<span class="ov"> \u00b7 violated contingency: it overloads `
+            + ov.map(([e, pct]) => `${ename(e)} to <b>${pct} %</b>`).join(', ') + '</span>'
+          : '')
     + (it ? `<span class="rk"> \u00b7 bridge: its outage strands <b>${MW(it.w)} MW</b>`
             + ` over ${it.nb} bus${it.nb > 1 ? 'es' : ''}`
             + (it.parent ? `, and sits inside the pocket of ${ename(it.parent.e)}` : '')
@@ -843,7 +879,8 @@ function hud(res) {
   ].join('') : row('phase result', `${MW(p.solobj)} MW`);
   $('#legbody').innerHTML =
     `<i style="border-color:#fff"></i>open in this candidate<br>` +
-    `<i style="border-color:var(--hot);border-top-style:dashed"></i>violated contingency<br>` +
+    `<i style="border-color:var(--hot);border-top-style:dashed"></i>violated contingency`
+    + ` \u2014 ${phone() ? 'tap' : 'point at'} one for what it overloads<br>` +
     `<i style="border-color:hsl(24 80% 52%)"></i>opened often so far (heat)<br>` +
     (S.showSBS ? `<i style="border-color:#6a7c96"></i>in the SBS this phase, not yet tried<br>` +
       `<i style="border-color:#3c4553"></i>outside the SBS this phase` +

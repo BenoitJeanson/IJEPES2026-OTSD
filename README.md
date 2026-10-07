@@ -115,6 +115,22 @@ candidate, bridges as the tree edges with `low[child] > disc[parent]`, pockets a
 intervals. It reproduces the stored per-candidate objective on **19,725 candidates
 across 41 runs**, every one to within 5e-4.
 
+### What a violated contingency broke
+
+A candidate's red dashed branches are the contingencies the subproblem found violated —
+that much is in the logs. *What* each one overloaded is not: `v_ctg` is a set of
+contingencies and nothing more. So point at one and the branches it overloads light up
+solid red, each labelled with its loading: `9–10 · violated contingency: it overloads
+37–38 to 118 %`. Dashed is the cause, solid is the effect.
+
+Those numbers are precomputed, not read from a log and not solved in the browser —
+`tools/overloads.py` runs coordedit's `dcpf` over every distinct (topology, `v_ctg`)
+pair in the corpus and stores the result on the frame as `b`, aligned with `v`. The
+check that it is the right computation: sweeping *every* branch as a contingency and
+keeping those that overload something reproduces the logged `v_ctg` set exactly, on
+every frame tested. Most violated contingencies overload exactly one branch; four is
+the most seen.
+
 ### The gantt: every branch against every candidate
 
 Under the scrubber, one row per branch the phase ever opened, one column per
@@ -234,6 +250,7 @@ These are all real properties of the data, surfaced in the UI rather than smooth
 | drag, wheel — or one finger / two-finger pinch | pan, zoom |
 | click or drag the gantt | seek to that candidate |
 | hover a gantt row or a network branch (tap, on a phone) | light up the other |
+| hover a violated contingency (red dashed) | the branches it overloads, and by how much |
 | drag the gantt's top edge, or a panel's inner edge | resize (remembered per browser) |
 | ☰ and ⓘ (phone only) | the run list and the run details, as sheets |
 
@@ -246,11 +263,13 @@ candidate of a specific phase with a specific ghost, ready to paste into an emai
 
 ### What it deliberately does not draw
 
-No flows, no overloads, no N−1 panel. The bridge decomposition is the one thing the
-page computes rather than reads, and only because it is pure graph topology — the same
-DFS `pf.risk` runs, with no power flow anywhere near it.
+No flows, no overloads *except* the ones a violated contingency causes, no N−1 panel.
+The bridge decomposition is the one thing the page computes rather than reads, and only
+because it is pure graph topology — the same DFS `pf.risk` runs, with no power flow
+anywhere near it. The per-contingency overloads are the opposite: a real DC solve, so
+they are computed once offline and shipped as data.
 
-Beyond that: those need the DC solver, which is Python, which
+A full N−1 panel is a different matter: it needs the solver live, which is Python, which
 means a server — and this had to be something you open from a link. `tools/coordedit`
 in the main repo already does all of that and was validated to 1e-14, so rather than
 build a second, subtly different copy, this one stays out of that business.

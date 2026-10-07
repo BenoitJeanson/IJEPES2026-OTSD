@@ -8,6 +8,13 @@ import os, re, sys, json, glob, csv
 import datetime as dt
 from concurrent.futures import ProcessPoolExecutor
 
+# One BLAS thread per worker. numpy's Accelerate backend otherwise opens a thread
+# pool in every process of the ProcessPoolExecutor, and 8 x 8 threads on 8 cores
+# turned a 0.3 ms solve into 5 s. Must be set before numpy is imported.
+for _v in ('OMP_NUM_THREADS', 'VECLIB_MAXIMUM_THREADS', 'OPENBLAS_NUM_THREADS',
+           'MKL_NUM_THREADS'):
+    os.environ.setdefault(_v, '1')
+
 ROOT = os.environ.get('TNR_ROOT', '/Users/benoitjeanson/vsCode/TUD/tnr')
 ABL = os.path.join(ROOT, 'tmp/IJEPES/ablation')
 OUT = sys.argv[1]
@@ -99,6 +106,47 @@ def _rev(sysname):
     return REV[sysname]
 
 
+FWD = {}
+
+
+def _fwd(sysname):
+    """the (bus, bus) key pf.Net uses -> edge index."""
+    if sysname not in FWD:
+        FWD[sysname] = {v: k for k, v in _rev(sysname).items()}
+    return FWD[sysname]
+
+
+def over_of(args):
+    """What each violated contingency actually breaks: [[[branch, loading%], ...], ...],
+    one list per entry of the frame's v_ctg, each sorted worst first.
+
+    The callback logs name the contingencies that failed and never what they
+    overloaded, and the viewer cannot work it out for itself -- it would need a DC
+    solve. So it is computed here, once, with the same `dcpf` pf.sa sweeps with.
+    A contingency whose own outage strands the component it would have to balance
+    has no flows to report and comes back empty.
+    """
+    sysname, topo, v = args
+    rev, fwd, net = _rev(sysname), _fwd(sysname), _net(sysname)
+    tlf = SYS[sysname][3]
+    opened = frozenset(rev[i] for i in topo)
+    out = []
+    for ci in v:
+        try:
+            r = net.dcpf(opened | {rev[ci]})
+        except ValueError:
+            out.append([])
+            continue
+        bad = []
+        for e in net.ekeys:
+            pm = net.edges[e]['pmax'] * tlf
+            if pm > 0 and abs(r['flows'][e]) / pm > 1.0:
+                bad.append([fwd[e], round(abs(r['flows'][e]) / pm * 100)])
+        bad.sort(key=lambda x: -x[1])
+        out.append(bad)
+    return out
+
+
 def risk_of(args):
     sysname, topo = args
     rev = _rev(sysname)
@@ -121,6 +169,7 @@ def main():
         json.dump(nets[s], open(os.path.join(OUT, 'net', s + '.json'), 'w'), separators=(',', ':'))
 
     runs, todo = [], {s: set() for s in SYS}
+    tov = {s: set() for s in SYS}
     for d in sorted(os.listdir(ABL)):
         rd = os.path.join(ABL, d)
         if d.startswith('_') or not os.path.isfile(os.path.join(rd, 'result.json')):
@@ -164,6 +213,8 @@ def main():
                            'sol': sol, 'frames': frames})
             for f in frames:
                 todo[s].add(tuple(f['o']))
+                if f['v']:
+                    tov[s].add((tuple(f['o']), tuple(f['v'])))
             todo[s].add(tuple(sol))
         p = man.get('parameters', {})
         rec = {'id': d, 'system': s, 'config': res['config'], 'block': res.get('block'),
@@ -188,12 +239,23 @@ def main():
             vals = list(ex.map(risk_of, [(s, t) for t in topos], chunksize=200))
         obj[s] = dict(zip(topos, vals))
 
+    # --- and the other column the logs do not have: what each violation broke ---
+    ovl = {}
+    for s, pairs in tov.items():
+        pairs = sorted(pairs)
+        print('  %s: %d distinct (topology, v_ctg) pairs' % (s, len(pairs)), flush=True)
+        with ProcessPoolExecutor() as ex:
+            vals = list(ex.map(over_of, [(s, t, v) for t, v in pairs], chunksize=100))
+        ovl[s] = dict(zip(pairs, vals))
+
     for rec in runs:
-        o = obj[rec['system']]
+        o, ov = obj[rec['system']], ovl[rec['system']]
         for ph in rec['phases']:
             ph['solobj'] = o[tuple(ph['sol'])]
             for f in ph['frames']:
                 f['j'] = o[tuple(f['o'])]
+                if f['v']:
+                    f['b'] = ov[(tuple(f['o']), tuple(f['v']))]
         json.dump(rec, open(os.path.join(OUT, 'runs', rec['id'] + '.json'), 'w'),
                   separators=(',', ':'))
 
