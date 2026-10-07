@@ -9,7 +9,7 @@
 <style>
 :root{
   --bg:#0e1116; --panel:#161b22; --line:#262d38; --ink:#e6edf3; --dim:#8b949e;
-  --acc:#58a6ff; --warm:#f0883e; --hot:#ff7b72; --cool:#3fb950; --ghost:#bc8cff; --sbs:#2dd4bf; --hl:#ffd14a;
+  --acc:#58a6ff; --warm:#f0883e; --hot:#ff7b72; --cool:#3fb950; --ghost:#bc8cff; --sbs:#2dd4bf; --hl:#ffd14a; --risk:#f778ba;
 }
 *{box-sizing:border-box}
 html,body{height:100%}
@@ -48,7 +48,7 @@ table.kv td{padding:2px 0;vertical-align:top}
 table.kv td:first-child{color:var(--dim);padding-right:8px;white-space:nowrap}
 table.kv td:last-child{text-align:right;font-variant-numeric:tabular-nums}
 #topright{position:absolute;right:12px;top:12px;z-index:5;display:flex;flex-direction:column;
-  align-items:flex-end;gap:8px;max-width:min(560px,54vw)}
+  align-items:flex-end;gap:8px;max-width:min(560px,54vw);min-height:0}
 #phases{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;
   background:rgba(22,27,34,.92);border:1px solid var(--line);border-radius:7px;padding:6px 7px}
 #phases:empty{display:none}
@@ -84,6 +84,26 @@ table.kv td:last-child{text-align:right;font-variant-numeric:tabular-nums}
 #hlbar button{pointer-events:auto;margin-left:8px;padding:0 6px;font-size:11px;
   background:transparent;border-color:var(--hl);color:var(--hl)}
 .hit line{stroke:transparent;fill:none;pointer-events:stroke}
+#hlbar .rk{color:var(--risk)}
+#ledger{background:rgba(22,27,34,.94);border:1px solid var(--line);border-radius:7px;
+  font-size:11.5px;font-variant-numeric:tabular-nums;min-width:216px;max-width:100%;
+  display:flex;flex-direction:column;min-height:0}
+#ledger h3,#ledger p{flex:0 0 auto}
+#ledger h3{margin:0;padding:6px 9px;font-size:11px;font-weight:600;color:var(--risk);
+  cursor:pointer;display:flex;justify-content:space-between;gap:10px;white-space:nowrap}
+#ledger h3 span{color:var(--dim);font-weight:400}
+#ledger ol{list-style:none;margin:0;padding:3px 0 4px;max-height:34vh;overflow:auto;
+  border-top:1px solid var(--line);flex:1 1 auto;min-height:0}
+#ledger ol.clip{box-shadow:inset 0 -15px 13px -13px #000}
+#ledger li{display:flex;gap:8px;padding:2px 9px;cursor:pointer;white-space:nowrap}
+#ledger li:hover{background:#2c2230}
+#ledger li.on{background:#2c2230;box-shadow:inset 2px 0 0 var(--hl)}
+#ledger li b{flex:1 1 auto;font-weight:500}
+#ledger li i{flex:0 0 auto;color:var(--dim);font-style:normal}
+#ledger li i.nest{color:var(--risk)}
+#ledger p{margin:0;padding:5px 9px 7px;color:var(--dim);font-size:10.5px;line-height:1.4;
+  white-space:normal;border-top:1px solid var(--line);max-width:300px}
+#ledger p b{color:var(--ink);font-weight:500}
 #legend i{display:inline-block;width:18px;height:0;border-top-width:3px;border-top-style:solid;
   vertical-align:middle;margin-right:6px}
 #hud{background:rgba(22,27,34,.92);border:1px solid var(--line);
@@ -181,6 +201,7 @@ a{color:var(--acc)}
   #phases{justify-content:flex-start}
   #hud{font-size:12px;padding:6px 10px;min-width:0;
     display:flex;flex-wrap:wrap;gap:2px 14px}
+  #ledger ol{max-height:20vh}
   #hud div{display:block}
   #hud .k{margin-right:4px}
   #legend{display:none}
@@ -251,6 +272,12 @@ a{color:var(--acc)}
       The campaign behind the paper's numbers ran <code>d_sol = 0</code>.</td></tr>
     <tr><td>objective</td><td>Load at risk, per unit on a <b>100 MVA</b> base — so 5.29 p.u.
       is 529 MW. Shown in MW with p.u. underneath.</td></tr>
+    <tr><td>bridge / pocket</td><td>A live branch whose own outage would split the grid.
+      The side that falls off is its <b>pocket</b>, and the load stranded there is what that
+      bridge contributes to the objective. A bridge can sit inside another bridge's pocket;
+      the objective charges that inner load to both, so the per-bridge figures sum to the
+      objective while the <i>distinct</i> load at risk is smaller. Turn on the
+      <b>bridges</b> layer to see them, and point at one to see its pocket.</td></tr>
     <tr><td>TLF</td><td>Thermal limit factor scaling every line rating: 1.5 for
       <code>ieee118</code>, 1.0 for <code>ieee57</code>.</td></tr>
   </table>
@@ -315,12 +342,14 @@ a{color:var(--acc)}
 
   <div id="stage">
     <svg id="net"></svg>
-    <div id="topright"><div id="phases"></div><div id="hud"></div></div>
+    <div id="topright"><div id="phases"></div><div id="hud"></div>
+      <div id="ledger" hidden></div></div>
     <div id="viewctl">
       <div class="grp"><span class="lbl">network</span>
         <button id="bheat" class="on">heat</button>
         <button id="bvctg" class="on">violations</button>
         <button id="bsbs" class="on">SBS</button>
+        <button id="bbrg" class="on" title="Bridges: live branches whose own outage would strand a pocket of the grid. Width is the load that pocket would lose.">bridges</button>
         <button id="blabel">bus labels</button></div>
       <div class="grp"><span class="lbl"></span>
         <button id="bghost" title="Pins the run you are viewing as a violet reference, then lets you pick another run to view against it.">pin this run as reference</button>
@@ -379,6 +408,7 @@ function busy(msg, stick) {
   b.className = msg ? (stick ? 'on err' : 'on') : '';
 }
 const phone = () => innerWidth <= 820 || matchMedia('(pointer:coarse)').matches;
+const MW = v => (v * 100).toFixed(0);          // p.u. on the 100 MVA base -> MW
 const SVGNS = 'http://www.w3.org/2000/svg';
 const el = (n, a = {}) => { const e = document.createElementNS(SVGNS, n);
   for (const k in a) e.setAttribute(k, a[k]); return e; };
@@ -388,7 +418,7 @@ const S = {                       // everything the render reads
   heat: null, ghost: null, ghostHeat: null,
   playing: false, showHeat: true, showVctg: true, showLabels: false, showSBS: true,
   showGantt: true, ganttH: 140, showLegend: true, xTime: false,
-  showCurve: true, curveH: 110,
+  showCurve: true, curveH: 110, showBrg: true, ledOpen: true,
   view: { k: 1, x: 0, y: 0 }
 };
 
@@ -483,6 +513,7 @@ function draw() {
 
   const P = b => [geom.X(n.buses[b].xy[0]), geom.Y(n.buses[b].xy[1])];
   const byNum = {}; n.buses.forEach((b, i) => byNum[b.i] = i);
+  const B = S.showBrg ? bridges() : null;
 
   EP.length = 0;
   n.edges.forEach((e, i) => {
@@ -515,6 +546,11 @@ function draw() {
     if (isNew && t > 0)
       g.appendChild(el('line', { x1, y1, x2, y2, stroke: 'var(--sbs)',
         'stroke-width': w + 4, 'stroke-opacity': .55, 'stroke-linecap': 'round' }));
+    // a bridge carries its pocket's load as width: the grid shows where the risk is
+    const bi = B && B.byEdge.get(i);
+    if (bi) g.appendChild(el('line', { x1, y1, x2, y2, stroke: 'var(--risk)',
+      'stroke-width': w + 2.5 + 9 * Math.sqrt(bi.w / B.maxw), 'stroke-opacity': .5,
+      'stroke-linecap': 'round' }));
     g.appendChild(el('line', { x1, y1, x2, y2, stroke: col, 'stroke-width': w,
       'stroke-opacity': op, 'stroke-linecap': 'round', 'data-e': i }));
     if (vctg.has(i))
@@ -530,8 +566,10 @@ function draw() {
     }
   });
 
+  BP.length = 0;
   n.buses.forEach((b, i) => {
     const [x, y] = P(i), inj = b.p, r = 2 + 4.2 * Math.sqrt(Math.abs(inj));
+    BP[i] = [x, y, r];
     const gen = inj < 0;
     g.appendChild(gen
       ? el('circle', { cx: x, cy: y, r, fill: '#0d1117', stroke: '#6e7681', 'stroke-width': 1.3 })
@@ -548,8 +586,127 @@ function draw() {
 
   g.appendChild(hlLayer()); paintHL();
   g.appendChild(hitLayer());             // invisible wide lines, so a thin branch is hoverable
-  hud(res); gantt(); plot(); transport(); stamp(); hlbar();
+  hud(res); gantt(); plot(); transport(); stamp(); ledger(); hlbar();
 }
+
+/* -------------------------------------------------------------- bridges --- */
+/* eval_risk, decomposed. pf.risk sums, over every live branch whose outage shrinks the
+   slack-reachable set, the positive injections in the pocket that falls off -- and a
+   bridge sitting inside another bridge's pocket is counted by both, exactly as
+   create_bridge_to_pocket does. One DFS from the slack gives all of it: the bridges are
+   the tree edges with low[child] > disc[parent], the pocket is that child's subtree, and
+   the Euler intervals turn "is this bus in that pocket" and "which bridge encloses this
+   one" into integer comparisons. Verified against the stored per-candidate objective
+   over 9323 frames of 12 runs: identical to 5e-4. */
+
+let brgCache = { key: null, v: null };
+
+function bridges() {
+  const n = S.nets[S.run.system], f = cur(), p = ph();
+  const open = f ? f.o : p ? p.sol : [];
+  const key = S.run.system + '|' + open.join(',');
+  if (brgCache.key === key) return brgCache.v;
+
+  const NB = n.buses.length, byNum = {};
+  n.buses.forEach((b, i) => byNum[b.i] = i);
+  const ends = n.edges.map(e => [byNum[e.f], byNum[e.t]]);
+  const inc = Array.from({ length: NB }, () => []);
+  const cut = new Set(open);
+  ends.forEach((ab, i) => { if (!cut.has(i)) { inc[ab[0]].push(i); inc[ab[1]].push(i); } });
+
+  const disc = new Int32Array(NB).fill(-1), low = new Int32Array(NB),
+        tin = new Int32Array(NB), tout = new Int32Array(NB), pos = new Float64Array(NB);
+  const list = [], byEdge = new Map();
+  // an explicit stack, because a recursive DFS here would be the one place in this
+  // file that a bigger case could blow up
+  let clock = 0;
+  const s0 = byNum[n.slack], st = [[s0, -1, 0]];      // bus, edge arrived by, next incident
+  disc[s0] = low[s0] = tin[s0] = clock++;
+  pos[s0] = Math.max(n.buses[s0].p, 0);
+  while (st.length) {
+    const fr = st[st.length - 1], u = fr[0];
+    if (fr[2] < inc[u].length) {
+      const k = inc[u][fr[2]++];
+      if (k === fr[1]) continue;                       // never walk back up the way in
+      const ab = ends[k], v = ab[0] === u ? ab[1] : ab[0];
+      if (disc[v] >= 0) { if (disc[v] < low[u]) low[u] = disc[v]; continue; }
+      disc[v] = low[v] = tin[v] = clock++;
+      pos[v] = Math.max(n.buses[v].p, 0);
+      st.push([v, k, 0]);
+      continue;
+    }
+    st.pop(); tout[u] = clock;
+    if (fr[1] < 0) break;
+    const ab = ends[fr[1]], w = ab[0] === u ? ab[1] : ab[0];
+    if (low[u] < low[w]) low[w] = low[u];
+    if (low[u] > disc[w]) {                            // nothing under u reaches past w
+      const it = { e: fr[1], child: u, w: pos[u], nb: tout[u] - tin[u] };
+      byEdge.set(fr[1], it); list.push(it);
+    }
+    pos[w] += pos[u];
+  }
+
+  // pockets are subtrees, so they nest or miss: one pass over the intervals, left to
+  // right, gives every bridge its nearest enclosing bridge and its nesting depth
+  list.sort((a, b) => tin[a.child] - tin[b.child]);
+  const stk = [];
+  for (const it of list) {
+    while (stk.length && tout[stk[stk.length - 1].child] <= tin[it.child]) stk.pop();
+    it.parent = stk.length ? stk[stk.length - 1] : null;
+    it.depth = stk.length;
+    stk.push(it);
+  }
+  let total = 0, union = 0, dead = 0;
+  for (const it of list) { total += it.w; if (!it.depth) union += it.w; }
+  for (let i = 0; i < NB; i++) if (disc[i] < 0) dead++;
+  list.sort((a, b) => b.w - a.w || tin[a.child] - tin[b.child]);   // a ranking, not a tree
+  const v = { list, byEdge, tin, tout, live: disc, total, union, dead,
+              maxw: Math.max(1e-9, ...list.map(it => it.w)) };
+  brgCache = { key, v };
+  return v;
+}
+
+const inPocket = (B, it, b) =>
+  B.live[b] >= 0 && B.tin[b] >= B.tin[it.child] && B.tin[b] < B.tout[it.child];
+
+const ename = e => { const x = S.nets[S.run.system].edges[e]; return x.f + '\u2013' + x.t; };
+
+function ledger() {
+  const L = $('#ledger');
+  if (!S.showBrg || !S.run || !ph()) { L.hidden = true; return; }
+  const B = bridges();
+  L.hidden = false;
+  L.innerHTML = `<h3 id="ledhd">load at risk, by bridge<span>${MW(B.total)} MW \u00b7 `
+    + `${B.list.length} bridges &nbsp;${S.ledOpen ? '\u2212' : '+'}</span></h3>`
+    + (S.ledOpen ? '<ol>' + B.list.map(it =>
+        `<li data-e="${it.e}" class="${S.hl === it.e ? 'on' : ''}">`
+        + `<b>${ename(it.e)}</b><i>${MW(it.w)} MW</i><i>${it.nb} bus</i>`
+        + (it.parent ? `<i class="nest">\u21b3${ename(it.parent.e)}</i>` : '')
+        + '</li>').join('') + '</ol>'
+      + `<p>Each row is what that one outage would strand. A nested bridge (\u21b3) sits in`
+      + ` another's pocket and its load is charged to both, as the objective does: the`
+      + ` column sums to <b>${MW(B.total)} MW</b>, the distinct load at risk is`
+      + ` <b>${MW(B.union)} MW</b>.`
+      + (B.dead ? ` ${B.dead} buses are already de-energized.` : '')
+      + `<br>${phone() ? 'Tap' : 'Point at'} a row to light up the pocket.</p>` : '');
+  $('#ledhd').onclick = () => {
+    S.ledOpen = !S.ledOpen; LS.set('ledger', S.ledOpen ? '1' : '0'); ledger();
+  };
+  // the legend owns the same corner from the other end: never grow into it
+  const lg = $('#legend').offsetHeight;
+  $('#topright').style.maxHeight =
+    Math.max(130, $('#stage').clientHeight - 24 - (lg ? lg + 10 : 0)) + 'px';
+  const ol = L.querySelector('ol');     // a clipped list needs to say so: it scrolls
+  if (ol) ol.classList.toggle('clip', ol.scrollHeight > ol.clientHeight + 2);
+  L.querySelectorAll('li').forEach(li => {
+    const i = +li.dataset.e;
+    li.onmouseenter = () => { if (!hlSticky) setHL(i, false); };
+    li.onclick = () => setHL(i, !(S.hl === i && hlSticky));
+  });
+}
+
+const ledMark = () => $('#ledger').querySelectorAll('li')
+  .forEach(li => li.classList.toggle('on', +li.dataset.e === S.hl));
 
 /* ------------------------------------------------------- branch spotlight --- */
 /* The gantt's rows and the network's lines are the same objects seen two ways, and
@@ -557,7 +714,7 @@ function draw() {
    lines live inside the panned group, so they only have to be rebuilt when the fit
    changes, not on every pan frame. */
 
-const EP = [];                           // edge endpoints in group coordinates
+const EP = [], BP = [];                  // edge endpoints, bus centres, group coords
 let hlG = null, hitC = { key: null, g: null }, hlSticky = false;
 
 const hlLayer = () => (hlG || (hlG = el('g')));
@@ -575,6 +732,22 @@ function hitLayer() {
 
 function paintHL() {
   const g = hlLayer(); g.textContent = '';
+  const B = S.showBrg && S.run && ph() ? bridges() : null;
+  const it = B && S.hl != null && B.byEdge.get(S.hl);
+  if (it) {                              // everything this one outage would de-energize
+    const n = S.nets[S.run.system], byNum = {};
+    n.buses.forEach((b, i) => byNum[b.i] = i);
+    n.edges.forEach((e, k) => {
+      if (k !== it.e && EP[k] && inPocket(B, it, byNum[e.f]) && inPocket(B, it, byNum[e.t]))
+        g.appendChild(el('line', { x1: EP[k][0], y1: EP[k][1], x2: EP[k][2], y2: EP[k][3],
+          stroke: 'var(--risk)', 'stroke-width': 10, 'stroke-opacity': .2,
+          'stroke-linecap': 'round' }));
+    });
+    BP.forEach((c, b) => { if (inPocket(B, it, b))
+      g.appendChild(el('circle', { cx: c[0], cy: c[1], r: c[2] + 4, fill: 'none',
+        stroke: 'var(--risk)', 'stroke-width': 1.5, 'stroke-opacity': .85,
+        'vector-effect': 'non-scaling-stroke' })); });
+  }
   const p = S.hl != null && EP[S.hl];
   if (!p) return;
   g.appendChild(el('line', { x1: p[0], y1: p[1], x2: p[2], y2: p[3], stroke: 'var(--hl)',
@@ -589,7 +762,7 @@ function setHL(i, sticky) {
   sticky = !!sticky;
   if (i === S.hl && sticky === hlSticky) return;
   S.hl = i; hlSticky = sticky;
-  paintHL(); gantt(); hlbar();
+  paintHL(); gantt(); ledMark(); hlbar();
 }
 
 function hlbar() {
@@ -598,10 +771,15 @@ function hlbar() {
   const e = S.nets[S.run.system].edges[S.hl], p = ph();
   let n = 0; for (const f of p.frames) if (f.o.indexOf(S.hl) >= 0) n++;
   b.hidden = false;
+  const B = S.showBrg ? bridges() : null, it = B && B.byEdge.get(S.hl);
   b.innerHTML = `branch <b>${e.f}\u2013${e.t}</b> \u00b7 `
     + (n ? `opened in <b>${n}</b> of ${p.frames.length} candidates this phase`
          : p.sbs.indexOf(S.hl) >= 0 ? 'in the SBS, never opened this phase'
                                     : 'outside the SBS this phase')
+    + (it ? `<span class="rk"> \u00b7 bridge: its outage strands <b>${MW(it.w)} MW</b>`
+            + ` over ${it.nb} bus${it.nb > 1 ? 'es' : ''}`
+            + (it.parent ? `, and sits inside the pocket of ${ename(it.parent.e)}` : '')
+            + '</span>' : '')
     + (hlSticky ? ' <button id="hlx">\u2715</button>' : '');
   if (hlSticky) $('#hlx').onclick = () => setHL(null, false);
 }
@@ -672,6 +850,8 @@ function hud(res) {
       (ph() && ph().sbs_new.length
         ? `<br><i style="border-color:var(--sbs);border-top-width:4px"></i>added to the SBS this phase` : '')
       : '') +
+    (S.showBrg ? `<br><i style="border-color:var(--risk);border-top-width:5px"></i>`
+      + `bridge \u2014 width is the load it would strand` : '') +
     (S.ghost ? `<br><i style="border-color:var(--ghost);border-top-width:6px"></i>`
       + `reference: ${S.ghost.id}` : '');
 }
@@ -1154,7 +1334,8 @@ $('#bstep1').onclick = () => { play(false); setFrame(frames().length - 1); };
 $('#bstepm').onclick = () => { play(false); setFrame(S.frame - 1); };
 $('#bstepp').onclick = () => { play(false); setFrame(S.frame + 1); };
 for (const [id, key] of [['bheat', 'showHeat'], ['bvctg', 'showVctg'],
-                         ['blabel', 'showLabels'], ['bsbs', 'showSBS']])
+                         ['blabel', 'showLabels'], ['bsbs', 'showSBS'],
+                         ['bbrg', 'showBrg']])
   $('#' + id).onclick = e => { S[key] = !S[key]; e.target.classList.toggle('on', S[key]); draw(); };
 $('#bghost').onclick = () => {
   if (pickingGhost) { endPick(); return; }
@@ -1316,6 +1497,8 @@ $('#phases').addEventListener('click', () => sheet(null));
   if (q.get('xtime')) S.xTime = q.get('xtime') !== '0';
   $('#bxtime').classList.toggle('on', S.xTime);
   if (LS.get('gantt') === '0' || (phone() && LS.get('gantt') === null)) S.showGantt = false;
+  // the ledger is a list: on a phone it opens over the network, so it starts folded
+  S.ledOpen = LS.get('ledger') === null ? !phone() : LS.get('ledger') === '1';
   if (q.get('gantt')) S.showGantt = q.get('gantt') !== '0';
   $('#bgantt').classList.toggle('on', S.showGantt);
   if (q.get('speed') && [...$('#speed').options].some(o => o.value === q.get('speed')))

@@ -90,6 +90,31 @@ the SBS their phase searched, which they must, since the master cannot open anyt
 > searched is the previous one (for phase 1, `init_sbs`). The viewer always shows the
 > set the phase searched, and the `+n` beside it is what that phase added.
 
+### The objective, taken apart
+
+The number on the plot is a sum, and the terms are places on the map. `eval_risk` adds
+up, over every live branch whose own outage would shrink the set reachable from the
+slack, the load stranded in the pocket that falls off. The **bridges** layer draws those
+branches in pink, each as wide as the load it would cost, and the panel under the HUD
+ranks them: 551 MW of objective is 184 here, 133 there, and eleven smaller ones. Point
+at a row — or at the branch — and its pocket lights up: the buses that would go dark and
+the lines that would go with them.
+
+Bridges are a property of the *candidate*, not of the network. Opening lines makes them:
+at the end of `118_H3_d2_hop2_REF` phase 1 there are 14, and the ieee57 runs reach 24.
+
+Nesting is the part worth knowing about. A bridge often sits inside another bridge's
+pocket, and the objective charges that inner load to **both** — `create_bridge_to_pocket`
+counts each bridge's whole downstream pocket. So the column sums to the objective while
+the distinct load at risk is smaller (551 vs 514 MW above; on ieee57, 971 vs 681), and a
+nested row carries a `↳` naming the bridge it sits inside. Chains run deep: 14 levels, in
+the worst frame of the corpus.
+
+This is computed in the browser, not read from a file — one DFS from the slack per
+candidate, bridges as the tree edges with `low[child] > disc[parent]`, pockets as Euler
+intervals. It reproduces the stored per-candidate objective on **19,725 candidates
+across 41 runs**, every one to within 5e-4.
+
 ### The gantt: every branch against every candidate
 
 Under the scrubber, one row per branch the phase ever opened, one column per
@@ -200,7 +225,8 @@ These are all real properties of the data, surfaced in the UI rather than smooth
 | scrubber, `←` `→`, `shift`+arrow | move one / twenty-five candidates |
 | `space`, **play** | run the phase, 0.4× to 400× — **1× is 2.5 candidates per second** |
 | **pin this run as reference**, then pick one from the list | the run you were viewing turns violet and stays as the reference; the run you pick comes to the front, drawn over it |
-| **network**: heat / violations / SBS / bus labels | what the diagram shows |
+| **network**: heat / violations / SBS / bridges / bus labels | what the diagram shows |
+| hover a row of the bridge panel, or a pink branch (tap, on a phone) | light up the pocket that bridge would strand |
 | **pin this run as reference** / **unpin** | same row, since they also act on the diagram |
 | `i1 i2 i3`, top-right | switch phase |
 | **candidates**: objective / gantt / time axis | which bottom pane is up, and its x-axis |
@@ -220,7 +246,11 @@ candidate of a specific phase with a specific ghost, ready to paste into an emai
 
 ### What it deliberately does not draw
 
-No flows, no overloads, no N−1 panel. Those need the DC solver, which is Python, which
+No flows, no overloads, no N−1 panel. The bridge decomposition is the one thing the
+page computes rather than reads, and only because it is pure graph topology — the same
+DFS `pf.risk` runs, with no power flow anywhere near it.
+
+Beyond that: those need the DC solver, which is Python, which
 means a server — and this had to be something you open from a link. `tools/coordedit`
 in the main repo already does all of that and was validated to 1e-14, so rather than
 build a second, subtly different copy, this one stays out of that business.
